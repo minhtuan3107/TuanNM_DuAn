@@ -9,6 +9,8 @@ import Register from "./component/LoginLogout/Register";
 import Login from "./component/LoginLogout/Login";
 import UserInfo from "./component/LoginLogout/UserInfo";
 import HistoryBooking from "./component/LoginLogout/HistoryBooking";
+import AllProduct from "./component/AllProduct";
+import Accessary from "./component/admin/accessary/Accessary";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
         <Route path={"/login"} element={<Login/>}></Route>
         <Route path={"/info"} element={<UserInfo/>}></Route>
         <Route path={"/history"} element={<HistoryBooking/>}></Route>
+        <Route path={"/all"} element={<AllProduct/>}></Route>
+        <Route path={"/admin/accessary"} element={<Accessary/>}></Route>
         </Routes>
     </>
   );

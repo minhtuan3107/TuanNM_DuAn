@@ -1,0 +1,110 @@
+import Header from "./Header";
+import Footer from "./Footer";
+import {Link, useLocation, useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {getListAll} from "./service/MotobikeAccessoryService";
+import ReactPaginate from "react-paginate";
+import './modal.css'
+
+export default function AllProduct() {
+    const [dataProduct, setDataProduct] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(10);
+    const location = useLocation();
+    const name = location.state?.data || "";
+    useEffect(() => {
+        async function fetchData() {
+            setLoading(true);
+            const result = await getListAll(name, page);
+            setDataProduct(result.content);
+            setLoading(false);
+            document.title = "Tất cả phụ tùng"
+        }
+
+        console.log(dataProduct)
+
+        fetchData();
+
+    }, [page, name]);
+
+
+    function formatNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    return (
+        <>
+            <div>
+                <Header/>
+            </div>
+            {dataProduct.length === 0 ? "Khong co du lieu " :
+                <div>
+                    <section
+                        className="section_collection_group pd-top-30"
+                        data-include="section-collection-group-1"
+                    >
+                        <div className="container">
+                            <div className="bg-color-while">
+                                <div className="wd-top-title d-flex d-flex-center js-between">
+                                    <h2 className="title-section">Tất cả phụ tùng</h2>
+
+                                </div>
+                                <div className="d-flex d-flex-wrap row-left-list">
+                                    {dataProduct.map((m) => (
+                                        <>
+                                            <div
+                                                className="d-flex-column mg-bottom-15 mg-bottom-10-mb col-lg-1 col-md-3 col-sm-4 col-xs-6 pd-right-0">
+                                                <div className="product-block item loop-border">
+                                                    <div
+                                                        className="product-img  has-hover"
+                                                    >
+
+                                                        <img
+                                                            className="lazyload dt-width-100 "
+                                                            width={260}
+                                                            height={260}
+                                                            src={m.img}
+                                                        />
+
+                                                    </div>
+                                                    <div className="product-detail">
+                                                        <h3 className="pro-name">
+                                                            <Link className="image-resize"
+                                                                  to={`/detail/${m.id}`}>{m.name}</Link>
+
+                                                        </h3>
+
+                                                        <div className="box-pro-prices">
+                                                            <p className="pro-price">
+                                                                <span>{formatNumber(m.price)}đ </span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ))}
+
+                                </div>
+                                <div  style={{textAlign: "center"}} className="action_bottom button dark">
+                                    <button style={{backgroundColor: "var(--bgheader)"}}
+                                        className="btn"
+                                       onClick={()=> {
+                                           setPage(page + 5)
+                                       }}
+                                    >Xem thêm</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+
+            }
+            <div>
+
+                <Footer/>
+            </div>
+        </>
+    );
+}

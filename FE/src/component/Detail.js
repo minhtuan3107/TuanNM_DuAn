@@ -1,26 +1,45 @@
 import Header from "./Header";
 import Footer from "./Footer";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {findById} from "./service/MotobikeAccessoryService";
+import {addToCard, getListCart} from "./service/CartService";
+import {ToastContainer, toast, Bounce} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Detail() {
     const {id} = useParams();
     const [data, setData] = useState({});
+    const back = useNavigate();
+    const [flag, setFlag] = useState(false);
     useEffect(() => {
         const run = async () => {
             const list = await findById(id);
             setData(list);
         }
         run()
-    }, []);
+    }, [flag]);
+    const notify = () => toast.success('Thêm vào giỏ hàng thành công!', {
+        position: "top-right",
+        autoClose: 500,
+        hideProgressBar: false,
+        // closeOnClick: true,
+        // pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+    });
+
+
     function formatNumber(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
+
     return (
         <>
             <div>
-                <Header/>
+                <Header props={flag}/>
             </div>
             <div>
                 <main>
@@ -56,13 +75,13 @@ export default function Detail() {
                                                         <div
                                                             className="item item-owl"
                                                             data-pos={0}>
-                                                                <img
-                                                                    className="product-image-feature dt-width-100 lazyload"
-                                                                    src={data.img}
-                                                                    data-src={data.img}
-                                                                    width={600}
-                                                                    height={600}
-                                                                />
+                                                            <img
+                                                                className="product-image-feature dt-width-100 lazyload"
+                                                                src={data.img}
+                                                                data-src={data.img}
+                                                                width={600}
+                                                                height={600}
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -77,7 +96,7 @@ export default function Detail() {
                                                         </div>
                                                         <div className="d-flex product-info">
                                                             <div className="pro-type">
-                                                                <h3>Giá: {data.price > 1 ? formatNumber(data.price) : "Đang cập nhật" } đ</h3>
+                                                                <h3>Giá: {data.price > 1 ? formatNumber(data.price) : "Đang cập nhật"} đ</h3>
 
                                                             </div>
                                                         </div>
@@ -182,6 +201,11 @@ export default function Detail() {
                                                                     id="add-to-cart"
                                                                     className="flex-addcart-mb  add-to-cart-style"
                                                                     name="add"
+                                                                    onClick={() => {
+                                                                        addToCard(1, data.id)
+                                                                        notify()
+                                                                        setFlag(true)
+                                                                    }}
                                                                 >
                                                                     <strong> Thêm vào giỏ </strong>
                                                                     <span>Giao Tận Nơi </span>
@@ -286,6 +310,8 @@ export default function Detail() {
             <div>
                 <Footer/>
             </div>
+            <ToastContainer/>
+
         </>
     )
 }

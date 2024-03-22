@@ -86,6 +86,7 @@ export default function Payment() {
                                                                     <a>
                                                                         {cart.motobikeAccessory.name}
                                                                     </a>
+                                                                    <h4>Số lượng: {cart.quantity}</h4>
                                                                     <div className="d-flex group-item-option">
                                                                         <span className="item-option">
                           <span className="item-price">
@@ -96,37 +97,9 @@ export default function Payment() {
                                                             </li>
                                                             <li className="item-qty">
                                                                 <div className="quantity-area">
-                                                                    {" "}
-                                                                    <input
-                                                                        type="button"
-                                                                        defaultValue="–"
-                                                                        onClick="Wandacart.minusqt_cart($(this))"
-                                                                        className="qty-btn btn-left-quantity"
-                                                                    />
-                                                                    <input
-                                                                        type="text"
-                                                                        id="updates_1119676455"
-                                                                        name="updates[]"
-                                                                        defaultValue={1}
-                                                                        min={1}
-                                                                        data-price={27300000}
-                                                                        className="quantity-selector quantity-mini"
-                                                                        data-combo=""
-                                                                    />
-                                                                    <input
-                                                                        type="button"
-                                                                        defaultValue="+"
-                                                                        onClick="Wandacart.plusqt_cart($(this))"
-                                                                        className="qty-btn btn-right-quantity"
-                                                                    />
+
                                                                 </div>
                                                                 <div className="item-remove">
-                      <span className="remove-wrap">
-                        <a
-                        >
-                          Xóa
-                        </a>
-                      </span>
                                                                 </div>
                                                             </li>
                                                             <li className="item-price">

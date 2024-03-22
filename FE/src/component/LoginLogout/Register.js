@@ -1,7 +1,11 @@
 import Header from "../Header";
 import Footer from "../Footer";
+import {useEffect} from "react";
 
 export default function Register() {
+    useEffect(() => {
+        document.title ="Đăng kí"
+    }, []);
     return (
         <>
             <div>

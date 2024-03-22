@@ -1,7 +1,11 @@
 import Header from "../Header";
 import Footer from "../Footer";
+import {useEffect} from "react";
 
 export default function Login() {
+    useEffect(() => {
+        document.title = "Đăng nhập"
+    }, []);
     return (
         <>
             <div>

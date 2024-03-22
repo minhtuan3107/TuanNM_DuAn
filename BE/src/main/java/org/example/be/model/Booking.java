@@ -31,4 +31,7 @@ public class Booking {
     @JoinColumn(name = "statusBooking_id", referencedColumnName = "id")
     private StatusBooking statusBooking;
     private Long totalPrice;
+    private int quantity;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean status = false;
 }

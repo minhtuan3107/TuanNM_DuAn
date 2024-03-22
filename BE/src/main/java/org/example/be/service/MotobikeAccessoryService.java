@@ -3,6 +3,8 @@ package org.example.be.service;
 import org.example.be.repository.MotobikeAccessoryRepository;
 import org.example.be.model.MotobikeAccessory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,12 +30,26 @@ public class MotobikeAccessoryService implements IMotobikeAccessoryService {
     }
 
     @Override
-    public List<MotobikeAccessory> getListByOrders() {
-        return null;
+    public List<MotobikeAccessory> getListHot() {
+        return motobikeAccessoryRepository.getListHot();
+    }
+
+
+    @Override
+    public List<MotobikeAccessory> getListNewAll(String name) {
+        return motobikeAccessoryRepository.getListNewAll(name);
+    }
+
+
+    @Override
+    public Page<MotobikeAccessory> getAllAndSearch(String name, Pageable pageable) {
+        return motobikeAccessoryRepository.getAllAndSearch("%" + name.trim() + "%", pageable);
     }
 
     @Override
-    public List<MotobikeAccessory> getListByIdAccount() {
-        return null;
+    public void save(MotobikeAccessory motobikeAccessory) {
+        motobikeAccessoryRepository.save(motobikeAccessory);
     }
+
+
 }

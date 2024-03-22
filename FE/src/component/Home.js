@@ -2,25 +2,35 @@ import './style.css'
 import Header from "./Header";
 import Footer from "./Footer";
 import {useEffect, useState} from "react";
-import {getList, getListNew} from "./service/MotobikeAccessoryService";
-import {Link} from "react-router-dom";
+import {getList, getListHot, getListNew} from "./service/MotobikeAccessoryService";
+import {Link, useNavigate} from "react-router-dom";
+import {getAll} from "./service/TypeAccessoryService";
 
 export default function Home() {
     const [listData, setListData] = useState([]);
     const [listDataNew, setListDataNew] = useState([]);
+    const back = useNavigate();
+    const [type, setType] = useState([]);
+    const [listHot, setListHot] = useState([]);
     useEffect(() => {
         const getListData = async () => {
             const list = await getListNew();
             const listNew = await getListNew()
+            const listType = await getAll();
+            const listHot = await getListHot();
+            setType(listType);
+            setListHot(listHot);
             setListData(list);
             setListDataNew(listNew);
         }
         getListData()
         document.title = "Phụ tùng xe máy"
     }, []);
+
     function formatNumber(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
+
     return (
         <>
             <div>
@@ -35,22 +45,26 @@ export default function Home() {
                                     className="col-md-3 hidden-sm hidden-xs pd-right-0 z-index-high nav-category-group">
                                     <nav className="nav-group">
                                         <ul className="navigation list-menu-nav scroll">
-                                            <li className="mn-item active-nav has-child">
-                                                <a
-                                                    href="/collections/phu-tung-xe-may"
-                                                    className="menu-item__link item-link"
-                                                    title="Phụ tùng xe máy"
-                                                >
-                                                    <img
-                                                        width={24}
-                                                        height={24}
-                                                        src="//file.hstatic.net/200000298594/file/phu_tung_9018ecfa8678422badcd7e11f134720c_icon.png"
-                                                        alt="Phụ tùng xe máy"
-                                                    />
-                                                    <span>Phụ tùng xe máy</span>
-                                                </a>
+                                            {type.map((t) => (
+                                                <li className="mn-item active-nav has-child">
+                                                    <a
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            back("/all", {state: {data: t.name}})
 
-                                            </li>
+                                                        }}
+                                                        className="menu-item__link item-link"
+                                                    >
+                                                        <img
+                                                            width={24}
+                                                            height={24}
+                                                            src={t.img}
+                                                            alt={t.name}
+                                                        />
+                                                        <span>{t.name}</span>
+                                                    </a>
+                                                </li>
+                                            ))}
                                         </ul>
                                     </nav>
                                 </div>
@@ -73,8 +87,6 @@ export default function Home() {
                                     >
                                         <div className="item item-owl">
                                             <a
-                                                href="https://congtyminhphong.vn/products/may-doc-loi-mst100-pro-phien-ban-9-0"
-                                                title="slider 1"
                                             >
                                                 <img
                                                     className="dt-width-100 lazyload"
@@ -128,14 +140,14 @@ export default function Home() {
                                                                     <div
                                                                         className="product-img  has-hover"
                                                                     >
-                                                                            <img
-                                                                                className="lazyload dt-width-100 img-hover hidden-xs"
-                                                                                width={260}
-                                                                                height={260}
-                                                                                src={datanew.img}
-                                                                                data-src={datanew.img}
-                                                                                data-mobile={datanew.img}
-                                                                            />
+                                                                        <img
+                                                                            className="lazyload dt-width-100 img-hover hidden-xs"
+                                                                            width={260}
+                                                                            height={260}
+                                                                            src={datanew.img}
+                                                                            data-src={datanew.img}
+                                                                            data-mobile={datanew.img}
+                                                                        />
                                                                         <div
                                                                             className="button-loop-pro hidden-xs hidden-sm">
                                                                             <button
@@ -153,19 +165,14 @@ export default function Home() {
                                                                     </div>
                                                                     <div className="product-detail">
                                                                         <h3 className="pro-name">
-                                                                            <Link className="image-resize" to={`/detail/${datanew.id}`}>{datanew.name}</Link>
+                                                                            <Link className="image-resize"
+                                                                                  to={`/detail/${datanew.id}`}>{datanew.name}</Link>
 
                                                                         </h3>
-                                                                        <div
-                                                                            className="d-flex js-between d-flex-center">
-                                                                            <ul className="list-variants d-flex d-flex-wrap image"></ul>
-                                                                        </div>
                                                                         <div className="box-pro-prices">
                                                                             <p className="pro-price">
-                                                                                <span>300,000₫ </span>
-                                                                                <del
-                                                                                    className="compare-price">350,000₫
-                                                                                </del>
+                                                                                <span>{formatNumber(datanew.price)}đ </span>
+
                                                                             </p>
                                                                         </div>
                                                                         <ul className="hash-tag-loop"></ul>
@@ -202,127 +209,54 @@ export default function Home() {
                                                     data-infinite="false"
                                                     data-custom-arrows="true"
                                                 >
-                                                    <div className="d-flex-column item-owl pd-left--10">
-                                                        <div className="product-block item">
-                                                            <div
-                                                                className="product-img  has-hover"
-                                                                data-frame="bố 3 càng ba búa 3 càng fcc bố fcc 3 càng bố ba càng côn sau"
-                                                            >
-                                                                <a
-                                                                    href="/products/combo-chuong-exedy-bo-3-cang-honda-dai-hong-tien-cnc"
-                                                                    title="COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG (TIỆN CNC)"
-                                                                    className="image-resize "
-                                                                >
-                                                                    <img
-                                                                        className="lazyload dt-width-100 img-first"
-                                                                        width={260}
-                                                                        height={260}
-                                                                        src="https://file.hstatic.net/200000397757/file/lazyload_e95df2e69ca44092831654bec491fb77_large.jpg"
-                                                                        data-src="//product.hstatic.net/200000298594/product/dai_hong-6_6ed79c8de9614e4d8f5b30ac33e5e776_large.jpg"
-                                                                        data-mobile="//product.hstatic.net/200000298594/product/dai_hong-6_6ed79c8de9614e4d8f5b30ac33e5e776_medium.jpg"
-                                                                        alt="COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG (TIỆN CNC)"
-                                                                    />
-                                                                    <img
-                                                                        className="lazyload dt-width-100 img-hover hidden-xs"
-                                                                        width={260}
-                                                                        height={260}
-                                                                        src="https://file.hstatic.net/200000397757/file/lazyload_e95df2e69ca44092831654bec491fb77_large.jpg"
-                                                                        data-src="//product.hstatic.net/200000298594/product/dai_hong-1_e9977e03224c4076a4a9bb8492d17b2f_large.jpg"
-                                                                        data-mobile="//product.hstatic.net/200000298594/product/dai_hong-1_e9977e03224c4076a4a9bb8492d17b2f_large.jpg"
-                                                                        alt="COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG (TIỆN CNC)"
-                                                                    />
-                                                                </a>
-                                                                <div className="button-loop-pro hidden-xs hidden-sm">
-                                                                    <button
-                                                                        className="btn-quickview"
-                                                                        onClick="window.wd.scofield.quickview('/products/combo-chuong-exedy-bo-3-cang-honda-dai-hong-tien-cnc?view=quickview-nochoose')"
-                                                                        type="button"
+                                                    {listHot.map((datanew) => (
+                                                        <>
+                                                            <div className="d-flex-column item-owl pd-left--10">
+                                                                <div className="product-block item">
+                                                                    <div
+                                                                        className="product-img  has-hover"
                                                                     >
                                                                         <img
-                                                                            src="https://file.hstatic.net/200000525917/file/search-icon_61351aaf4f2a4ba0b163434492c75c0d.svg"
-                                                                            width={16}
-                                                                            height={16}
-                                                                            alt="Xem nhanh"
+                                                                            className="lazyload dt-width-100 img-hover hidden-xs"
+                                                                            width={260}
+                                                                            height={260}
+                                                                            src={datanew.img}
+                                                                            data-src={datanew.img}
+                                                                            data-mobile={datanew.img}
                                                                         />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div className="product-detail">
-                                                                <h3 className="pro-name">
-                                                                    <a
-                                                                        href="/products/combo-chuong-exedy-bo-3-cang-honda-dai-hong-tien-cnc"
-                                                                        title="COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG (TIỆN CNC)"
-                                                                    >
-                                                                        COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG
-                                                                        (TIỆN CNC){" "}
-                                                                    </a>
-                                                                </h3>
-                                                                <div className="d-flex js-between d-flex-center">
-                                                                    <ul className="list-variants d-flex d-flex-wrap image"></ul>
-                                                                </div>
-                                                                <div className="box-pro-prices">
-                                                                    <p className="pro-price">
-                                                                        <span>120,000₫ </span>
-                                                                    </p>
-                                                                </div>
-                                                                <ul className="hash-tag-loop"></ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="d-flex-column item-owl pd-left--10">
-                                                        <div className="product-block item">
-                                                            <div
-                                                                className="product-img  has-hover"
-                                                                data-frame="bố 3 càng ba búa 3 càng fcc bố fcc 3 càng bố ba càng côn sau"
-                                                            >
-                                                                <a
-                                                                    href="/products/combo-chuong-exedy-bo-3-cang-honda-dai-hong-tien-cnc"
-                                                                    title="COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG (TIỆN CNC)"
-                                                                    className="image-resize "
-                                                                >
-                                                                    <img
-                                                                        className="lazyload dt-width-100 img-first"
-                                                                        width={260}
-                                                                        height={260}
-                                                                        src="https://file.hstatic.net/200000397757/file/lazyload_e95df2e69ca44092831654bec491fb77_large.jpg"
-                                                                        data-src="//product.hstatic.net/200000298594/product/dai_hong-6_6ed79c8de9614e4d8f5b30ac33e5e776_large.jpg"
-                                                                        data-mobile="//product.hstatic.net/200000298594/product/dai_hong-6_6ed79c8de9614e4d8f5b30ac33e5e776_medium.jpg"
-                                                                        alt="COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG (TIỆN CNC)"
-                                                                    />
+                                                                        <div
+                                                                            className="button-loop-pro hidden-xs hidden-sm">
+                                                                            <button
+                                                                                className="btn-quickview"
+                                                                                type="button"
+                                                                            >
+                                                                                <img
+                                                                                    src="https://file.hstatic.net/200000525917/file/search-icon_61351aaf4f2a4ba0b163434492c75c0d.svg"
+                                                                                    width={16}
+                                                                                    height={16}
+                                                                                    alt="Xem nhanh"
+                                                                                />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="product-detail">
+                                                                        <h3 className="pro-name">
+                                                                            <Link className="image-resize"
+                                                                                  to={`/detail/${datanew.id}`}>{datanew.name}</Link>
 
-                                                                </a>
-                                                                <div className="button-loop-pro hidden-xs hidden-sm">
-                                                                    <button
-                                                                        className="btn-quickview"
-                                                                        onClick="window.wd.scofield.quickview('/products/combo-chuong-exedy-bo-3-cang-honda-dai-hong-tien-cnc?view=quickview-nochoose')"
-                                                                        type="button"
-                                                                    >
+                                                                        </h3>
+                                                                        <div className="box-pro-prices">
+                                                                            <p className="pro-price">
+                                                                                <span>{formatNumber(datanew.price)}đ </span>
 
-                                                                    </button>
+                                                                            </p>
+                                                                        </div>
+                                                                        <ul className="hash-tag-loop"></ul>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="product-detail">
-                                                                <h3 className="pro-name">
-                                                                    <a
-                                                                        href="/products/combo-chuong-exedy-bo-3-cang-honda-dai-hong-tien-cnc"
-                                                                        title="COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG (TIỆN CNC)"
-                                                                    >
-                                                                        COMBO Chuông EXEDY + Bố 3 càng HONDA DÀI - HỒNG
-                                                                        (TIỆN CNC){" "}
-                                                                    </a>
-                                                                </h3>
-                                                                <div className="d-flex js-between d-flex-center">
-                                                                    <ul className="list-variants d-flex d-flex-wrap image"></ul>
-                                                                </div>
-                                                                <div className="box-pro-prices">
-                                                                    <p className="pro-price">
-                                                                        <span>120,000₫ </span>
-                                                                    </p>
-                                                                </div>
-                                                                <ul className="hash-tag-loop"></ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                        </>
+                                                    ))}
 
                                                 </div>
                                             </div>
@@ -351,40 +285,28 @@ export default function Home() {
                                                     <div
                                                         className="product-img  has-hover"
                                                     >
-
-                                                            <img
-                                                                className="lazyload dt-width-100 "
-                                                                width={260}
-                                                                height={260}
-                                                                src={m.img}
-                                                            />
-
+                                                        <img
+                                                            className="lazyload dt-width-100 "
+                                                            width={260}
+                                                            height={260}
+                                                            src={m.img}
+                                                        />
                                                     </div>
                                                     <div className="product-detail">
                                                         <h3 className="pro-name">
-                                                            <Link className="image-resize" to={`/detail/${m.id}`}>{m.name}</Link>
-
+                                                            <Link className="image-resize"
+                                                                  to={`/detail/${m.id}`}>{m.name}</Link>
                                                         </h3>
-                                                        <div className="d-flex js-between d-flex-center">
-                                                            <ul className="list-variants d-flex d-flex-wrap image"></ul>
-                                                        </div>
                                                         <div className="box-pro-prices">
                                                             <p className="pro-price">
                                                                 <span>{formatNumber(m.price)}đ </span>
                                                             </p>
                                                         </div>
-                                                        <ul className="hash-tag-loop"></ul>
                                                     </div>
                                                 </div>
                                             </div>
                                         </>
                                     ))}
-                                </div>
-
-
-                                <div className="text-center btn-view-all-tab">
-                                    <a className="btn btn-all-tab" href="/collections/phu-tung-xe-may">
-                                    </a>
                                 </div>
                             </div>
                         </div>
