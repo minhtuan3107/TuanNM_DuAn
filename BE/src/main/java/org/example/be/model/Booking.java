@@ -35,4 +35,5 @@ public class Booking {
     private int statusPayment;
     private String address;
     private String phone;
+    private String des;
 }

@@ -1,16 +1,16 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import {useEffect, useState} from "react";
-import {getList, getListNew} from "./service/MotobikeAccessoryService";
-import {Link, useHref, useNavigate, useParams} from "react-router-dom";
+import {getListNew} from "./service/MotobikeAccessoryService";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {deleteCart, getListCart, getTotalAmount, updateQuantity} from "./service/CartService";
 import './modal.css'
 import Swal from "sweetalert2";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 import {
-    booking,
-    bookingAccessary,
     checkQuantityPayment,
-    payment,
     paymentBooking,
     shipCod
 } from "./service/BookingService";
@@ -24,7 +24,11 @@ export default function Cart() {
     const [flag, setFlag] = useState(false);
     const [flag1, setFlag1] = useState(false);
     const back = useNavigate();
-    const [payment, setPayment] = useState("");
+    const [address, setAddress] = useState("");
+    const [phone, setPhone] = useState("");
+    const [des, setDes] = useState("");
+    const [useAccountAddress, setUseAccountAddress] = useState(true);
+    const [printPDF, setPrintPDF] = useState(false);
     useEffect(() => {
         const getListData = async () => {
             const list = await getListCart(id);
@@ -33,7 +37,7 @@ export default function Cart() {
             setTotalAmount(total);
             const listNew = await getListNew()
             setListProduct(listNew);
-
+            console.log(listCart)
         }
         getListData()
         setFlag(false)
@@ -77,7 +81,7 @@ export default function Cart() {
     }
 
     const backToPayment = async () => {
-        const paymentBooking1 = paymentBooking(totalAmount, id).then(url => {
+        const paymentBooking1 = paymentBooking(totalAmount, id, des, address, phone).then(url => {
             window.location.href = url;
 
             console.log(url)
@@ -85,7 +89,23 @@ export default function Cart() {
     }
 
     const cod = async () => {
-        shipCod(totalAmount, id).then(
+        if (printPDF) {
+            const doc = new jsPDF();
+            const tableData = listCart.map(c => [c.id, c.motobikeAccessory.name, c.motobikeAccessory.price]);
+            const totalRow = ['Tổng tiền', '', totalAmount];
+            tableData.push(totalRow);
+
+            // Tạo bảng
+            doc.autoTable({
+                head: [['Mã sản phẩm', 'Tên sản phẩm', 'Giá tiền']], // Tiêu đề cột
+                body: tableData, // Dữ liệu cho các hàng
+                startY: 10, // Vị trí bắt đầu vẽ bảng
+            });
+
+            // Lưu file PDF
+            doc.save('example.pdf');
+        }
+        shipCod(totalAmount, id, des, address, phone).then(
             back(`/history/${id}`, {state: {data: "COD"}})
         )
     }
@@ -132,6 +152,24 @@ export default function Cart() {
             });
         }
     }
+    const changeDes = (event) => {
+        setDes(event);
+    }
+    const changeAddress = (event) => {
+        setAddress(event);
+    }
+    const changePhone = (event) => {
+        setPhone(event);
+    }
+    const handleCheckboxChange = () => {
+        setUseAccountAddress(!useAccountAddress);
+        setAddress("")
+        setDes("")
+        setPhone("")
+    };
+    const handleCheckboxChangePDF = () => {
+        setPrintPDF(!printPDF);
+    };
     return (
         <>
             <div>
@@ -263,6 +301,8 @@ export default function Cart() {
                                                         id="checkbox-bill"
                                                         defaultValue="yes"
                                                         className="regular-checkbox"
+                                                        checked={printPDF}
+                                                        onChange={handleCheckboxChangePDF}
                                                     />
                                                     <label htmlFor="checkbox-bill" className="title">
                                                         Xuất hoá đơn
@@ -274,7 +314,8 @@ export default function Cart() {
                                                         id="checkbox-bill1"
                                                         defaultValue="yes"
                                                         className="regular-checkbox"
-                                                        value={"yes"}
+                                                        checked={useAccountAddress}
+                                                        onChange={handleCheckboxChange}
                                                     />
                                                     <label htmlFor="checkbox-bill1" className="title">
                                                         Sử dụng địa chỉ trên tài khoản
@@ -282,6 +323,32 @@ export default function Cart() {
                                                 </div>
                                             </div>
                                             <div className="checkout-buttons clearfix">
+                                                {!useAccountAddress && (
+                                                    <div>
+                                                        <label className="note-label">
+                                                            Thông tin nhận hàng
+                                                        </label>
+                                                        <textarea
+                                                            className="form-control"
+                                                            rows={1}
+                                                            placeholder="Địa chỉ"
+                                                            defaultValue={""}
+                                                            onChange={(event) => {
+                                                                changeAddress(event.target.value);
+                                                            }
+                                                            }
+                                                        /> <textarea
+                                                        className="form-control"
+                                                        rows={1}
+                                                        placeholder="Số điện thoại"
+                                                        defaultValue={""}
+                                                        onChange={(event) => {
+                                                            changePhone(event.target.value);
+                                                        }
+                                                        }
+                                                    />
+                                                    </div>
+                                                )}
                                                 <label htmlFor="note" className="note-label">
                                                     Ghi chú đơn hàng
                                                 </label>
@@ -292,6 +359,10 @@ export default function Cart() {
                                                     rows={4}
                                                     placeholder="Ghi chú"
                                                     defaultValue={""}
+                                                    onChange={(event) => {
+                                                        changeDes(event.target.value);
+                                                    }
+                                                    }
                                                 />
                                             </div>
                                             <div className="order_action">

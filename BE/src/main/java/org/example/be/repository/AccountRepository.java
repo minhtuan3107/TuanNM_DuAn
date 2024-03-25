@@ -8,8 +8,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
-    @Query(value ="select * from account where account.is_deleted = 0 and account.role_id = 2 and (account.account_name like :name or account.address like :name )", nativeQuery = true)
+    @Query(value = "select * from account where account.is_deleted = 0 and account.role_id = 2 and (account.account_name like :name or account.address like :name )", nativeQuery = true)
     Page<Account> getAccountAndSearch(@Param("name") String name, Pageable pageable);
+
+    @Query(value = "select * from account where account.email = :email", nativeQuery = true)
+    List<Account> checkEmail(@Param("email") String email);
+
+    @Query(value = "select * from account where account.phone = :phone", nativeQuery = true)
+    List<Account> checkPhone(@Param("phone") String phone);
+
+    @Query(value = "select * from account where account.account_name = :userName", nativeQuery = true)
+    List<Account> checkUserName(@Param("userName") String userName);
 }
+

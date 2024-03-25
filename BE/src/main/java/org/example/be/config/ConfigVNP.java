@@ -20,7 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @author CTT VNPAY
  */
-public class Config {
+public class ConfigVNP {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_TmnCode = "DJ9212K8";
     public static String secretKey = "YNAVXZMKKNRTNRYTMHYCFZSWOKVCDTNU";

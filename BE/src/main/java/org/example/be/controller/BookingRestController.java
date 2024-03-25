@@ -1,23 +1,35 @@
 package org.example.be.controller;
 
-import jakarta.transaction.Transactional;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfDocument;
+import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.example.be.DTO.HistoryBookingDTO;
 import org.example.be.model.Booking;
 import org.example.be.model.MotobikeAccessory;
+import org.example.be.service.IAccountService;
 import org.example.be.service.IBookingService;
 import org.example.be.service.IMotobikeAccessoryService;
 import org.example.be.service.IStatusBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,10 +45,31 @@ public class BookingRestController {
     @Autowired
     private IStatusBookingService statusBookingService;
 
+    @Autowired
+    private IAccountService accountService;
+
     @GetMapping("{id}")
-    private ResponseEntity<List<Booking>> getListBookingByAccount(@PathVariable Long id) {
-        List<Booking> getListBooking = bookingService.getListByIdAccount(id);
+    private ResponseEntity<List<HistoryBookingDTO>> getListBookingByAccount(@PathVariable Long id) {
+        List<HistoryBookingDTO> getListBooking = bookingService.getListBookingFormat(id);
         return new ResponseEntity<>(getListBooking, HttpStatus.OK);
+    }
+
+    @GetMapping("getAll")
+    private ResponseEntity<List<HistoryBookingDTO>> getAllBooking() {
+        List<HistoryBookingDTO> getListBooking = bookingService.getListBooking();
+        return new ResponseEntity<>(getListBooking, HttpStatus.OK);
+    }
+
+    @GetMapping("detailsBookingAdmin")
+    private ResponseEntity<List<Booking>> detailsBookingAdmin(@RequestParam(defaultValue = "") String date) {
+        List<Booking> bookings = bookingService.detailBookingAdmin(date);
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    }
+
+    @GetMapping("detailsBooking")
+    private ResponseEntity<List<Booking>> detailsBooking(@RequestParam(defaultValue = "") String date, Long idAccount) {
+        List<Booking> bookings = bookingService.detailsBooking(date, idAccount);
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 
     @GetMapping("cart/{id}")
@@ -64,16 +97,32 @@ public class BookingRestController {
     }
 
     @GetMapping("shipCod")
-    private void shipCod(@RequestParam Long price, @RequestParam Long idAccount) {
+    private void shipCod(@RequestParam Long price,
+                         @RequestParam Long idAccount,
+                         @RequestParam(defaultValue = "") String des,
+                         @RequestParam(defaultValue = "") String address,
+                         @RequestParam(defaultValue = "") String phone) {
         List<Booking> bookings = bookingService.getListPay(idAccount);
+        LocalDateTime dateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
             MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
             motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
             motobikeAccessoryService.save(motobikeAccessory);
             booking.setStatusBooking(statusBookingService.findById(2L));
             booking.setStatusPayment(1);
-            booking.setDateBooking(LocalDateTime.now());
+            booking.setDateBooking(dateTime);
             booking.setTotalPrice(motobikeAccessory.getPrice());
+            booking.setDes(des);
+            if (address.equals("")) {
+                booking.setAddress(booking.getAccount().getAddress());
+            } else {
+                booking.setAddress(address);
+            }
+            if (phone.equals("")) {
+                booking.setPhone(booking.getAccount().getPhone());
+            } else {
+                booking.setPhone(phone);
+            }
             bookingService.save(booking);
         }
     }
@@ -81,10 +130,11 @@ public class BookingRestController {
     @GetMapping("donePayment/{idAccount}")
     private void donePayment(@PathVariable Long idBooking) {
         Booking booking = bookingService.findById(idBooking);
+        LocalDateTime dateTime = LocalDateTime.now();
         MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
         booking.setStatusBooking(statusBookingService.findById(2L));
         booking.setStatusPayment(2);
-        booking.setDateBooking(LocalDateTime.now());
+        booking.setDateBooking(dateTime);
         booking.setTotalPrice(motobikeAccessory.getPrice());
         bookingService.save(booking);
     }
@@ -133,5 +183,9 @@ public class BookingRestController {
         }
         System.out.println("YES");
         return new ResponseEntity<>("YES", HttpStatus.OK);
+    }
+
+    private void exportPDF(List<Booking> list, Long idAccount) {
+
     }
 }

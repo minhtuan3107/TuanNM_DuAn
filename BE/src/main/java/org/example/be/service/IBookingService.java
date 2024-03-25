@@ -1,16 +1,18 @@
 package org.example.be.service;
 
+import org.example.be.DTO.HistoryBookingDTO;
 import org.example.be.model.Booking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IBookingService {
     List<Booking> getListPay(Long id);
 
-    List<Booking> getListByIdAccount(Long id);
+    List<Booking> detailsBooking(String dateTime, Long idAccount);
 
     List<Booking> getCartByIdAccount(Long id);
 
@@ -31,5 +33,11 @@ public interface IBookingService {
     List<Booking> checkBooking(Long idAccount, Long idAccessory);
 
     Booking findBookingByIdAccountAndIdAccessory(Long idAccount, Long idAccessory);
+
+    List<HistoryBookingDTO> getListBookingFormat(Long id);
+
+    List<HistoryBookingDTO> getListBooking();
+
+    List<Booking> detailBookingAdmin(String date);
 
 }

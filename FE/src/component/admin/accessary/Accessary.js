@@ -4,6 +4,10 @@ import {useEffect, useState} from "react";
 import {getAllAdmin, getListAll} from "../../service/MotobikeAccessoryService";
 import ReactPaginate from "react-paginate";
 import {getAllAccount} from "../../service/AccountService";
+import {detailsBooking, detailsBookingAdmin, getAllBooking} from "../../service/BookingService";
+import MySwal from "sweetalert2";
+import Swal from "sweetalert2";
+import {formatNumber} from "chart.js/helpers";
 
 export default function Accessary() {
     const [listAccessary, setListAccessary] = useState([]);
@@ -23,8 +27,8 @@ export default function Accessary() {
             console.log(listAccount)
         }
         const getListBookingPage = async () => {
-            const result = await getAllAccount(nameSearch, page);
-            setListBooking(result.content);
+            const result = await getAllBooking(nameSearch, page);
+            setListBooking(result);
             console.log(listBooking)
         }
         getListBookingPage();
@@ -32,7 +36,46 @@ export default function Accessary() {
         getListAccessary();
         document.title = "admin"
     }, [showAdmin, page]);
+    const showDetailBooking = async (date) => {
+        const booking = await detailsBookingAdmin(date);
 
+        MySwal.fire({
+            title: 'Chi tiết đơn hàng',
+            html: `
+    <div style="font-weight: bold; text-align: left">
+      <p>Địa chỉ nhận hàng: ${booking[0].address}</p>
+      <p>Số điện thoại: ${booking[0].phone}</p>
+    </div>
+    ${booking.map((booking, index) => (
+                `<div class="item-wrap" id="cart-page-result-${index}">
+         <ul class="cart-wrap" data-line={1}>
+           <li class="item-info">
+             <div class="item-img">
+               <img src="${booking.motobikeAccessory.img}" />
+             </div>
+             <div class="item-title">
+               <h5>Số lượng : ${booking.quantity}</h5>
+             </div>
+           </li>
+           <li class="item-price" style="flex: 0 0 40%">
+             <span class="amount full-price">
+               <span>${formatNumber(booking.motobikeAccessory.price)}đ</span>
+             </span>
+           </li>
+         </ul>
+       </div>`
+            )).join('')}
+  `
+        });
+    };
+
+    const formatDate = (dateString) => {
+        const timestamp = new Date(dateString);
+        const formattedDate = `${timestamp.getHours()}:${timestamp.getMinutes()} - ${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+        console.log(formattedDate);
+        return formattedDate;
+    };
     return (
         <>
             <div>
@@ -152,15 +195,15 @@ export default function Accessary() {
                                                             <thead>
                                                             <tr>
                                                                 <th className="order_number text-center">
-                                                                    Mã đơn hàng
+                                                                    Mã phụ tùng
                                                                 </th>
-                                                                <th className="date text-center">Ngày đặt</th>
-                                                                <th className="total text-center">Thành tiền</th>
+                                                                <th className="date text-center">Tên phụ tùng</th>
+                                                                <th className="total text-center">Giá tiền</th>
                                                                 <th className="payment_status text-center">
-                                                                    Trạng thái thanh toán
+                                                                    Số lượng còn lại
                                                                 </th>
                                                                 <th className="fulfillment_status text-center">
-                                                                    Vận chuyển
+                                                                    Loại
                                                                 </th>
                                                             </tr>
                                                             </thead>
@@ -181,11 +224,11 @@ export default function Accessary() {
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span
-                                                                        className="status_pending"></span>
+                                                                        className="status_pending">{accessory.quantity == 0 ? "Đã hết" : accessory.quantity}</span>
                                                                     </td>
                                                                     <td className="text-center">
                           <span className="status_not fulfilled" data-note="">
-
+                            {accessory.typeAccessory.name}
                           </span>
                                                                     </td>
                                                                 </tr>
@@ -199,68 +242,63 @@ export default function Accessary() {
                                     </div>
                                 }
                                 {showAdmin === 0 &&
-                                <div className="col-xs-12 col-sm-9 col-md-10 item-right mg-bottom-15">
-                                    <div className="bg-while pd-15 border-10-radius">
-                                        <div className="row">
-                                            <div className="col-xs-12" id="customer_sidebar">
-                                                <div className="table-responsive">
-                                                    <table className="table">
-                                                        <thead>
-                                                        <tr>
-                                                            <th className="order_number text-center">Tên khách hàng
-                                                            </th>
-                                                            <th className="date text-center">Địa chỉ</th>
-                                                            <th className="total text-center">Số điện thoại</th>
-                                                            <th className="payment_status text-center">
-                                                                Tên sản phẩm
-                                                            </th>
-                                                            <th className="fulfillment_status text-center">
-                                                                Số lượng
-                                                            </th>  <th className="fulfillment_status text-center">
-                                                            Tổng tiền
-                                                            </th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        {listBooking.map((booking) => (
-                                                            <tr className="odd cancelled_order" key={booking.id}>
-                                                                <td className="text-center">
-                                                                    <a>
-                                                                        {booking.account}
-                                                                    </a>
-                                                                </td>
-                                                                <td className="text-center">
-                                                                    <span>{booking.date || "Đang cập nhật"}</span>
-                                                                </td>
-                                                                <td className="text-center">
-                                                                    <span
-                                                                        className="total money">{booking.name}</span>
-                                                                </td>
-                                                                <td className="text-center">
-                                                                    <span
-                                                                        className="status_pending">{(booking.price) || "Đang cập nhật"}</span>
-                                                                </td>
-                                                                <td className="text-center">{booking.quantity}
-                                                                    <span className="status_not fulfilled" data-note="">
-
-                          </span>
-                                                                </td>
+                                    <div className="col-xs-12 col-sm-9 col-md-10 item-right mg-bottom-15">
+                                        <div className="bg-while pd-15 border-10-radius">
+                                            <div className="row">
+                                                <div className="col-xs-12" id="customer_sidebar">
+                                                    <div className="table-responsive">
+                                                        <table className="table">
+                                                            <thead>
+                                                            <tr>
+                                                                <th className="order_number text-center">Ngày đặt
+                                                                </th>
+                                                                <th className="total text-center">Tổng tiền</th>
+                                                                <th className="payment_status text-center">
+                                                                    Trạng thái
+                                                                </th>
+                                                         
                                                             </tr>
-                                                        ))}
+                                                            </thead>
+                                                            <tbody>
+                                                            {listBooking.map((booking) => (
+                                                                <tr className="odd cancelled_order">
+                                                                    <td className="text-center">
+                                                                            {formatDate(booking.dateBooking)}
+                                                                    </td>
+                                                                    <td className="text-center">
+                                                                        <span>{booking.price}</span>
+                                                                    </td>
+                                                                    <td className="text-center">
+                                                                    <span
+                                                                        className="total money">
+                                                                        {booking.statusPayment == 1 ? "Nhận hàng rồi thanh toán" : "Đã thanh toán"}
+                                                                    </span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <button className="btn-update-customer"
+                                                                                onClick={() => {
+                                                                                    showDetailBooking(booking.dateBooking)
+                                                                                }}
+                                                                        >Chi
+                                                                            tiết đơn hàng
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
 
-                                                        </tbody>
+                                                            </tbody>
 
-                                                    </table>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            }
+                                }
                                 {showAdmin === 2 &&
                                     <div className="col-xs-12 col-sm-9 col-md-10 item-right mg-bottom-15">
                                         <div className="bg-while pd-15 border-10-radius">
-                                            <div className="row">
+                                        <div className="row">
                                                 <div className="col-xs-12" id="customer_sidebar">
                                                     <div className="table-responsive">
                                                         <table className="table">

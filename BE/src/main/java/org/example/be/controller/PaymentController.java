@@ -1,9 +1,10 @@
 package org.example.be.controller;
 
 import org.example.be.DTO.PaymentResDTO;
-import org.example.be.config.Config;
+import org.example.be.config.ConfigVNP;
 import org.example.be.model.Booking;
 import org.example.be.model.MotobikeAccessory;
+import org.example.be.service.IAccountService;
 import org.example.be.service.IBookingService;
 import org.example.be.service.IMotobikeAccessoryService;
 import org.example.be.service.IStatusBookingService;
@@ -30,17 +31,23 @@ public class PaymentController {
     private IMotobikeAccessoryService motobikeAccessoryService;
     @Autowired
     private IStatusBookingService statusBookingService;
+    @Autowired
+    private IAccountService accountService;
 
     @GetMapping("/createPay")
-    private ResponseEntity<String> payment(@RequestParam Long price, @RequestParam Long idAccount) throws UnsupportedEncodingException {
+    private ResponseEntity<String> payment(@RequestParam Long price,
+                                           @RequestParam Long idAccount,
+                                           @RequestParam(defaultValue = "") String des,
+                                           @RequestParam(defaultValue = "") String address,
+                                           @RequestParam(defaultValue = "") String phone) throws UnsupportedEncodingException {
         long amount = price * 100;
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
         String bankCode = "NCB";
-        String vnp_TxnRef = Config.getRandomNumber(8);
+        String vnp_TxnRef = ConfigVNP.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
-        String vnp_TmnCode = Config.vnp_TmnCode;
+        String vnp_TmnCode = ConfigVNP.vnp_TmnCode;
         String vnp_ReturnUrl = "http://localhost:3000/payOk/" + idAccount + "/";
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
@@ -50,6 +57,9 @@ public class PaymentController {
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", bankCode);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("phone", phone);
+        vnp_Params.put("des", des);
+        vnp_Params.put("address", address);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
 
@@ -90,9 +100,9 @@ public class PaymentController {
             }
         }
         String queryUrl = query.toString();
-        String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hashData.toString());
+        String vnp_SecureHash = ConfigVNP.hmacSHA512(ConfigVNP.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
+        String paymentUrl = ConfigVNP.vnp_PayUrl + "?" + queryUrl;
         PaymentResDTO paymentResDTO = new PaymentResDTO();
         paymentResDTO.setStatus("OK");
         paymentResDTO.setMessage("Success");
@@ -104,6 +114,9 @@ public class PaymentController {
     @GetMapping("/payment_infor/{idAccount}")
     public void handlePaymentInfo(
             @PathVariable Long idAccount,
+            @RequestParam(defaultValue = "") String des,
+            @RequestParam(defaultValue = "") String address,
+            @RequestParam(defaultValue = "") String phone,
             @RequestParam(value = "vnp_Amount", required = false) String amount,
             @RequestParam(value = "vnp_BankCode", required = false) String bankCode,
             @RequestParam(value = "vnp_BankTranNo", required = false) String bankTranNo,
@@ -119,6 +132,9 @@ public class PaymentController {
 
         // Xử lý thông tin thanh toán ở đây
         System.out.println("ID Account: " + idAccount);
+        System.out.println(des);
+        System.out.println(address);
+        System.out.println(phone);
         System.out.println("Amount: " + amount);
         System.out.println("Bank Code: " + bankCode);
         System.out.println("Bank Transaction No: " + bankTranNo);
@@ -132,14 +148,26 @@ public class PaymentController {
         System.out.println("Transaction Ref: " + txnRef);
         System.out.println("Secure Hash: " + secureHash);
         List<Booking> bookings = bookingService.getListPay(idAccount);
+        LocalDateTime dateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
             MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
             motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
             motobikeAccessoryService.save(motobikeAccessory);
             booking.setStatusBooking(statusBookingService.findById(2L));
             booking.setStatusPayment(2);
-            booking.setDateBooking(LocalDateTime.now());
+            booking.setDateBooking(dateTime);
             booking.setTotalPrice(motobikeAccessory.getPrice());
+            booking.setDes(des);
+            if (address.equals("")) {
+                booking.setAddress(booking.getAccount().getAddress());
+            } else {
+                booking.setAddress(address);
+            }
+            if (phone.equals("")) {
+                booking.setPhone(booking.getAccount().getPhone());
+            } else {
+                booking.setPhone(phone);
+            }
             bookingService.save(booking);
         }
     }

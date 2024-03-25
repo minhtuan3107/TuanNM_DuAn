@@ -2,9 +2,12 @@ import Footer from "../Footer";
 import Header from "../Header";
 import {useEffect, useState} from "react";
 import {getListNew} from "../service/MotobikeAccessoryService";
-import {useLocation, useParams} from "react-router-dom";
-import {getListBookingByIdAccount} from "../service/BookingService";
+import {Link, useLocation, useParams} from "react-router-dom";
+import {detailsBooking, getListBookingByIdAccount} from "../service/BookingService";
 import Swal from "sweetalert2";
+import {updateQuantity} from "../service/CartService";
+import {formatNumber} from "chart.js/helpers";
+import MySwal from "sweetalert2";
 
 export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
@@ -31,12 +34,47 @@ export default function HistoryBooking() {
     }
 
     const formatDate = (dateString) => {
-        const timestamp = new Date("2024-03-23T18:53:31.371503");
+        const timestamp = new Date(dateString);
         const formattedDate = `${timestamp.getHours()}:${timestamp.getMinutes()} - ${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
 
         console.log(formattedDate);
         return formattedDate;
     };
+
+    const showDetailBooking = async (date) => {
+        const booking = await detailsBooking(date, id);
+
+        MySwal.fire({
+            title: 'Chi tiết đơn hàng',
+            html: `
+    <div style="font-weight: bold; text-align: left">
+      <p>Địa chỉ nhận hàng: ${booking[0].address}</p>
+      <p>Số điện thoại: ${booking[0].phone}</p>
+    </div>
+    ${booking.map((booking, index) => (
+                `<div class="item-wrap" id="cart-page-result-${index}">
+         <ul class="cart-wrap" data-line={1}>
+           <li class="item-info">
+             <div class="item-img">
+               <img src="${booking.motobikeAccessory.img}" />
+             </div>
+             <div class="item-title">
+               <h5>Số lượng : ${booking.quantity}</h5>
+             </div>
+           </li>
+           <li class="item-price" style="flex: 0 0 40%">
+             <span class="amount full-price">
+               <span>${formatNumber(booking.motobikeAccessory.price)}đ</span>
+             </span>
+           </li>
+         </ul>
+       </div>`
+            )).join('')}
+  `
+        });
+    };
+
+
     return (
         <>
             <div>
@@ -352,35 +390,39 @@ export default function HistoryBooking() {
                                                         <table className="table">
                                                             <thead>
                                                             <tr>
-                                                                <th className="order_number text-center">
-                                                                    Mã đơn hàng
-                                                                </th>
                                                                 <th className="date text-center">Ngày đặt</th>
                                                                 <th className="total text-center">Thành tiền</th>
                                                                 <th className="payment_status text-center">
                                                                     Trạng thái thanh toán
                                                                 </th>
+                                                                <th className="order_number text-center">
+
+                                                                </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
-                                                            {listBooking.map((booking) => (
+                                                            {listBooking.map((booking, index) => (
                                                                 <tr className="odd cancelled_order" data-od="">
-                                                                    <td className="text-center">
-                                                                        <a
-                                                                        >
-                                                                            {booking.id}
-                                                                        </a>
-                                                                    </td>
                                                                     <td className="text-center">
                                                                         <span>{formatDate(booking.dateBooking)}</span>
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span
-                                                                        className="total money">{(booking.totalPrice) || "Đang cập nhật"}</span>
+                                                                        className="total money">{(booking.price) || "Đang cập nhật"}</span>
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span
                                                                         className="status_pending">{booking.statusPayment === 1 ? "Nhận hàng rồi thanh toán" : "Đã thanh toán"}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <button className="btn-update-customer"
+                                                                                type="submit"
+                                                                                onClick={() => {
+                                                                                    showDetailBooking(booking.dateBooking)
+                                                                                }}
+                                                                                data-address-default="ThemeSyntaxError">Chi
+                                                                            tiết đơn hàng
+                                                                        </button>
                                                                     </td>
                                                                 </tr>
                                                             ))}
