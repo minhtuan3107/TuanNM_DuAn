@@ -168,55 +168,35 @@ export default function Detail() {
                                                     </div>
                                                     <div className="row">
                                                         <div
-                                                            className="col-xs-12 selector-actions d-flex d-flex-center">
-                                                            <div className="quantity-area">
-                                                                <input
-                                                                    type="button"
-                                                                    defaultValue="–"
-                                                                    onClick="window.wd.scofield.minusQuantity($(this))"
-                                                                    className="qty-btn qtyminus"
-                                                                />
-                                                                <input
-                                                                    type="text"
-                                                                    id="quantity"
-                                                                    name="quantity"
-                                                                    defaultValue={1}
-                                                                    min={1}
-                                                                    className="quantity-selector"
-                                                                />
-                                                                <input
-                                                                    type="button"
-                                                                    defaultValue="+"
-                                                                    onClick="window.wd.scofield.plusQuantity($(this))"
-                                                                    className="qty-btn qtyplus"
-                                                                />
-                                                            </div>
-                                                        </div>
-
-                                                        <div
                                                             className="col-xs-12 selector-actions d-flex d-flex-center pd-top-10">
                                                             <div className="wrap-addcart">
-                                                                <button
-                                                                    type="button"
-                                                                    id="add-to-cart"
-                                                                    className="flex-addcart-mb  add-to-cart-style"
-                                                                    name="add"
-                                                                    onClick={() => {
-                                                                        addToCard(1, data.id)
-                                                                        notify()
-                                                                        setFlag(true)
-                                                                    }}
-                                                                >
-                                                                    <strong> Thêm vào giỏ </strong>
-                                                                    <span>Giao Tận Nơi </span>
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    id="buynow-combo"
-                                                                    className="flex-addcart-mb mg-top-10  add-to-combo-style hidden"
-                                                                    name="add"
-                                                                >
-                                                                </button>
+                                                                {data.quantity === 0 ?
+                                                                    <div>
+                                                                        <button
+                                                                            type="button"
+                                                                            id="add-to-cart"
+                                                                            className="flex-addcart-mb  add-to-cart-style"
+                                                                            name="add"
+                                                                        >
+                                                                            <strong> Tạm hết hàng </strong>
+                                                                            <span>Vui lòng quay lại sau </span>
+                                                                        </button>
+                                                                    </div> : <button
+                                                                        type="button"
+                                                                        id="add-to-cart"
+                                                                        className="flex-addcart-mb  add-to-cart-style"
+                                                                        name="add"
+                                                                        onClick={() => {
+                                                                            addToCard(1, data.id)
+                                                                            notify()
+                                                                            setFlag(true)
+                                                                        }}
+                                                                    >
+                                                                        <strong> Thêm vào giỏ </strong>
+                                                                        <span>Giao Tận Nơi </span>
+                                                                    </button>
+
+                                                                }
                                                             </div>
                                                         </div>
                                                     </div>

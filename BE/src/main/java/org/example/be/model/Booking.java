@@ -32,6 +32,7 @@ public class Booking {
     private StatusBooking statusBooking;
     private Long totalPrice;
     private int quantity;
-    @Column(columnDefinition = "boolean default false")
-    private Boolean status = false;
+    private int statusPayment;
+    private String address;
+    private String phone;
 }

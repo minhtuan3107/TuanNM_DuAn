@@ -1,5 +1,6 @@
 package org.example.be.controller;
 
+import jakarta.transaction.Transactional;
 import org.example.be.model.Booking;
 import org.example.be.model.MotobikeAccessory;
 import org.example.be.service.IBookingService;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +63,32 @@ public class BookingRestController {
         }
     }
 
+    @GetMapping("shipCod")
+    private void shipCod(@RequestParam Long price, @RequestParam Long idAccount) {
+        List<Booking> bookings = bookingService.getListPay(idAccount);
+        for (Booking booking : bookings) {
+            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
+            motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
+            motobikeAccessoryService.save(motobikeAccessory);
+            booking.setStatusBooking(statusBookingService.findById(2L));
+            booking.setStatusPayment(1);
+            booking.setDateBooking(LocalDateTime.now());
+            booking.setTotalPrice(motobikeAccessory.getPrice());
+            bookingService.save(booking);
+        }
+    }
+
+    @GetMapping("donePayment/{idAccount}")
+    private void donePayment(@PathVariable Long idBooking) {
+        Booking booking = bookingService.findById(idBooking);
+        MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
+        booking.setStatusBooking(statusBookingService.findById(2L));
+        booking.setStatusPayment(2);
+        booking.setDateBooking(LocalDateTime.now());
+        booking.setTotalPrice(motobikeAccessory.getPrice());
+        bookingService.save(booking);
+    }
+
     @PostMapping("book")
     private void bookAccessary(@RequestParam Long idBooking,
                                @RequestParam Long price) {
@@ -88,5 +118,20 @@ public class BookingRestController {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Booking> getList = bookingService.getListAndSearch(name, pageable);
         return new ResponseEntity<>(getList, HttpStatus.OK);
+    }
+
+    @GetMapping("checkQuantityPayment")
+    private ResponseEntity<?> checkQuantityPayment(@RequestParam Long idAccount) {
+        List<Booking> bookings = bookingService.getListPay(idAccount);
+        for (Booking booking : bookings) {
+            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
+            System.out.println(motobikeAccessory.getQuantity() - booking.getQuantity() < -1);
+            if (motobikeAccessory.getQuantity() - booking.getQuantity() < -1) {
+                System.out.println("NO");
+                return new ResponseEntity<>("NO", HttpStatus.OK);
+            }
+        }
+        System.out.println("YES");
+        return new ResponseEntity<>("YES", HttpStatus.OK);
     }
 }

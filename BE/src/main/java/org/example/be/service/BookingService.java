@@ -14,6 +14,12 @@ public class BookingService implements IBookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
+
+    @Override
+    public List<Booking> getListPay(Long id) {
+        return bookingRepository.getListPay(id);
+    }
+
     @Override
     public List<Booking> getListByIdAccount(Long id) {
         return bookingRepository.getListBookingByIdAccount(id);
@@ -66,7 +72,7 @@ public class BookingService implements IBookingService {
 
     @Override
     public Booking findBookingByIdAccountAndIdAccessory(Long idAccount, Long idAccessory) {
-        return bookingRepository.findBookingByIdAccountAndIdAccessory(idAccount,idAccessory);
+        return bookingRepository.findBookingByIdAccountAndIdAccessory(idAccount, idAccessory);
     }
 
 

@@ -2,11 +2,18 @@ import Header from "./Header";
 import Footer from "./Footer";
 import {useEffect, useState} from "react";
 import {getList, getListNew} from "./service/MotobikeAccessoryService";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useHref, useNavigate, useParams} from "react-router-dom";
 import {deleteCart, getListCart, getTotalAmount, updateQuantity} from "./service/CartService";
 import './modal.css'
 import Swal from "sweetalert2";
-import {booking, bookingAccessary} from "./service/BookingService";
+import {
+    booking,
+    bookingAccessary,
+    checkQuantityPayment,
+    payment,
+    paymentBooking,
+    shipCod
+} from "./service/BookingService";
 
 export default function Cart() {
     const [listCart, setListCart] = useState([]);
@@ -17,6 +24,7 @@ export default function Cart() {
     const [flag, setFlag] = useState(false);
     const [flag1, setFlag1] = useState(false);
     const back = useNavigate();
+    const [payment, setPayment] = useState("");
     useEffect(() => {
         const getListData = async () => {
             const list = await getListCart(id);
@@ -25,11 +33,12 @@ export default function Cart() {
             setTotalAmount(total);
             const listNew = await getListNew()
             setListProduct(listNew);
+
         }
         getListData()
         setFlag(false)
         document.title = "Giỏ hàng của bạn"
-    }, [totalAmount, flag, listCart.length, flag1]);
+    }, [totalAmount, flag, flag1]);
 
     const alert = (cart) => {
         Swal.fire({
@@ -52,19 +61,6 @@ export default function Cart() {
             }
         });
     }
-    const booking = async () => {
-        const date = new Date();
-
-        listCart.map((book) => (
-            bookingAccessary(book.id, book.motobikeAccessory.price)
-        ))
-        Swal.fire({
-            title: "Đặt hàng thành công !",
-            // text: "Your file has been deleted.",
-            icon: "success"
-        });
-        back("/history")
-    }
     const onDelete = async (id) => {
         await deleteCart(id)
         setAmount()
@@ -80,6 +76,62 @@ export default function Cart() {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+    const backToPayment = async () => {
+        const paymentBooking1 = paymentBooking(totalAmount, id).then(url => {
+            window.location.href = url;
+
+            console.log(url)
+        })
+    }
+
+    const cod = async () => {
+        shipCod(totalAmount, id).then(
+            back(`/history/${id}`, {state: {data: "COD"}})
+        )
+    }
+    const confirmShipCod = async () => {
+        const data = await checkQuantityPayment(id);
+        if (data === "YES") {
+            Swal.fire({
+                title: "Bạn muốn nhận hàng rồi thanh toán  ?",
+                text: "Bạn chắc chắn muốn hàng rồi thanh toán chứ ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Đồng ý",
+                cancelButtonText: "Huỷ"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    checkQuantityPart2();
+                }
+            });
+        } else {
+            Swal.fire({
+                title: "Số lượng sản phẩm trong kho không đủ  !",
+                text: "Số lượng sản phẩm trong kho không đủ vui lòng đặt lại sau",
+                icon: "error"
+            });
+        }
+    }
+    const checkQuantityPart2 = async () => {
+        const data = await checkQuantityPayment(id);
+        console.log(data)
+        if (data === "YES") {
+            Swal.fire({
+                title: "Đặt hàng thành công !",
+                text: "Vui lòng thanh toán " + totalAmount + " cho shipper",
+                icon: "success"
+            });
+            cod()
+        } else {
+            Swal.fire({
+                title: "Số lượng sản phẩm trong kho không đủ  !",
+                text: "Số lượng sản phẩm trong kho không đủ vui lòng đặt lại sau",
+                icon: "error"
+            });
+        }
+    }
     return (
         <>
             <div>
@@ -119,17 +171,12 @@ export default function Cart() {
                                                                 {/*</a>*/}
                                                                 <Link
                                                                     to={`/detail/${cart.motobikeAccessory.id}`}>    {cart.motobikeAccessory.name}</Link>
+                                                                <h5>Số lượng : {cart.motobikeAccessory.quantity}</h5>
                                                                 {/*<a onClick={() => {*/}
                                                                 {/*    back(`//1`)*/}
                                                                 {/*}}>*/}
                                                                 {/*    Giỏ hàng*/}
                                                                 {/*</a>*/}
-                                                                <div className="d-flex group-item-option">
-                                                                        <span className="item-option">
-                          <span className="item-price">
-                          </span>
-                        </span>
-                                                                </div>
                                                             </div>
                                                         </li>
                                                         <li className="item-qty">
@@ -153,28 +200,38 @@ export default function Cart() {
                                                                 />
                                                                 <button
                                                                     onClick={() => {
-                                                                        updateQuantity(cart.quantity + 1, cart.id);
-                                                                        setAmount();
-                                                                        setFlag(true);
-                                                                        // eslint-disable-next-line no-restricted-globals
-                                                                    }}
+                                                                        if (cart.motobikeAccessory.quantity >= cart.quantity + 1) {
+                                                                            updateQuantity(cart.quantity + 1, cart.id);
+                                                                            setAmount();
+                                                                            setFlag(true);
+                                                                            // eslint-disable-next-line no-restricted-globals
+                                                                        } else {
+                                                                            Swal.fire({
+                                                                                title: "Số lượng hiện tại không đủ !",
+                                                                                icon: "error"
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                    }
+
                                                                     className="qty-btn btn-left-quantity"
                                                                 >+
                                                                 </button>
                                                             </div>
                                                             <div className="item-remove">
-                      <span className="remove-wrap">
-                        <a onClick={() => {
-                            alert(cart)
-                        }}>Xoá
-                        </a>
-                      </span>
+                                                                <span className="remove-wrap">
+                                                                <a onClick={() => {
+                                                                    alert(cart)
+                                                                }}>Xoá
+                                                        </a>
+                                                    </span>
                                                             </div>
                                                         </li>
                                                         <li className="item-price">
-                    <span className="amount full-price">
-                      <span className="money">{formatNumber(cart.motobikeAccessory.price)} đ</span>
-                    </span>
+                                        <span className="amount full-price">
+                                        <span className="money">{formatNumber(cart.motobikeAccessory.price)} đ
+                                </span>
+                            </span>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -238,16 +295,22 @@ export default function Cart() {
                                                 />
                                             </div>
                                             <div className="order_action">
-                                                <button onClick={() => {
-                                                    booking()
-                                                    setFlag1(true);
-                                                }}
-                                                        className="btncart-checkout text-center"
-                                                        name="checkout"
-                                                        type="submit"
-                                                >
-                                                    THANH TOÁN NGAY
-                                                </button>
+                                                {listCart.length > 0 &&
+                                                    <>
+                                                        <a onClick={() => {
+                                                            backToPayment()
+                                                        }}
+                                                           className="btncart-checkout text-center"
+                                                        >
+                                                            THANH TOÁN NGAY
+                                                        </a> <a onClick={() => {
+                                                        confirmShipCod()
+                                                    }}
+                                                                className="btncart-checkout text-center"
+                                                    >
+                                                        COD
+                                                    </a>
+                                                    </>}
                                                 <p className="link-continue text-center">
                                                     <a href="/home">
                                                         <i className="fa fa-reply"/> Tiếp tục mua hàng

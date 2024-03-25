@@ -2,28 +2,40 @@ import Footer from "../Footer";
 import Header from "../Header";
 import {useEffect, useState} from "react";
 import {getListNew} from "../service/MotobikeAccessoryService";
-import {useParams} from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import {getListBookingByIdAccount} from "../service/BookingService";
+import Swal from "sweetalert2";
 
 export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
     const {id} = useParams();
     const [showData, setShowData] = useState(1);
+    const location = useLocation();
+    const [name, setName] = useState(location.state?.data || "")
     useEffect(() => {
         const getListData = async () => {
-            const list = await getListBookingByIdAccount(1);
+            const list = await getListBookingByIdAccount(id);
             setListBooking(list)
         }
+        console.log(listBooking)
         getListData()
     }, [showData]);
-
+    if (name === "OK") {
+        setName("")
+        setShowData(2);
+        Swal.fire({
+            title: "Thanh toán thành công !",
+            // text: ".",
+            icon: "success"
+        });
+    }
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        const timestamp = new Date("2024-03-23T18:53:31.371503");
+        const formattedDate = `${timestamp.getHours()}:${timestamp.getMinutes()} - ${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+        console.log(formattedDate);
+        return formattedDate;
     };
     return (
         <>
@@ -71,10 +83,11 @@ export default function HistoryBooking() {
                                         </div>
                                         <div className="AccountContent ">
                                             <ul>
-                                                {showData == 1 ? <li className="d-flex d-flex-center mg-bottom-15 active ">
-                                                    <a className="d-flex d-flex-center" onClick={() => {
-                                                        setShowData(1);
-                                                    }}>
+                                                {showData == 1 ?
+                                                    <li className="d-flex d-flex-center mg-bottom-15 active ">
+                                                        <a className="d-flex d-flex-center" onClick={() => {
+                                                            setShowData(1);
+                                                        }}>
                     <span className="icon">
                       <svg
                           width={16}
@@ -119,12 +132,12 @@ export default function HistoryBooking() {
                         </defs>
                       </svg>
                     </span>
-                                                        <span>Thông tin cá nhân</span>
-                                                    </a>
-                                                </li> : <li className="d-flex d-flex-center mg-bottom-15  ">
-                                                    <a className="d-flex d-flex-center" onClick={() => {
-                                                        setShowData(1);
-                                                    }}>
+                                                            <span>Thông tin cá nhân</span>
+                                                        </a>
+                                                    </li> : <li className="d-flex d-flex-center mg-bottom-15  ">
+                                                        <a className="d-flex d-flex-center" onClick={() => {
+                                                            setShowData(1);
+                                                        }}>
                     <span className="icon">
                       <svg
                           width={16}
@@ -169,9 +182,9 @@ export default function HistoryBooking() {
                         </defs>
                       </svg>
                     </span>
-                                                        <span>Thông tin cá nhân</span>
-                                                    </a>
-                                                </li>}
+                                                            <span>Thông tin cá nhân</span>
+                                                        </a>
+                                                    </li>}
                                                 {showData == 2 ?
                                                     <li className="d-flex d-flex-center mg-bottom-15 active">
                                                         <a onClick={() => {
@@ -347,9 +360,6 @@ export default function HistoryBooking() {
                                                                 <th className="payment_status text-center">
                                                                     Trạng thái thanh toán
                                                                 </th>
-                                                                <th className="fulfillment_status text-center">
-                                                                    Vận chuyển
-                                                                </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
@@ -362,7 +372,7 @@ export default function HistoryBooking() {
                                                                         </a>
                                                                     </td>
                                                                     <td className="text-center">
-                                                                        <span>{booking.dateBooking}</span>
+                                                                        <span>{formatDate(booking.dateBooking)}</span>
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span
@@ -370,12 +380,7 @@ export default function HistoryBooking() {
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span
-                                                                        className="status_pending">{booking.status === false ? "Nhận hàng rồi thanh toán" : "Đã thanh toán"}</span>
-                                                                    </td>
-                                                                    <td className="text-center">
-                          <span className="status_not fulfilled" data-note="">
-                          {booking.statusBooking.name}
-                          </span>
+                                                                        className="status_pending">{booking.statusPayment === 1 ? "Nhận hàng rồi thanh toán" : "Đã thanh toán"}</span>
                                                                     </td>
                                                                 </tr>
                                                             ))}

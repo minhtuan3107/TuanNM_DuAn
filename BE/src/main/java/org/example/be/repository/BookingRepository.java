@@ -27,8 +27,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO booking (`account_id`, `motobike_accessory_id`, `status_booking_id`,`quantity`) VALUES (:idAccount, :idAccessory, '1','1')", nativeQuery = true)
+    @Query(value = "INSERT INTO booking (`account_id`, `motobike_accessory_id`, `status_booking_id`,`quantity`,`status_payment`) VALUES (:idAccount, :idAccessory, '1','1','0')", nativeQuery = true)
     void addToCard(@Param("idAccount") Long idAccount, @Param("idAccessory") Long idAccessory);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "select * from booking\n" +
+            "where booking.status_booking_id = 1 and status_payment = 0 and account_id = :id ;", nativeQuery = true)
+    List<Booking> getListPay(@Param("id") Long id);
+
 
     @Modifying
     @Transactional

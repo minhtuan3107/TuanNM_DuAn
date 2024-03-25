@@ -3,10 +3,13 @@ package org.example.be.service;
 import org.example.be.model.Booking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface IBookingService {
+    List<Booking> getListPay(Long id);
+
     List<Booking> getListByIdAccount(Long id);
 
     List<Booking> getCartByIdAccount(Long id);
@@ -26,6 +29,7 @@ public interface IBookingService {
     Booking findById(Long id);
 
     List<Booking> checkBooking(Long idAccount, Long idAccessory);
+
     Booking findBookingByIdAccountAndIdAccessory(Long idAccount, Long idAccessory);
 
 }
