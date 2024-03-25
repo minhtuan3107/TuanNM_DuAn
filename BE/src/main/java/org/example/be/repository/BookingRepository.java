@@ -82,6 +82,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "where booking.date_booking = :date and booking.account_id = :idAccount and booking.status_booking_id = 2", nativeQuery = true)
     List<Booking> detailsBooking(@Param("date") String dateTime, Long idAccount);
     @Query(value = "select * from booking\n" +
-            "where booking.date_booking = :date ", nativeQuery = true)
+            "where booking.date_booking = :date and booking.account_id = :idAccount", nativeQuery = true)
     List<Booking> detailBookingAdmin(@Param("date") String dateTime);
 }

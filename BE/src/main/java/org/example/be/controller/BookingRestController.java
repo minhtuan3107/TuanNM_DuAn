@@ -1,11 +1,5 @@
 package org.example.be.controller;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfDocument;
-import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.example.be.DTO.HistoryBookingDTO;
 import org.example.be.model.Booking;
