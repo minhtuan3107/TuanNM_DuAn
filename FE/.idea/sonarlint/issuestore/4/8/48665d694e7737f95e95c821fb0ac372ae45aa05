@@ -1,0 +1,20 @@
+
+djavascript:S14819"<Remove the declaration of the unused 'logoutSever' variable.(’å•Ëşÿÿÿÿ8†•‚òç1
+ajavascript:S18549"9Remove this useless assignment to variable "logoutSever".(’å•Ëşÿÿÿÿ8†•‚òç1
+zjavascript:S4144I"WUpdate this function so that its implementation is not identical to the one on line 57.(Ô ‚8†•‚òç1
+javascript:S1077\"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(Æœ¢Ã8‡•‚òç1
+‚javascript:S1082c"_Visible, non-interactive elements with click handlers must have at least one keyboard listener.(¡²ü¸8‡•‚òç1
+ƒjavascript:S6819i"`Use <img alt=...> instead of the "presentation" role to ensure accessibility across all devices.(µşğ™8‡•‚òç1
+‡javascript:S1082"_Visible, non-interactive elements with click handlers must have at least one keyboard listener.(×Å•›şÿÿÿÿ8ß©Šòç1
+„javascript:S6819‡"`Use <img alt=...> instead of the "presentation" role to ensure accessibility across all devices.(µşğ™8ß©Šòç1
+Sjavascript:S6477Ÿ"*Missing "key" prop for element in iterator(¯şÙ¸ûÿÿÿÿ8ß©Šòç1
+javascript:S6844 "dAnchor used as a button. Anchors are primarily expected to navigate. Use the button element instead.(­ÈÎ´üÿÿÿÿ8ß©Šòç1
+ˆjavascript:S1082 "_Visible, non-interactive elements with click handlers must have at least one keyboard listener.(­ÈÎ´üÿÿÿÿ8ß©Šòç1
+©javascript:S6844Ç"ÿThe href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles.(­ÈÎ´üÿÿÿÿ8ß©Šòç1
+javascript:S1077É"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(Æœ¢Ã8ß©Šòç1
+Ujavascript:S6749÷",A fragment with only one child is redundant.(™åÑğüÿÿÿÿ8‡•‚òç1
+javascript:S1077ı"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(Æœ¢Ã8à©Šòç1
+Ujavascript:S6749Ã",A fragment with only one child is redundant.(™åÑğüÿÿÿÿ8à©Šòç1
+javascript:S1077É"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(Æœ¢Ã8á©Šòç1
+Ujavascript:S6749‡",A fragment with only one child is redundant.(™åÑğüÿÿÿÿ8á©Šòç1
+javascript:S1077"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(Æœ¢Ã8á©Šòç1

@@ -1,12 +1,10 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import {useEffect, useState} from "react";
-import {getListNew} from "./service/MotobikeAccessoryService";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import {deleteCart, getListCart, getTotalAmount, updateQuantity} from "./service/CartService";
 import './modal.css'
 import Swal from "sweetalert2";
-import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 import {
@@ -14,13 +12,15 @@ import {
     paymentBooking,
     shipCod
 } from "./service/BookingService";
+import SweetAlert from "sweetalert";
+import axios from "axios";
+import HeaderIsLogin from "./HeaderIsLogin";
 
 export default function Cart() {
     const [listCart, setListCart] = useState([]);
-    const {id} = useParams();
-    const [quantity, setQuantity] = useState(null);
+    const [isLogin, setIsLogin] = useState(true);
+    const location = useLocation();
     const [totalAmount, setTotalAmount] = useState(0);
-    const [listProduct, setListProduct] = useState([]);
     const [flag, setFlag] = useState(false);
     const [flag1, setFlag1] = useState(false);
     const back = useNavigate();
@@ -29,19 +29,28 @@ export default function Cart() {
     const [des, setDes] = useState("");
     const [useAccountAddress, setUseAccountAddress] = useState(true);
     const [printPDF, setPrintPDF] = useState(false);
+    const idAccount = location.state.idAccount || "";
+    const [nameProduct, setNameProduct] = useState("")
+    const [qualityProduct, setQualityProduct] = useState(0);
+
     useEffect(() => {
+
+        const token = localStorage.getItem("authToken");
+        const idUser = localStorage.getItem("idAccount");
         const getListData = async () => {
-            const list = await getListCart(id);
+            const list = await getListCart(idAccount, token);
             setListCart(list);
-            const total = await getTotalAmount(id);
+            const total = await getTotalAmount(idAccount);
             setTotalAmount(total);
-            const listNew = await getListNew()
-            setListProduct(listNew);
-            console.log(listCart)
         }
+        window.scrollTo(0, 0);
         getListData()
         setFlag(false)
         document.title = "Giỏ hàng của bạn"
+        const isLogin = localStorage.getItem("isLogin");
+        if (isLogin) {
+            setIsLogin(true)
+        }
     }, [totalAmount, flag, flag1]);
 
     const alert = (cart) => {
@@ -71,17 +80,14 @@ export default function Cart() {
         setFlag(true)
     }
     const setAmount = async () => {
-        const total = await getTotalAmount(id);
+        const total = await getTotalAmount(idAccount);
         setTotalAmount(total);
     }
 
 
-    function formatNumber(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
 
     const backToPayment = async () => {
-        const paymentBooking1 = paymentBooking(totalAmount, id, des, address, phone).then(url => {
+        const paymentBooking1 = paymentBooking(totalAmount, idAccount, des, address, phone).then(url => {
             window.location.href = url;
 
             console.log(url)
@@ -89,28 +95,12 @@ export default function Cart() {
     }
 
     const cod = async () => {
-        if (printPDF) {
-            const doc = new jsPDF();
-            const tableData = listCart.map(c => [c.id, c.motobikeAccessory.name, c.motobikeAccessory.price]);
-            const totalRow = ['Tổng tiền', '', totalAmount];
-            tableData.push(totalRow);
-
-            // Tạo bảng
-            doc.autoTable({
-                head: [['Mã sản phẩm', 'Tên sản phẩm', 'Giá tiền']], // Tiêu đề cột
-                body: tableData, // Dữ liệu cho các hàng
-                startY: 10, // Vị trí bắt đầu vẽ bảng
-            });
-
-            // Lưu file PDF
-            doc.save('example.pdf');
-        }
-        shipCod(totalAmount, id, des, address, phone).then(
-            back(`/history/${id}`, {state: {data: "COD"}})
+        shipCod(totalAmount, idAccount, des, address, phone).then(
+            back(`/history/${idAccount}`, {state: {data: "COD"}})
         )
     }
     const confirmShipCod = async () => {
-        const data = await checkQuantityPayment(id);
+        const data = await checkQuantityPayment(idAccount);
         if (data === "YES") {
             Swal.fire({
                 title: "Bạn muốn nhận hàng rồi thanh toán  ?",
@@ -134,13 +124,19 @@ export default function Cart() {
             });
         }
     }
+
+    function formatNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     const checkQuantityPart2 = async () => {
-        const data = await checkQuantityPayment(id);
+        const token = localStorage.getItem("authToken")
+        const data = await checkQuantityPayment(idAccount, token);
         console.log(data)
         if (data === "YES") {
             Swal.fire({
                 title: "Đặt hàng thành công !",
-                text: "Vui lòng thanh toán " + totalAmount + " cho shipper",
+                text: "Vui lòng thanh toán " + formatNumber(totalAmount) + "đ khi nhận hàng",
                 icon: "success"
             });
             cod()
@@ -170,11 +166,21 @@ export default function Cart() {
     const handleCheckboxChangePDF = () => {
         setPrintPDF(!printPDF);
     };
+
+
+    function formatNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     return (
         <>
-            <div>
-                <Header props={flag}/>
-            </div>
+
+            {isLogin ? (
+                <>
+                    <HeaderIsLogin props={flag}/>
+                </>
+            ) : <Header props={flag}/>
+            }
             <div>
                 <div
                     id="wd-shoes-scofiled"

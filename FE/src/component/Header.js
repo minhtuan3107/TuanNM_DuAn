@@ -8,15 +8,19 @@ import {Field, Form, Formik} from "formik";
 export default function Header(props) {
     const [account, setAccount] = useState({})
     const back = useNavigate();
-    const [cart, setCart] = useState([])
+    const [cart, setCart] = useState(null)
     const [nameProduct, setName] = useState("")
+    const [status, setStatus] = useState(false)
+    const [roleUser, setRoleUser] = useState("");
+    const [userName, setUserName] = useState("");
+    const [isLogin, setIsLogin] = useState(false)
+
     useEffect(() => {
         getListData();
     }, [props]);
-
     const getListData = async () => {
-        const list = await getListCart(1);
-        setCart(list);
+        // const list = await getListCart(1);
+        // setCart();
     }
     const handleNameSearch = (value) => {
         setName(value)
@@ -27,6 +31,7 @@ export default function Header(props) {
         back("/all", {state: {data: nameProduct}})
 
     }
+
     return (
         <>
             <header id="header" className="site-header">
@@ -139,33 +144,33 @@ export default function Header(props) {
                                                 </button>
                                             </div>
                                         </li>
-                                        <li className="list-inline-item mr-0 header-cart">
-                                            <div className="list-inline-item-text">
-                                                <button className="group-icon-item d-flex d-flex-center">
-                  <span className="box-icon">
-                    <img
-                        width={24}
-                        height={24}
-                        src="//theme.hstatic.net/200000298594/1001166168/14/shopping-cart.svg?v=256"
-                    />
-                    <span className="js-number-cart number-cart">{cart.length}</span>
-                  </span>
-                                                    <span onClick={() => {
-                                                        back(`/cart/1`)
-                                                    }}>
-                                                        Giỏ hàng
-                                                    </span>
-                                                    <span className="box-arrow">
-                    <svg viewBox="0 0 20 9" role="presentation">
-                      <path
-                          d="M.47108938 9c.2694725-.26871321.57077721-.56867841.90388257-.89986354C3.12384116 6.36134886 5.74788116 3.76338565 9.2467995.30653888c.4145057-.4095171 1.0844277-.40860098 1.4977971.00205122L19.4935156 9H.47108938z"
-                          fill="#ffffff"
-                      />
-                    </svg>
-                  </span>
-                                                </button>
-                                            </div>
-                                        </li>
+                                        {/*                      <li className="list-inline-item mr-0 header-cart">*/}
+                                        {/*                          <div className="list-inline-item-text">*/}
+                                        {/*                              <button className="group-icon-item d-flex d-flex-center">*/}
+                                        {/*<span className="box-icon">*/}
+                                        {/*  <img*/}
+                                        {/*      width={24}*/}
+                                        {/*      height={24}*/}
+                                        {/*      src="//theme.hstatic.net/200000298594/1001166168/14/shopping-cart.svg?v=256"*/}
+                                        {/*  />*/}
+                                        {/*  <span className="js-number-cart number-cart">{cart.length}</span>*/}
+                                        {/*</span>*/}
+                                        {/*                                  <span onClick={() => {*/}
+                                        {/*                                      back(`/cart/1`)*/}
+                                        {/*                                  }}>*/}
+                                        {/*                                      Giỏ hàng*/}
+                                        {/*                                  </span>*/}
+                                        {/*                                  <span className="box-arrow">*/}
+                                        {/*  <svg viewBox="0 0 20 9" role="presentation">*/}
+                                        {/*    <path*/}
+                                        {/*        d="M.47108938 9c.2694725-.26871321.57077721-.56867841.90388257-.89986354C3.12384116 6.36134886 5.74788116 3.76338565 9.2467995.30653888c.4145057-.4095171 1.0844277-.40860098 1.4977971.00205122L19.4935156 9H.47108938z"*/}
+                                        {/*        fill="#ffffff"*/}
+                                        {/*    />*/}
+                                        {/*  </svg>*/}
+                                        {/*</span>*/}
+                                        {/*                              </button>*/}
+                                        {/*                          </div>*/}
+                                        {/*                      </li>*/}
                                     </ul>
                                 </div>
                             </div>
@@ -188,12 +193,6 @@ export default function Header(props) {
                                         /></span>Tất
                                             cả sản phẩm</a>
                                     </li>
-                                    <li className="">
-                                        <a href="/admin/accessary"><span className="icon"><img width="25" height="25"
-                                                                                               src="//file.hstatic.net/200000298594/file/icon_2_f022897d2c6e4c6e9d20d4e5938783f2_icon.png"
-                                        /></span>Admin</a>
-                                    </li>
-
                                 </ul>
                             </nav>
                         </div>

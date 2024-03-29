@@ -3,44 +3,65 @@ import Footer from "./Footer";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {findById} from "./service/MotobikeAccessoryService";
-import {addToCard, getListCart} from "./service/CartService";
-import {ToastContainer, toast, Bounce} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {addToCard} from "./service/CartService";
+import SweetAlert from "sweetalert";
+import HeaderIsLogin from "./HeaderIsLogin";
+import {checkLiveCart} from "./service/BookingService";
 
 export default function Detail() {
     const {id} = useParams();
     const [data, setData] = useState({});
     const back = useNavigate();
     const [flag, setFlag] = useState(false);
+    const [isLogin, setIsLogin] = useState(false);
+    const [nameProduct, setNameProduct] = useState("");
+    const [qualityProduct, setQualityProduct] = useState(0);
+    const idUser = localStorage.getItem("idAccount");
+
     useEffect(() => {
+        const idUser = localStorage.getItem("idAccount");
+        const token = localStorage.getItem("authToken");
         const run = async () => {
             const list = await findById(id);
             setData(list);
         }
         run()
+        const isLogin = localStorage.getItem("isLogin");
+        if (isLogin) {
+            setIsLogin(true)
+        }
     }, [flag]);
-    const notify = () => toast.success('Thêm vào giỏ hàng thành công!', {
-        position: "top-right",
-        autoClose: 500,
-        hideProgressBar: false,
-        // closeOnClick: true,
-        // pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-    });
+    const notify = async () => {
+        await SweetAlert(
+            "Thêm sản phẩm thành công",
+            ``,
+            "success"
+        );
+        setFlag(!flag)
+        // back("/home")
+    };
+    const notifyErrors = async () => {
+        await SweetAlert(
+            "Thêm sản phẩm thành công",
+            `Sản phẩm đã trong giỏ hàng`,
+            "error"
+        );
+        // back("/home")
+    };
+
 
 
     function formatNumber(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+
     return (
         <>
-            <div>
-                <Header props={flag}/>
-            </div>
+            {isLogin ? (
+                <HeaderIsLogin props={flag}/>
+            ) : <Header props={flag}/>
+            }
             <div>
                 <main>
                     <section id="product-template" className="product-page">
@@ -187,7 +208,7 @@ export default function Detail() {
                                                                         className="flex-addcart-mb  add-to-cart-style"
                                                                         name="add"
                                                                         onClick={() => {
-                                                                            addToCard(1, data.id)
+                                                                            addToCard(idUser, data.id)
                                                                             notify()
                                                                             setFlag(true)
                                                                         }}
@@ -290,7 +311,6 @@ export default function Detail() {
             <div>
                 <Footer/>
             </div>
-            <ToastContainer/>
 
         </>
     )

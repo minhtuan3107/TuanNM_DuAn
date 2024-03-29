@@ -6,9 +6,14 @@ export default function PaymentOk() {
     const back = useNavigate();
     const {id} = useParams();
     const [resultPayment, setResultPayment] = useState("");
+    const token = localStorage.getItem("authToken")
     useEffect(() => {
         const setPaymentOk = async () => {
-            const data = await axios.get(`http://localhost:8080/payment/payment_infor/${id}`);
+            const data = await axios.get(`http://localhost:8080/payment/payment_infor/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             setResultPayment(data.data);
         }
         setPaymentOk();

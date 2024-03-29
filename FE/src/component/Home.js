@@ -2,17 +2,24 @@ import './style.css'
 import Header from "./Header";
 import Footer from "./Footer";
 import {useEffect, useState} from "react";
-import {getList, getListHot, getListNew} from "./service/MotobikeAccessoryService";
+import {getListHot, getListNew} from "./service/MotobikeAccessoryService";
 import {Link, useNavigate} from "react-router-dom";
 import {getAll} from "./service/TypeAccessoryService";
+import SweetAlert from "sweetalert";
+import axios from "axios";
+import HeaderIsLogin from "./HeaderIsLogin";
 
 export default function Home() {
     const [listData, setListData] = useState([]);
     const [listDataNew, setListDataNew] = useState([]);
-    const back = useNavigate();
+    const navigate = useNavigate();
     const [type, setType] = useState([]);
     const [listHot, setListHot] = useState([]);
+    const [isLogin, setIsLogin] = useState(false);
+    const [qualityProduct, setQualityProduct] = useState(0);
+    const [nameProduct, setNameProduct] = useState("");
     useEffect(() => {
+        const token = localStorage.getItem("authToken");
         const getListData = async () => {
             const list = await getListNew();
             const listNew = await getListNew()
@@ -24,18 +31,81 @@ export default function Home() {
             setListDataNew(listNew);
         }
         getListData()
+        window.scrollTo(0, 0);
         document.title = "Phụ tùng xe máy"
+        const qualityCart = async () => {
+            try {
+                const idUser = localStorage.getItem("idAccount");
+                const qualityProductCart = await axios.get("http://localhost:8080/booking/quantityCart", {
+                    params: {
+                        idUser: idUser
+                    }, headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setQualityProduct(qualityProductCart.data)
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        const isLogin = localStorage.getItem("isLogin");
+        if (isLogin) {
+            setIsLogin(true)
+            qualityCart();
+        }
+        ;
     }, []);
+    const handleNameSearch = (value) => {
+        setNameProduct(value)
+    }
+    const sendData = (e) => {
+        e.preventDefault()
+        navigate("/all", {state: {data: nameProduct}})
+
+    }
+    const logoutSever = async () => {
+        localStorage.clear();
+
+        setIsLogin(false)
+        await SweetAlert(
+            "Đăng xuất thành công",
+            `Cám ơn bạn đã có những trải nghiệm với hệ thống của chúng tôi!`,
+            "success"
+        );
+        navigate("/home")
+    }
+    const handleViewCart = async () => {
+        const idAccount = localStorage.getItem("idAccount")
+
+        navigate("/cart", {
+            state: {
+                idAccount: idAccount
+            }
+        })
+
+    }
 
     function formatNumber(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+    const logout = async () => {
+        localStorage.clear();
+
+        setIsLogin(false)
+        await SweetAlert(
+            "Đăng xuất thành công",
+            `Cám ơn bạn đã có những trải nghiệm với hệ thống của chúng tôi!`,
+            "success"
+        );
+        navigate("/")
+    }
     return (
         <>
-            <div>
-                <Header/>
-            </div>
+            {isLogin ? (
+                <HeaderIsLogin/>
+            ) : <Header/>}
+
             <div>
                 <main>
                     <section id="home-slider" className=" mg-0-mb">
@@ -50,7 +120,7 @@ export default function Home() {
                                                     <a
                                                         onClick={(e) => {
                                                             e.preventDefault()
-                                                            back("/all", {state: {data: t.name}})
+                                                            navigate("/all", {state: {data: t.name}})
 
                                                         }}
                                                         className="menu-item__link item-link"

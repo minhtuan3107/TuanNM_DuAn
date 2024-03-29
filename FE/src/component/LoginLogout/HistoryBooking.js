@@ -8,6 +8,9 @@ import Swal from "sweetalert2";
 import {updateQuantity} from "../service/CartService";
 import {formatNumber} from "chart.js/helpers";
 import MySwal from "sweetalert2";
+import HeaderIsLogin from "../HeaderIsLogin";
+import findById from "../service/AccountService";
+import {Field, Form, Formik} from "formik";
 
 export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
@@ -15,10 +18,13 @@ export default function HistoryBooking() {
     const [showData, setShowData] = useState(1);
     const location = useLocation();
     const [name, setName] = useState(location.state?.data || "")
+    const [account, setAccount] = useState({});
     useEffect(() => {
         const getListData = async () => {
             const list = await getListBookingByIdAccount(id);
+            const account = await findById(id);
             setListBooking(list)
+            setAccount(account);
         }
         console.log(listBooking)
         getListData()
@@ -40,6 +46,10 @@ export default function HistoryBooking() {
         console.log(formattedDate);
         return formattedDate;
     };
+
+    function formatNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 
     const showDetailBooking = async (date) => {
         const booking = await detailsBooking(date, id);
@@ -78,7 +88,7 @@ export default function HistoryBooking() {
     return (
         <>
             <div>
-                <Header/>
+                <HeaderIsLogin/>
             </div>
             <div>
                 <main>
@@ -114,8 +124,8 @@ export default function HistoryBooking() {
                                                     T
                                                 </div>
                                                 <div className="user-account">
-                                                    <h4 className="user-account-name">Tuan</h4>
-                                                    <div className="user-account-email">tn989993@gmail.com</div>
+                                                    <h4 className="user-account-name">{account.fullName}</h4>
+                                                    <div className="user-account-email">{account.email}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -329,55 +339,6 @@ export default function HistoryBooking() {
                                                             <span>Đơn hàng của bạn</span>
                                                         </a>
                                                     </li>}
-                                                {/*                            <li className="d-flex d-flex-center mg-bottom-15 ">*/}
-                                                {/*                                <a className="d-flex d-flex-center" href="/account/addresses">*/}
-                                                {/*<span className="icon">*/}
-                                                {/*  <svg*/}
-                                                {/*      width={16}*/}
-                                                {/*      height={16}*/}
-                                                {/*      viewBox="0 0 16 16"*/}
-                                                {/*      fill="none"*/}
-                                                {/*      xmlns="http://www.w3.org/2000/svg"*/}
-                                                {/*      xmlnsXlink="http://www.w3.org/1999/xlink"*/}
-                                                {/*  >*/}
-                                                {/*    <mask*/}
-                                                {/*        id="mask5"*/}
-                                                {/*        style={{maskType: "alpha"}}*/}
-                                                {/*        maskUnits="userSpaceOnUse"*/}
-                                                {/*        x={0}*/}
-                                                {/*        y={0}*/}
-                                                {/*        width={16}*/}
-                                                {/*        height={16}*/}
-                                                {/*    >*/}
-                                                {/*      <rect width={16} height={16} fill="url(#pattern5)"/>*/}
-                                                {/*    </mask>*/}
-                                                {/*    <g mask="url(#mask5)">*/}
-                                                {/*      <rect x={-1} y={-2} width={19} height={21}/>*/}
-                                                {/*    </g>*/}
-                                                {/*    <defs>*/}
-                                                {/*      <pattern*/}
-                                                {/*          id="pattern5"*/}
-                                                {/*          patternContentUnits="objectBoundingBox"*/}
-                                                {/*          width={1}*/}
-                                                {/*          height={1}*/}
-                                                {/*      >*/}
-                                                {/*        <use*/}
-                                                {/*            xlinkHref="#image5"*/}
-                                                {/*            transform="scale(0.00195312)"*/}
-                                                {/*        />*/}
-                                                {/*      </pattern>*/}
-                                                {/*      <image*/}
-                                                {/*          id="image5"*/}
-                                                {/*          width={512}*/}
-                                                {/*          height={512}*/}
-                                                {/*          xlinkHref="data:image/png;base64,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"*/}
-                                                {/*      />*/}
-                                                {/*    </defs>*/}
-                                                {/*  </svg>*/}
-                                                {/*</span>*/}
-                                                {/*                                    <span>Đia chỉ giao hàng</span>*/}
-                                                {/*                                </a>*/}
-                                                {/*                            </li>*/}
                                             </ul>
                                         </div>
                                     </div>
@@ -408,7 +369,7 @@ export default function HistoryBooking() {
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span
-                                                                        className="total money">{(booking.price) || "Đang cập nhật"}</span>
+                                                                        className="total money">{formatNumber(booking.price) + "đ" || "Đang cập nhật"}</span>
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span
@@ -445,7 +406,6 @@ export default function HistoryBooking() {
                                                                 height={20}
                                                                 src="https://file.hstatic.net/200000525917/file/check_fed1ae0ce277470eb827c4d6f3ac8ddf.png"
                                                             />
-                                                            Cập nhật thông tin thành công!{" "}
                                                             <div className="btn-close">
                                                                 <span className="bar animate"/>
                                                             </div>
@@ -453,110 +413,27 @@ export default function HistoryBooking() {
                                                         <form
                                                             acceptCharset="UTF-8"
                                                             action="/account"
-                                                            id="update_customer"
                                                             method="post"
                                                         >
-                                                            <input
-                                                                name="form_type"
-                                                                type="hidden"
-                                                                defaultValue="update_customer"
-                                                            />
-                                                            <input name="utf8" type="hidden" defaultValue="✓"/>
                                                             <div className="form-group-edit d-flex align-center">
                                                                 <label>Họ và tên</label>
                                                                 <p>
                                                                     <input
                                                                         required=""
                                                                         type="text"
-                                                                        defaultValue="Tuan "
-                                                                        name="customer[last_name]"
+                                                                        defaultValue={account.fullName}
                                                                         placeholder="Nhập họ và tên"
-                                                                        id="last_name"
                                                                         className="text"
-                                                                        size={30}
                                                                     />
                                                                 </p>
-                                                            </div>
-                                                            <div className="form-group-edit d-flex align-center">
-                                                                <label>Giới tính</label>
-                                                                <ul className="d-flex align-center item-gender">
-                                                                    <li>
-                                                                        <input
-                                                                            id="radio1"
-                                                                            type="radio"
-                                                                            defaultValue={1}
-                                                                            name="customer[gender]"
-                                                                        />
-                                                                        <label htmlFor="radio1">Nam</label>
-                                                                    </li>
-                                                                    <li>
-                                                                        <input
-                                                                            id="radio0"
-                                                                            type="radio"
-                                                                            defaultValue={0}
-                                                                            name="customer[gender]"
-                                                                        />
-                                                                        <label htmlFor="radio0">Nữ</label>
-                                                                    </li>
-                                                                </ul>
                                                             </div>
                                                             <div className="form-group-edit d-flex align-center">
                                                                 <label>Địa chỉ</label>
                                                                 <p>
                                                                     <input
-                                                                        autoComplete="false"
                                                                         type="text"
-                                                                        defaultValue="zxc"
-                                                                        name="customer[address1]"
+                                                                        defaultValue={account.address}
                                                                         placeholder="Nhập địa chỉ"
-                                                                        className="text email"
-                                                                    />
-                                                                </p>
-                                                            </div>
-                                                            <div className="form-group-edit d-flex align-center">
-                                                                <label>Quốc gia </label>
-                                                                <p>
-                                                                    <select
-                                                                        className="form-control textbox"
-                                                                        id="address_country_customer_wd"
-                                                                        name="customer[country]"
-                                                                        data-default="Vietnam"
-                                                                    >
-                                                                        <option value="" data-provinces="[]">
-                                                                            Vui lòng chọn quốc gia
-                                                                        </option>
-                                                                        <option
-                                                                            value="Vietnam"
-                                                                            data-provinces='["Hồ Chí Minh","Hà Nội","Đà Nẵng","An Giang","Bà Rịa - Vũng Tàu","Bình Dương","Bình Phước","Bình Thuận","Bình Định","Bạc Liêu","Bắc Giang","Bắc Kạn","Bắc Ninh","Bến Tre","Cao Bằng","Cà Mau","Cần Thơ","Gia Lai","Hà Giang","Hà Nam","Hà Tĩnh","Hòa Bình","Hưng Yên","Hải Dương","Hải Phòng","Hậu Giang","Khánh Hòa","Kiên Giang","Kon Tum","Lai Châu","Long An","Lào Cai","Lâm Đồng","Lạng Sơn","Nam Định","Nghệ An","Ninh Bình","Ninh Thuận","Phú Thọ","Phú Yên","Quảng Bình","Quảng Nam","Quảng Ngãi","Quảng Ninh","Quảng Trị","Sóc Trăng","Sơn La","Thanh Hóa","Thái Bình","Thái Nguyên","Thừa Thiên Huế","Tiền Giang","Trà Vinh","Tuyên Quang","Tây Ninh","Vĩnh Long","Vĩnh Phúc","Yên Bái","Điện Biên","Đắk Lắk","Đắk Nông","Đồng Nai","Đồng Tháp"]'
-                                                                        >
-                                                                            Vietnam
-                                                                        </option>
-                                                                        <option
-                                                                            value="United States"
-                                                                            data-provinces='["Alabama","Alaska","American Samoa","Arizona","Arkansas","Armed Forces Americas","Armed Forces Europe","Armed Forces Pacific","California","Colorado","Connecticut","Delaware","District of Columbia","Federated States of Micronesia","Florida","Georgia","Guam","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Marshall Islands","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Northern Mariana Islands","Ohio","Oklahoma","Oregon","Palau","Pennsylvania","Puerto Rico","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virgin Islands","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]'
-                                                                        >
-                                                                            United States
-                                                                        </option>
-                                                                        <option
-                                                                            value="Thailand"
-                                                                            data-provinces='["Amnat Charoen","Ang Thong","Bangkok","Bueng Kan","Buriram","Chachoengsao","Chai Nat","Chaiyaphum","Chanthaburi","Chiang Mai","Chiang Rai","Chon Buri","Chumphon","Kalasin","Kamphaeng Phet","Kanchanaburi","Khon Kaen","Krabi","Lampang","Lamphun","Loei","Lopburi","Mae Hong Son","Maha Sarakham","Mukdahan","Nakhon Nayok","Nakhon Pathom","Nakhon Phanom","Nakhon Ratchasima","Nakhon Sawan","Nakhon Si Thammarat","Nan","Narathiwat","Nong Bua Lam Phu","Nong Khai","Nonthaburi","Pathum Thani","Pattani","Pattaya","Phangnga","Phatthalung","Phayao","Phetchabun","Phetchaburi","Phichit","Phitsanulok","Phra Nakhon Si Ayutthaya","Phrae","Phuket","Prachin Buri","Prachuap Khiri Khan","Ranong","Ratchaburi","Rayong","Roi Et","Sa Kaeo","Sakon Nakhon","Samut Prakan","Samut Sakhon","Samut Songkhram","Saraburi","Satun","Sing Buri","Sisaket","Songkhla","Sukhothai","Suphan Buri","Surat Thani","Surin","Tak","Trang","Trat","Ubon Ratchathani","Udon Thani","Uthai Thani","Uttaradit","Yala","Yasothon"]'
-                                                                        >
-                                                                            Thailand
-                                                                        </option>
-                                                                    </select>
-                                                                </p>
-                                                            </div>
-                                                            <div
-                                                                className="form-group-edit d-flex align-center"
-                                                                id="address_province_container_wd"
-                                                            >
-                                                                <label>Tỉnh thành</label>
-                                                                <p>
-                                                                    <select
-                                                                        id="address_province_customer_wd"
-                                                                        className="form-control textbox"
-                                                                        name="customer[province]"
-                                                                        data-default="An Giang"
                                                                     />
                                                                 </p>
                                                             </div>
@@ -564,13 +441,9 @@ export default function HistoryBooking() {
                                                                 <label>Email</label>
                                                                 <p>
                                                                     <input
-                                                                        autoComplete="false"
                                                                         type="text"
-                                                                        defaultValue="tn989993@gmail.com"
-                                                                        readOnly=""
-                                                                        name="customer[email]"
+                                                                        defaultValue={account.email}
                                                                         placeholder="Nhập email"
-                                                                        className="text email"
                                                                         size={30}
                                                                     />
                                                                 </p>
@@ -579,24 +452,9 @@ export default function HistoryBooking() {
                                                                 <label>Số điện thoại</label>
                                                                 <p>
                                                                     <input
-                                                                        autoComplete="false"
-                                                                        id="customer-phone"
-                                                                        type="text"
-                                                                        data-addressid=""
-                                                                        name="customer[phone]"
                                                                         placeholder="Nhập số điện thoại"
+                                                                        defaultValue={account.phoneNumber}
                                                                         size={30}
-                                                                    />
-                                                                </p>
-                                                            </div>
-                                                            <div className="form-group-edit d-flex align-center">
-                                                                <label>Ngày sinh</label>
-                                                                <p>
-                                                                    <input
-                                                                        autoComplete="false"
-                                                                        type="date"
-                                                                        defaultValue=""
-                                                                        name="customer[birthday]"
                                                                     />
                                                                 </p>
                                                             </div>
@@ -612,6 +470,7 @@ export default function HistoryBooking() {
                                                                 </button>
                                                             </div>
                                                         </form>
+
                                                     </div>
                                                 </div>
                                             </div>

@@ -5,14 +5,19 @@ import {useEffect, useState} from "react";
 import {getListAll} from "./service/MotobikeAccessoryService";
 import ReactPaginate from "react-paginate";
 import './modal.css'
+import HeaderIsLogin from "./HeaderIsLogin";
 
 export default function AllProduct() {
+    const [isLogin, setIsLogin] = useState(true);
     const [dataProduct, setDataProduct] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(10);
     const location = useLocation();
     const name = location.state?.data || "";
+
     useEffect(() => {
+        const isLogin = localStorage.getItem("isLogin");
+
         async function fetchData() {
             setLoading(true);
             const result = await getListAll(name, page);
@@ -24,7 +29,9 @@ export default function AllProduct() {
         console.log(dataProduct)
 
         fetchData();
-
+        if (isLogin) {
+            setIsLogin(true)
+        }
     }, [page, name]);
 
 
@@ -34,9 +41,7 @@ export default function AllProduct() {
 
     return (
         <>
-            <div>
-                <Header/>
-            </div>
+            {isLogin ? <HeaderIsLogin /> : <Header />}
             {dataProduct.length === 0 ? "Khong co du lieu " :
                 <div>
                     <section
@@ -86,13 +91,14 @@ export default function AllProduct() {
                                     ))}
 
                                 </div>
-                                <div  style={{textAlign: "center"}} className="action_bottom button dark">
+                                <div style={{textAlign: "center"}} className="action_bottom button dark">
                                     <button style={{backgroundColor: "var(--bgheader)"}}
-                                        className="btn"
-                                       onClick={()=> {
-                                           setPage(page + 5)
-                                       }}
-                                    >Xem thêm</button>
+                                            className="btn"
+                                            onClick={() => {
+                                                setPage(page + 5)
+                                            }}
+                                    >Xem thêm
+                                    </button>
                                 </div>
                             </div>
                         </div>

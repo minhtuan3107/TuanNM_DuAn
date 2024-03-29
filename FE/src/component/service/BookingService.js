@@ -1,7 +1,14 @@
 import axios from "axios";
 
 export async function getListBookingByIdAccount(id) {
-    const data = await axios.get(`http://localhost:8080/booking/${id}`);
+    const token = localStorage.getItem("authToken")
+    const data = await axios.get(`http://localhost:8080/booking`, {
+        params: {
+            id: id
+        }, headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
     return data.data;
 }
 
@@ -11,27 +18,60 @@ export async function getAllBooking() {
 }
 
 export async function detailsBooking(date, id) {
-    const data = await axios.get(`http://localhost:8080/booking/detailsBooking?date=${date}&idAccount=${id}`);
-    return data.data;
-}
-
-export async function detailsBookingAdmin(date) {
-    const data = await axios.get(`http://localhost:8080/booking/detailsBookingAdmin?date=${date}`);
+    const token = localStorage.getItem("authToken")
+    const data = await axios.get(`http://localhost:8080/booking/detailsBooking/${id}`, {
+        params: {
+            date: date
+        }, headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
     return data.data;
 }
 
 
 export async function paymentBooking(price, id, des, address, phone) {
-    const data = await axios.get(`http://localhost:8080/payment/createPay?price=${price}&idAccount=${id}&des=${des}&address=${address}&phone=${phone}`);
+    const token = localStorage.getItem("authToken")
+    const data = await axios.get(`http://localhost:8080/payment/createPay`, {
+        params: {
+            price: price,
+            id: id,
+            des: des,
+            address: address,
+            phone: phone
+        },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
     return data.data
 }
 
 export async function shipCod(price, id, des, address, phone) {
-    const data = await axios.get(`http://localhost:8080/booking/shipCod?price=${price}&idAccount=${id}&des=${des}&address=${address}&phone=${phone}`);
+    const token = localStorage.getItem("authToken")
+    const data = await axios.get(`http://localhost:8080/booking/shipCod`, {
+        params: {
+            price: price,
+            idAccount: id,
+            des: des,
+            address: address,
+            phone: phone
+        }, headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
     return data.data
 }
 
 export async function checkQuantityPayment(id) {
-    const data = await axios.get(`http://localhost:8080/booking/checkQuantityPayment?idAccount=${id}`);
+    const token = localStorage.getItem("authToken")
+    const data = await axios.get(`http://localhost:8080/booking/checkQuantityPayment`, {
+        params: {
+            idAccount: id
+        },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
     return data.data
 }

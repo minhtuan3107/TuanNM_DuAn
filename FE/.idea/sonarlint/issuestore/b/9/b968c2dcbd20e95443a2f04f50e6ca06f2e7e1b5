@@ -1,0 +1,43 @@
+
+Jjavascript:S1128"'Remove this unused import of 'getList'.(‹İ¶Ä8’©ñç1
+Mjavascript:S1128"*Remove this unused import of 'getListNew'.(‹İ¶Ä8’©ñç1
+@javascript:S1128"$Remove this unused import of 'Link'.(îä½Ó
+Sjavascript:S1128"+Remove this unused import of 'getListCart'.(º©¡´şÿÿÿÿ8ÍÍ®ñç1
+Hjavascript:S1128"%Remove this unused import of 'Field'.(½í¾Á8¤ì¦ñç1
+Gjavascript:S1128"$Remove this unused import of 'Form'.(½í¾Á8¤ì¦ñç1
+Ijavascript:S1128"&Remove this unused import of 'Formik'.(½í¾Á8¤ì¦ñç1
+`javascript:S1481	"8Remove the declaration of the unused 'account' variable.(ÕÚÊŒùÿÿÿÿ8Ù¼­ñç1
+]javascript:S1854	"5Remove this useless assignment to variable "account".(ÕÚÊŒùÿÿÿÿ8Ú¼­ñç1
+cjavascript:S1481	";Remove the declaration of the unused 'setAccount' variable.(ÕÚÊŒùÿÿÿÿ8Ú¼­ñç1
+`javascript:S1854	"8Remove this useless assignment to variable "setAccount".(ÕÚÊŒùÿÿÿÿ8Ú¼­ñç1
+]javascript:S1481"5Remove the declaration of the unused 'cart' variable.(ªââªüÿÿÿÿ8Òû¯ñç1
+Zjavascript:S1854"2Remove this useless assignment to variable "cart".(ªââªüÿÿÿÿ8Òû¯ñç1
+bjavascript:S6754":useState call is not destructured into value + setter pair(«ÙÌúşÿÿÿÿ8¤ì¦ñç1
+_javascript:S1481"7Remove the declaration of the unused 'status' variable.(‰ìà¸ùÿÿÿÿ8ÿ®êğç1
+\javascript:S1854"4Remove this useless assignment to variable "status".(‰ìà¸ùÿÿÿÿ8ÿ®êğç1
+bjavascript:S1481":Remove the declaration of the unused 'setStatus' variable.(‰ìà¸ùÿÿÿÿ8ÿ®êğç1
+_javascript:S1854"7Remove this useless assignment to variable "setStatus".(‰ìà¸ùÿÿÿÿ8ÿ®êğç1
+[javascript:S1481"9Remove the declaration of the unused 'roleUser' variable.(İÃe8ÿ®êğç1
+Xjavascript:S1854"6Remove this useless assignment to variable "roleUser".(İÃe8ÿ®êğç1
+^javascript:S1481"<Remove the declaration of the unused 'setRoleUser' variable.(İÃe8ÿ®êğç1
+[javascript:S1854"9Remove this useless assignment to variable "setRoleUser".(İÃe8ÿ®êğç1
+\javascript:S1481"9Remove the declaration of the unused 'userName' variable.(Øî®–8ÿ®êğç1
+Yjavascript:S1854"6Remove this useless assignment to variable "userName".(Øî®–8ÿ®êğç1
+_javascript:S1481"<Remove the declaration of the unused 'setUserName' variable.(Øî®–8€¯êğç1
+\javascript:S1854"9Remove this useless assignment to variable "setUserName".(Øî®–8€¯êğç1
+[javascript:S1481"8Remove the declaration of the unused 'isLogin' variable.(„Ö”ß8¥ì¦ñç1
+Xjavascript:S1854"5Remove this useless assignment to variable "isLogin".(„Ö”ß8¥ì¦ñç1
+^javascript:S1481";Remove the declaration of the unused 'setIsLogin' variable.(„Ö”ß8¥ì¦ñç1
+[javascript:S1854"8Remove this useless assignment to variable "setIsLogin".(„Ö”ß8¥ì¦ñç1
+cjavascript:S1481"@Remove the declaration of the unused 'handleViewLogin' variable.(õøŒ8Û¼­ñç1
+`javascript:S1854"=Remove this useless assignment to variable "handleViewLogin".(õøŒ8Û¼­ñç1
+Ajavascript:S125"Remove this commented out code.(“’³Ë8ÍÍ®ñç1
+Tjavascript:S6749(",A fragment with only one child is redundant.(™åÑğüÿÿÿÿ8¥ì¦ñç1
+javascript:S1077/"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(Æœ¢Ã8¥ì¦ñç1
+Mjavascript:S6772g"*Ambiguous spacing before next element span(óèñ›8¥ì¦ñç1
+ƒjavascript:S6819o"`Use <img alt=...> instead of the "presentation" role to ensure accessibility across all devices.(µşğ™8¦ì¦ñç1
+ˆjavascript:S1082…"_Visible, non-interactive elements with click handlers must have at least one keyboard listener.(×Å•›şÿÿÿÿ8Æ²ˆòç1
+„javascript:S6819"`Use <img alt=...> instead of the "presentation" role to ensure accessibility across all devices.(µşğ™8Æ²ˆòç1
+javascript:S1077¾"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(Ü·Ğª8¦ì¦ñç1
+“javascript:S1077Ã"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(èŠ¡Àşÿÿÿÿ8¦ì¦ñç1
+javascript:S1077É"jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.(ñÒ…è8İ¼­ñç1
