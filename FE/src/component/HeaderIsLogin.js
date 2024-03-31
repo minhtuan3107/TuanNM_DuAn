@@ -101,7 +101,7 @@ export default function HeaderIsLogin(props) {
             `Cám ơn bạn đã có những trải nghiệm với hệ thống của chúng tôi!`,
             "success"
         );
-        navigate("/home")
+        navigate("/zxc")
     }
 
     return (
@@ -168,7 +168,7 @@ export default function HeaderIsLogin(props) {
                 </span>
                                                 <span className="box-text">
                   Hotline
-                  <span className="small-text">1900232434</span>
+                  <span className="small-text">0876543332</span>
                 </span>
                                             </a>
                                         </li>

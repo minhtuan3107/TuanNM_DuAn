@@ -1,16 +1,11 @@
 import Footer from "../Footer";
-import Header from "../Header";
 import {useEffect, useState} from "react";
-import {getListNew} from "../service/MotobikeAccessoryService";
-import {Link, useLocation, useParams} from "react-router-dom";
+import { useLocation, useParams} from "react-router-dom";
 import {detailsBooking, getListBookingByIdAccount} from "../service/BookingService";
 import Swal from "sweetalert2";
-import {updateQuantity} from "../service/CartService";
-import {formatNumber} from "chart.js/helpers";
 import MySwal from "sweetalert2";
 import HeaderIsLogin from "../HeaderIsLogin";
 import findById from "../service/AccountService";
-import {Field, Form, Formik} from "formik";
 
 export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
@@ -41,7 +36,7 @@ export default function HistoryBooking() {
 
     const formatDate = (dateString) => {
         const timestamp = new Date(dateString);
-        const formattedDate = `${timestamp.getHours()}:${timestamp.getMinutes()} - ${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+        const formattedDate = `${timestamp.getDate().toString().padStart(2, '0')}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getFullYear()} ${timestamp.getHours()}:${timestamp.getMinutes()} `;
 
         console.log(formattedDate);
         return formattedDate;
@@ -483,7 +478,7 @@ export default function HistoryBooking() {
                     </div>
                 </main>
             </div>
-            <div>
+            <div style={{marginTop: "3%"}}>
                 <Footer/>
             </div>
         </>

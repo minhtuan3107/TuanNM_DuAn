@@ -10,6 +10,7 @@ import HistoryBooking from "./component/LoginLogout/HistoryBooking";
 import AllProduct from "./component/AllProduct";
 import AdminPage from "./component/admin/accessary/AdminPage";
 import PaymentOk from "./component/PaymentOk";
+import Errors from "./component/Errors";
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path={"/all"} element={<AllProduct/>}></Route>
                 <Route path={"/admin"} element={<AdminPage/>}></Route>
                 <Route path={"/payOk/:id"} element={<PaymentOk/>}></Route>
+                <Route path={"*"} element={<Errors/>}></Route>
             </Routes>
         </>
     );

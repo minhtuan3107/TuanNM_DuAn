@@ -17,12 +17,15 @@ export async function getListAll(name, page) {
 }
 
 
-
 export async function findById(id) {
-    const data = await axios.get(`http://localhost:8080/api/find`, {
-        params: {
-            id: id
-        }
-    });
-    return data.data;
+    try {
+        const data = await axios.get(`http://localhost:8080/api/find`, {
+            params: {
+                id: id
+            }
+        });
+        return data.data;
+    } catch (e) {
+        console.log(e)
+    }
 }

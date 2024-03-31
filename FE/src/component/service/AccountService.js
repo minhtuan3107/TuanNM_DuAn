@@ -1,46 +1,65 @@
 import axios from "axios";
-export  async function checkEmailAccount(email) {
+
+export async function checkEmailAccount(email) {
     const token = localStorage.getItem("authToken");
-    const result = await axios.get("http://localhost:8080/account/checkEmail", {
-        params: {
-            email: email
-        },
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-    return result.data;
+    try {
+        const result = await axios.get("http://localhost:8080/account/checkEmail", {
+            params: {
+                email: email
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return result.data;
+    } catch (e) {
+        console.log(e);
+    }
 }
-export  async function checkUserNameAccount(userName) {
-    const token = localStorage.getItem("authToken")
-    const result = await axios.get("http://localhost:8080/account/checkUserName", {
-        params: {
-            userName: userName
-        }, headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    return result.data;
+
+export async function checkUserNameAccount(userName) {
+    try {
+        const token = localStorage.getItem("authToken")
+        const result = await axios.get("http://localhost:8080/account/checkUserName", {
+            params: {
+                userName: userName
+            }, headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        return result.data;
+    } catch (e) {
+        console.log(e);
+    }
 }
+
 export async function checkPhoneNumberAccount(phoneNumber) {
     const token = localStorage.getItem("authToken")
-    const result = await axios.get("http://localhost:8080/account/checkPhoneNumber", {
-        params: {
-            phoneNumber: phoneNumber
-        }, headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    return result.data;
+    try {
+        const result = await axios.get("http://localhost:8080/account/checkPhoneNumber", {
+            params: {
+                phoneNumber: phoneNumber
+            }, headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        return result.data;
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 export async function register(user) {
     const token = localStorage.getItem("authToken")
-    await axios.post(`http://localhost:8080/account/registerr`, user, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
+    try {
+        await axios.post(`http://localhost:8080/account/registerr`, user, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 export async function loginAccount(value) {
@@ -53,13 +72,17 @@ export async function loginAccount(value) {
 
 export default async function findById(id) {
     const token = localStorage.getItem("authToken")
-    const result = await axios.get("http://localhost:8080/account/findById", {
-        params: {
-            idAccount: id
-        }, headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    return result.data;
+    try {
+        const result = await axios.get("http://localhost:8080/account/findById", {
+            params: {
+                idAccount: id
+            }, headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        return result.data;
+    } catch (e) {
+        console.log(e)
+    }
 }
 

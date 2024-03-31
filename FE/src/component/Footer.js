@@ -1,6 +1,19 @@
 import './style.css'
+import {useEffect, useState} from "react";
+import {getListHot, getListNew} from "./service/MotobikeAccessoryService";
+import {getAll} from "./service/TypeAccessoryService";
+import {useNavigate} from "react-router-dom";
 
 export default function Footer() {
+    const [listType, setListType] = useState([]);
+    const navigate = useNavigate();
+    useEffect(() => {
+        const getListData = async () => {
+            const list = await getAll();
+            setListType(list);
+        }
+        getListData()
+    }, []);
     return (
         <>
             <footer className="mg-0 pd-bt-50-mb">
@@ -19,21 +32,12 @@ export default function Footer() {
                                     <p>Phụ tùng xe máy chính hãng - Thiết bị sửa chữa chuyên nghiệp</p>
                                     <ul>
                                         <li>
-                                            <i className="fa fa-map-marker" aria-hidden="true"/> A8/31 Khu
-                                            Dân Cư Cotec, Xã Phú Xuân, Huyện Nhà Bè, TP.HCM
-                                        </li>
-                                        <li>
                                             <i className="fa fa-phone" aria-hidden="true"/>{" "}
-                                            <a rel="nofollow" href="tel:1900232434">
-                                                1900232434
+                                            <a rel="nofollow" href="tel:0876543332">
+                                                0876543332
                                             </a>
                                         </li>
-                                        <li>
-                                            <i className="fa fa-envelope-o" aria-hidden="true"/>{" "}
-                                            <a rel="nofollow" href="mailto:minhphongcongty@gmail.com">
-                                                minhphongcongty@gmail.com
-                                            </a>
-                                        </li>
+
                                     </ul>
                                 </div>
                             </div>
@@ -44,25 +48,14 @@ export default function Footer() {
                                 <div className="footer-link-wanda">
                                     <ul>
                                         <li>
-                                            <a href="/">Trang chủ</a>
+                                            <a href="/home">Trang chủ</a>
                                         </li>
                                         <li>
-                                            <a href="/collections/all">Tất cả sản phẩm</a>
+                                            <a href="/all">Tất cả sản phẩm</a>
                                         </li>
                                         <li>
-                                            <a href="/pages/lien-he">Liên hệ</a>
+                                            <a href="https://fb.com/mtuan3107">Liên hệ</a>
                                         </li>
-                                        <li>
-                                            <a href="https://drive.google.com/drive/folders/1P1c76QBxEzCa77pjgshaWGt7PEbid3Dq?usp=sharing">
-                                                Tải về Vinamoto
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="https://youtu.be/okMgDnzRwZM">
-                                                Hướng dẫn cài đặt ViNAMOTO
-                                            </a>
-                                        </li>
-                                        {" "}
                                     </ul>
                                 </div>
                             </div>
@@ -72,33 +65,15 @@ export default function Footer() {
                                 </div>
                                 <div className="footer-link-wanda">
                                     <ul>
-                                        <li>
-                                            <a href="/collections/phu-tung-xe-may">Phụ tùng xe máy</a>
-                                        </li>
-                                        <li>
-                                            <a href="/collections/noi-tay-ga">Nồi xe tay ga</a>
-                                        </li>
-                                        <li>
-                                            <a href="/collections/phu-tung-binh-xang-con">Bình xăng con</a>
-                                        </li>
-                                        <li>
-                                            <a href="/collections/thiet-bi-chuyen-dung">
-                                                Thiết bị chuyên dụng
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="/collections/dung-cu-sua-chua">Dụng cụ sửa chữa</a>
-                                        </li>
-                                        <li>
-                                            <a href="/collections/phu-kien">Phụ kiện xe máy</a>
-                                        </li>
-                                        <li>
-                                            <a href="/collections/all-cac-loai-day-cap">Dây - Giắc - Cáp</a>
-                                        </li>
-                                        <li>
-                                            <a href="/collections/phu-gia-tay-rua">Phụ gia - Tẩy rửa</a>
-                                        </li>
-                                        {" "}
+                                        {listType.map((type) => (
+                                            <li>
+                                                <a  onClick={(e) => {
+                                                    e.preventDefault()
+                                                    navigate("/all", {state: {data: type.name}})
+
+                                                }}>{type.name}</a>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </div>
                             </div>
@@ -106,22 +81,12 @@ export default function Footer() {
                                 <div className="title-footer">
                                     <div className="h4">Tổng đài hỗ trợ</div>
                                 </div>
-                                <ul className="footer-support">
-                                    <li>
-                                        <span>Gọi mua hàng:</span> <a href="tel:0329798101">0329798101</a>{" "}
-                                        <span>Miss Thắng (8h30-21h)</span>
-                                    </li>
-                                    <li>
-                                        <span>Gọi bảo hành:</span>{" "}
-                                        <a href="tel:0977551771 ">0977551771 </a>{" "}
-                                        <span>Mr Anh (8h30-17h)</span>
-                                    </li>
-                                    <li>
-                                        <span>Gọi khiếu nại:</span>{" "}
-                                        <a href="tel:0977551771">0977551771</a>{" "}
-                                        <span>Mr Anh (8h30-17h)</span>
-                                    </li>
-                                </ul>
+                                {/*<ul className="footer-support">*/}
+                                {/*    <li>*/}
+                                {/*        <span>Gọi mua hàng:</span> <a href="tel:0329798101">0329798101</a>{" "}*/}
+                                {/*        <span>Miss Thắng (8h30-21h)</span>*/}
+                                {/*    </li>*/}
+                                {/*</ul>*/}
                                 <div className="title-footer">
                                     <div className="h4">Phương thức thanh toán</div>
                                 </div>
@@ -143,18 +108,8 @@ export default function Footer() {
                             <div className="col-md-12 text-center">
                                 <div className="text-copyright mb-0">
             <span>
-              © Copyright 2024 By{" "}
-                <a href="/" target="_blank" className="underline_hover link">
-                {" "}
+              © Copyright 2024 By TUI
 
-              </a>
-              <a
-                  target="_blank"
-                  rel="nofollow"
-                  href="https://www.haravan.com?ref=wanda"
-              >
-                {" "}
-              </a>
             </span>
                                 </div>
                             </div>

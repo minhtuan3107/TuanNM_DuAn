@@ -1,28 +1,36 @@
 import axios from "axios";
 
 export async function getListCart(id, token) {
-    const data = await axios.get(`http://localhost:8080/booking/cart`, {
-        params: {
-            id: id
-        },
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-    return data.data;
+    try {
+        const data = await axios.get(`http://localhost:8080/booking/cart`, {
+            params: {
+                id: id
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data.data;
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 export async function getTotalAmount(id) {
-    const token = localStorage.getItem("authToken")
-    const data = await axios.get(`http://localhost:8080/booking/price`, {
-        params: {
-            id: id
-        },
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-    return data.data;
+    try {
+        const token = localStorage.getItem("authToken")
+        const data = await axios.get(`http://localhost:8080/booking/price`, {
+            params: {
+                id: id
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data.data;
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 export async function addToCard(idAccount, idAccessory) {

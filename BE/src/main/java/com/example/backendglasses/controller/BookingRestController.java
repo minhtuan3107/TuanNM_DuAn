@@ -36,11 +36,10 @@ public class BookingRestController {
 
 
     @GetMapping("")
-    private ResponseEntity<List<HistoryBookingDTO>> getListBookingByAccount(@RequestParam Long id) {
+    private ResponseEntity<List<HistoryBookingDTO>> getListBookingByAccount(@RequestParam(defaultValue = "") String name, @RequestParam Long id) {
         List<HistoryBookingDTO> getListBooking = bookingService.getListBookingFormat(id);
         return new ResponseEntity<>(getListBooking, HttpStatus.OK);
     }
-
 
 
     @GetMapping("detailsBooking/{id}")
@@ -116,7 +115,6 @@ public class BookingRestController {
         booking.setTotalPrice(motobikeAccessory.getPrice());
         bookingService.save(booking);
     }
-
 
 
     @GetMapping("deleteCart")

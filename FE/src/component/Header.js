@@ -96,7 +96,7 @@ export default function Header(props) {
                 </span>
                                                 <span className="box-text">
                   Hotline
-                  <span className="small-text">1900232434</span>
+                  <span className="small-text">0876543332</span>
                 </span>
                                             </a>
                                         </li>

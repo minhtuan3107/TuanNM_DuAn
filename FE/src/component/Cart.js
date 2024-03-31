@@ -12,8 +12,6 @@ import {
     paymentBooking,
     shipCod
 } from "./service/BookingService";
-import SweetAlert from "sweetalert";
-import axios from "axios";
 import HeaderIsLogin from "./HeaderIsLogin";
 
 export default function Cart() {
@@ -29,22 +27,28 @@ export default function Cart() {
     const [des, setDes] = useState("");
     const [useAccountAddress, setUseAccountAddress] = useState(true);
     const [printPDF, setPrintPDF] = useState(false);
-    const idAccount = location.state.idAccount || "";
+    const idAccount = location.state?.idAccount || 0;
     const [nameProduct, setNameProduct] = useState("")
     const [qualityProduct, setQualityProduct] = useState(0);
 
     useEffect(() => {
-
+        if (idAccount === 0) {
+            back("/zxc")
+        }
         const token = localStorage.getItem("authToken");
         const idUser = localStorage.getItem("idAccount");
-        const getListData = async () => {
-            const list = await getListCart(idAccount, token);
-            setListCart(list);
-            const total = await getTotalAmount(idAccount);
-            setTotalAmount(total);
+        try{
+            const getListData = async () => {
+                const list = await getListCart(idAccount, token);
+                setListCart(list);
+                const total = await getTotalAmount(idAccount);
+                setTotalAmount(total);
+            }
+            getListData()
+        }catch (e){
+            back("/zxc")
         }
         window.scrollTo(0, 0);
-        getListData()
         setFlag(false)
         document.title = "Giỏ hàng của bạn"
         const isLogin = localStorage.getItem("isLogin");
@@ -402,7 +406,7 @@ export default function Cart() {
                     </section>
                 </div>
             </div>
-            <div style={{marginTop: "1%"}}>
+            <div style={{marginTop: "6%"}}>
                 <Footer/>
             </div>
 

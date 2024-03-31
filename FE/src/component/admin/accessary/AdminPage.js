@@ -13,7 +13,6 @@ import {
     getRole
 } from "../../service/AdminService";
 import HeaderIsLogin from "../../HeaderIsLogin";
-import findById from "../../service/AccountService";
 import {useNavigate} from "react-router-dom";
 
 export default function AdminPage() {
@@ -27,30 +26,34 @@ export default function AdminPage() {
     const [isLogin, setIsLogin] = useState(true);
     const back = useNavigate();
     useEffect(() => {
-        const idUser = localStorage.getItem("idAccount");
-        window.scrollTo(0, 0);
-        const isLogin = localStorage.getItem("isLogin");
-        if (isLogin) {
-            setIsLogin(true)
+        try {
+            const idUser = localStorage.getItem("idAccount");
+            window.scrollTo(0, 0);
+            const isLogin = localStorage.getItem("isLogin");
+            if (isLogin) {
+                setIsLogin(true)
+            }
+            const getListAccessary = async () => {
+                const result = await getAllAccessary(nameSearch, page);
+                setListAccessary(result?.content || back("/zxc"));
+            }
+            const getListAccountPage = async () => {
+                const result = await getAllAccount(nameSearch, page);
+                setListAccount(result);
+                console.log(listAccount)
+            }
+            const getListBookingPage = async () => {
+                const result = await getAllBooking(nameSearch, page);
+                setListBooking(result?.content || back("/zxc"));
+                console.log(listBooking)
+            }
+            getListBookingPage();
+            getListAccountPage();
+            getListAccessary();
+            document.title = "admin"
+        } catch (e) {
+            back("/zxc")
         }
-        const getListAccessary = async () => {
-            const result = await getAllAccessary(nameSearch, page);
-            setListAccessary(result.content);
-        }
-        const getListAccountPage = async () => {
-            const result = await getAllAccount(nameSearch, page);
-            setListAccount(result);
-            console.log(listAccount)
-        }
-        const getListBookingPage = async () => {
-            const result = await getAllBooking(nameSearch, page);
-            setListBooking(result.content);
-            console.log(listBooking)
-        }
-        getListBookingPage();
-        getListAccountPage();
-        getListAccessary();
-        document.title = "admin"
     }, [showAdmin, page, refesh]);
     const showDetailBooking = async (date) => {
         const booking = await detailBooking(date);
@@ -406,7 +409,7 @@ export default function AdminPage() {
                     </div>
                 </main>
             </div>
-            <div style={{marginTop: "2.5%"}}>
+            <div style={{marginTop: "6%"}}>
                 <Footer/>
             </div>
         </>

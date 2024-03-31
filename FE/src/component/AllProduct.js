@@ -6,6 +6,7 @@ import {getListAll} from "./service/MotobikeAccessoryService";
 import ReactPaginate from "react-paginate";
 import './modal.css'
 import HeaderIsLogin from "./HeaderIsLogin";
+import Swal from "sweetalert2";
 
 export default function AllProduct() {
     const [isLogin, setIsLogin] = useState(true);
@@ -25,7 +26,6 @@ export default function AllProduct() {
             setLoading(false);
             document.title = "Tất cả phụ tùng"
         }
-
         console.log(dataProduct)
 
         fetchData();
@@ -41,8 +41,11 @@ export default function AllProduct() {
 
     return (
         <>
-            {isLogin ? <HeaderIsLogin /> : <Header />}
-            {dataProduct.length === 0 ? "Khong co du lieu " :
+            {isLogin ? <HeaderIsLogin/> : <Header/>}
+            {dataProduct.length === 0 ? <div>
+                <h1>Không tìm thấy sản phẩm vui lòng tìm sản phẩm khác</h1>
+                </div>
+                :
                 <div>
                     <section
                         className="section_collection_group pd-top-30"
@@ -107,10 +110,13 @@ export default function AllProduct() {
                 </div>
 
             }
-            <div>
-
+            {dataProduct.length > 0 || <div style={{marginTop: "34%"}}>
                 <Footer/>
             </div>
+            }
+            {dataProduct.length === 0 || <div style={{marginTop: "4%"}}>
+                <Footer/>
+            </div>}
         </>
     );
 }
