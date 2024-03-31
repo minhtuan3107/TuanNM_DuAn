@@ -1,6 +1,7 @@
 package com.example.backendglasses.service.impl;
 
 import com.example.backendglasses.model.Booking;
+import com.example.backendglasses.model.User;
 import com.example.backendglasses.model.dto.HistoryBookingDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,4 +42,7 @@ public interface IBookingService {
 
     List<Booking> detailBookingAdmin(String date);
 
+    void sendEmail(Long idAccount, Long price);
+
+    void sendMailBooking(String to, String subject, String template, User user, Booking booking);
 }

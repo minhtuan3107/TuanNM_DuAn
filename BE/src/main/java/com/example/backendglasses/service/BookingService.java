@@ -1,9 +1,12 @@
 package com.example.backendglasses.service;
 
 import com.example.backendglasses.model.Booking;
+import com.example.backendglasses.model.User;
 import com.example.backendglasses.model.dto.HistoryBookingDTO;
 import com.example.backendglasses.repository.BookingRepository;
+import com.example.backendglasses.service.impl.IAccountService;
 import com.example.backendglasses.service.impl.IBookingService;
+import com.example.backendglasses.service.impl.IMotobikeAccessoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +18,10 @@ import java.util.List;
 public class BookingService implements IBookingService {
     @Autowired
     private BookingRepository bookingRepository;
-
+    @Autowired
+    private IAccountService accountService;
+    @Autowired
+    private IMotobikeAccessoryService motobikeAccessoryService;
 
     @Override
     public List<Booking> checkLiveCart(Long idAccount, Long idAccessary) {
@@ -96,6 +102,19 @@ public class BookingService implements IBookingService {
     @Override
     public List<Booking> detailBookingAdmin(String date) {
         return bookingRepository.detailBookingAdmin(date);
+    }
+
+    @Override
+    public void sendEmail(Long idAccount, Long price) {
+        User user = accountService.findById(idAccount);
+        String to = user.getEmail();
+        String subject = "Thông báo xác nhận đơn hàng";
+        String template = "send-mail";
+    }
+
+    @Override
+    public void sendMailBooking(String to, String subject, String template, User user, Booking booking) {
+
     }
 
 
