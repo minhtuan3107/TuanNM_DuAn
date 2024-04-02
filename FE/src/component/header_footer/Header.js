@@ -1,8 +1,8 @@
-import './style.css'
+import '../css/style.css'
 import {useEffect, useState} from "react";
-import {getList, getListNew} from "./service/MotobikeAccessoryService";
+import {getList, getListNew} from "../../service/MotobikeAccessoryService";
 import {Link, useNavigate} from "react-router-dom";
-import {getListCart} from "./service/CartService";
+import {getListCart} from "../../service/CartService";
 import {Field, Form, Formik} from "formik";
 
 export default function Header(props) {
@@ -39,7 +39,7 @@ export default function Header(props) {
                     <div className="container">
                         <div className="row-left-list d-flex d-flex-center row-mb">
                             <div className="logo col-md-3 col-xs-3 col-sm-3 pd-right-0">
-                                <a href="/">
+                                <a href="/public">
                                     <img
                                         className="dt-width-auto logo-shop"
                                         height={50}

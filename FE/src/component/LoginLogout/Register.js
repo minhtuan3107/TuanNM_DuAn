@@ -1,8 +1,8 @@
-import Header from "../Header";
+import Header from "../header_footer/Header";
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import Footer from "../Footer";
+import Footer from "../header_footer/Footer";
 import {useState} from "react";
-import {checkEmailAccount, checkPhoneNumberAccount, checkUserNameAccount, register} from "../service/AccountService";
+import {checkEmailAccount, checkPhoneNumberAccount, checkUserNameAccount, register} from "../../service/AccountService";
 import SweetAlert from "sweetalert";
 import {useNavigate} from "react-router-dom";
 import * as Yup from "yup";

@@ -1,12 +1,12 @@
-import Header from "./Header";
-import Footer from "./Footer";
+import Header from "../header_footer/Header";
+import Footer from "../header_footer/Footer";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {findById} from "./service/MotobikeAccessoryService";
-import {addToCard} from "./service/CartService";
+import {findById} from "../../service/MotobikeAccessoryService";
+import {addToCard} from "../../service/CartService";
 import SweetAlert from "sweetalert";
-import HeaderIsLogin from "./HeaderIsLogin";
-import {checkLiveCart} from "./service/BookingService";
+import HeaderIsLogin from "../header_footer/HeaderIsLogin";
+import {checkLiveCart} from "../../service/BookingService";
 
 export default function Detail() {
     const {id} = useParams();

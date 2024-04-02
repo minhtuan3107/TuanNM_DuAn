@@ -1,7 +1,7 @@
-import './style.css'
+import '../css/style.css'
 import {useEffect, useState} from "react";
-import {getListHot, getListNew} from "./service/MotobikeAccessoryService";
-import {getAll} from "./service/TypeAccessoryService";
+import {getListHot, getListNew} from "../../service/MotobikeAccessoryService";
+import {getAll} from "../../service/TypeAccessoryService";
 import {useNavigate} from "react-router-dom";
 
 export default function Footer() {
@@ -22,7 +22,7 @@ export default function Footer() {
                         <div className="d-flex row">
                             <div className="col-md-3 col-sm-6 col-xs-12 infomation mg-bottom-15">
                                 <div className="title-footer">
-                                    <a href="/">
+                                    <a href="/public">
                                         <img
 
                                         />
@@ -66,7 +66,7 @@ export default function Footer() {
                                 <div className="footer-link-wanda">
                                     <ul>
                                         {listType.map((type) => (
-                                            <li>
+                                            <li key={type.id}>
                                                 <a  onClick={(e) => {
                                                     e.preventDefault()
                                                     navigate("/all", {state: {data: type.name}})

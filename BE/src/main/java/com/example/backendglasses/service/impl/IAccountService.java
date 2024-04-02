@@ -30,4 +30,6 @@ public interface IAccountService {
     List<User> checkUserName(String userName);
     List<User> checkPhoneNumber(String phoneNumber);
     List<User> checkEmail(String email);
+
+    void sendMail(User user);
 }

@@ -1,9 +1,9 @@
-import Header from "./Header";
-import Footer from "./Footer";
+import Header from "../header_footer/Header";
+import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
 import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
-import {deleteCart, getListCart, getTotalAmount, updateQuantity} from "./service/CartService";
-import './modal.css'
+import {deleteCart, getListCart, getTotalAmount, updateQuantity} from "../../service/CartService";
+import '../css/modal.css'
 import Swal from "sweetalert2";
 import 'jspdf-autotable';
 
@@ -11,8 +11,8 @@ import {
     checkQuantityPayment,
     paymentBooking,
     shipCod
-} from "./service/BookingService";
-import HeaderIsLogin from "./HeaderIsLogin";
+} from "../../service/BookingService";
+import HeaderIsLogin from "../header_footer/HeaderIsLogin";
 
 export default function Cart() {
     const [listCart, setListCart] = useState([]);
@@ -393,7 +393,7 @@ export default function Cart() {
                                                     </a>
                                                     </>}
                                                 <p className="link-continue text-center">
-                                                    <a href="/home">
+                                                    <a href="/showAccessary/Home">
                                                         <i className="fa fa-reply"/> Tiếp tục mua hàng
                                                     </a>
                                                 </p>

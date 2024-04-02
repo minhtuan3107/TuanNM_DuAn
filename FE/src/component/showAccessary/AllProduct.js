@@ -1,11 +1,11 @@
-import Header from "./Header";
-import Footer from "./Footer";
+import Header from "../header_footer/Header";
+import Footer from "../header_footer/Footer";
 import {Link, useLocation, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {getListAll} from "./service/MotobikeAccessoryService";
+import {getListAll} from "../../service/MotobikeAccessoryService";
 import ReactPaginate from "react-paginate";
-import './modal.css'
-import HeaderIsLogin from "./HeaderIsLogin";
+import '../css/modal.css'
+import HeaderIsLogin from "../header_footer/HeaderIsLogin";
 import Swal from "sweetalert2";
 
 export default function AllProduct() {

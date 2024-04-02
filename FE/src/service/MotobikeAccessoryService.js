@@ -29,3 +29,16 @@ export async function findById(id) {
         console.log(e)
     }
 }
+
+export async function addAccessary(accessary) {
+    const token = localStorage.getItem("authToken")
+    try {
+        await axios.post(`http://localhost:8080/admin/addAccessary`, accessary, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
+}

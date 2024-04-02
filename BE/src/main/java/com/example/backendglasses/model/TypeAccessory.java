@@ -18,4 +18,6 @@ public class TypeAccessory {
     private String name;
     @Column(columnDefinition = "LONGTEXT")
     private String img;
+
+
 }

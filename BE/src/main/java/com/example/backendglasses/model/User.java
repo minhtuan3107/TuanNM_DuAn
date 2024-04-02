@@ -24,6 +24,8 @@ public class User implements UserDetails {
     private String fullName;
     private String address;
     private String phoneNumber;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean isConfirm = false;
     @ManyToOne
     @JoinColumn(name = "RoleId",referencedColumnName = "id")
     private Role role;

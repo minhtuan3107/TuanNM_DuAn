@@ -1,12 +1,12 @@
-import Footer from "../Footer";
+import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
 import { useLocation, useParams} from "react-router-dom";
-import {detailsBooking, getListBookingByIdAccount} from "../service/BookingService";
+import {detailsBooking, getListBookingByIdAccount} from "../../service/BookingService";
 import Swal from "sweetalert2";
 import MySwal from "sweetalert2";
-import HeaderIsLogin from "../HeaderIsLogin";
-import findById from "../service/AccountService";
-
+import HeaderIsLogin from "../header_footer/HeaderIsLogin";
+import findById from "../../service/AccountService";
+import '../css/bookingHistory.css'
 export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
     const {id} = useParams();
@@ -478,7 +478,7 @@ export default function HistoryBooking() {
                     </div>
                 </main>
             </div>
-            <div style={{marginTop: "3%"}}>
+            <div style={{marginTop: "5%"}}>
                 <Footer/>
             </div>
         </>

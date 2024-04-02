@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import SweetAlert from "sweetalert";
 import axios from "axios";
-import findById from "./service/AccountService";
+import findById from "../../service/AccountService";
 
 export default function HeaderIsLogin(props) {
     const navigate = useNavigate();
@@ -111,7 +111,7 @@ export default function HeaderIsLogin(props) {
                     <div className="container">
                         <div className="row-left-list d-flex d-flex-center row-mb">
                             <div className="logo col-md-3 col-xs-3 col-sm-3 pd-right-0">
-                                <a href="/">
+                                <a href="/public">
                                     <img
                                         className="dt-width-auto logo-shop"
                                         height={50}

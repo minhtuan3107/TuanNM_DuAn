@@ -1,0 +1,32 @@
+.pagination {
+    display: flex;
+    padding: 0;
+    justify-content: center;
+    z-index: 9999; /* Đặt giá trị z-index cao nhất */
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pagination li.active a {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination li a:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination li.disabled a {
+    pointer-events: none;
+    cursor: not-allowed;
+}

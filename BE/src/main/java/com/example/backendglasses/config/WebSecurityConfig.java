@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.POST, ("/booking/setQuantity")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET, ("/booking/**")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET, ("/payment/**")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.POST, ("/admin/**")).hasAnyRole("ADMIN")
                             .requestMatchers(HttpMethod.GET, ("/admin/**")).hasAnyRole("ADMIN")
                             .anyRequest().permitAll()
 

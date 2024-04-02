@@ -1,13 +1,13 @@
-import './style.css'
-import Header from "./Header";
-import Footer from "./Footer";
+import '../css/style.css'
+import Header from "../header_footer/Header";
+import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
-import {getListHot, getListNew} from "./service/MotobikeAccessoryService";
+import {getListHot, getListNew} from "../../service/MotobikeAccessoryService";
 import {Link, useNavigate} from "react-router-dom";
-import {getAll} from "./service/TypeAccessoryService";
+import {getAll} from "../../service/TypeAccessoryService";
 import SweetAlert from "sweetalert";
 import axios from "axios";
-import HeaderIsLogin from "./HeaderIsLogin";
+import HeaderIsLogin from "../header_footer/HeaderIsLogin";
 
 export default function Home() {
     const [listData, setListData] = useState([]);

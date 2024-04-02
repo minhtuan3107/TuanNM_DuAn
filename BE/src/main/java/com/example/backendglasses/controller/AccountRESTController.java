@@ -61,6 +61,16 @@ public class AccountRESTController {
         user.setRole(roleService.findById(2L));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         iAccountService.save(user);
+        iAccountService.sendMail(user);
+    }
+
+    @GetMapping("confirm/{id}")
+    private ResponseEntity<String> confirmMail(@PathVariable Long id) {
+        User user = iAccountService.findById(id);
+        if (!user.getIsConfirm() && user.getId() == id) {
+            return new ResponseEntity<>("OK", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("NO", HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/register")
@@ -101,6 +111,7 @@ public class AccountRESTController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<Object> loginAccount(HttpServletResponse response, @RequestBody AccountDTO accountDTO) {

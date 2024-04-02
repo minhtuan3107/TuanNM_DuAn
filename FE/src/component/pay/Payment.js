@@ -1,10 +1,10 @@
-import Header from "./Header";
-import Footer from "./Footer";
+import Header from "../header_footer/Header";
+import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
-import {getListCart, getTotalAmount} from "./service/CartService";
+import {getListCart, getTotalAmount} from "../../service/CartService";
 import {useParams} from "react-router-dom";
 import axios from "axios";
-import './Payment.css'
+import '../css/Payment.css'
 
 export default function Payment() {
     const [listCart, setListCart] = useState([]);

@@ -1,16 +1,17 @@
 import './App.css';
 import {Route, Routes} from "react-router-dom";
-import Home from "./component/Home";
-import Cart from "./component/Cart";
-import Payment from "./component/Payment";
-import Detail from "./component/Detail";
+import Home from "./component/showAccessary/Home";
+import Cart from "./component/showAccessary/Cart";
+import Payment from "./component/pay/Payment";
+import Detail from "./component/showAccessary/Detail";
 import Register from "./component/LoginLogout/Register";
 import Login from "./component/LoginLogout/Login";
 import HistoryBooking from "./component/LoginLogout/HistoryBooking";
-import AllProduct from "./component/AllProduct";
-import AdminPage from "./component/admin/accessary/AdminPage";
-import PaymentOk from "./component/PaymentOk";
+import AllProduct from "./component/showAccessary/AllProduct";
+import AdminPage from "./component/admin/AdminPage";
+import PaymentOk from "./component/pay/PaymentOk";
 import Errors from "./component/Errors";
+import ConfirmAccount from "./component/LoginLogout/ConfirmAccount";
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path={"/admin"} element={<AdminPage/>}></Route>
                 <Route path={"/payOk/:id"} element={<PaymentOk/>}></Route>
                 <Route path={"*"} element={<Errors/>}></Route>
+                <Route path={"/confirm/:id"} element={<ConfirmAccount/>}></Route>
             </Routes>
         </>
     );

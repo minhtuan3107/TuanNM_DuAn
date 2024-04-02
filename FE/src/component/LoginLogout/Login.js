@@ -1,11 +1,11 @@
-
-import Header from "../Header";
-import Footer from "../Footer";
+import Header from "../header_footer/Header";
+import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import SweetAlert from "sweetalert";
-import {loginAccount} from "../service/AccountService";
+import {loginAccount} from "../../service/AccountService";
 import {Form, Formik} from "formik";
+import Swal from "sweetalert2";
 
 export default function Login() {
     const [isLogin, setIsLogin] = useState(false);
@@ -13,10 +13,25 @@ export default function Login() {
     const [paramPassword, setParamPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
+    const name = location.state?.data || "";
     useEffect(() => {
         const isLogin = localStorage.getItem("isLogin");
         window.scrollTo(0, 0);
         document.title = "Đăng nhập"
+        if (name === "OK") {
+            Swal.fire({
+                title: "Xác minh tài khoản thành công !",
+                text: "Vui lòng đăng nhập",
+                icon: "success"
+            });
+        } else if (name === "NO") {
+            Swal.fire({
+                title: "Xác minh tài khoản không thành công !",
+                text: "Vui lòng thử lại",
+                icon: "error"
+            });
+        }
     }, []);
     const handleParamAccountChange = (e) => {
         setParamAccount(e.target.value)

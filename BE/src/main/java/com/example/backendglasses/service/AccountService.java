@@ -4,15 +4,20 @@ import com.example.backendglasses.config.JwtTokenUtil;
 import com.example.backendglasses.model.User;
 import com.example.backendglasses.repository.AccountRepository;
 import com.example.backendglasses.service.impl.IAccountService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +34,10 @@ public class AccountService implements IAccountService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private final AccountRepository accountRepository;
-
-
+    @Autowired
+    private JavaMailSender mailSender;
+    @Autowired
+    private TemplateEngine templateEngine;
     @Override
     public Optional<User> findAccountByEmail(String email) {
 
@@ -103,5 +110,28 @@ public class AccountService implements IAccountService {
         return accountRepository.checkEmail(email);
     }
 
+    @Override
+    public void sendMail(User user) {
+        String to = user.getEmail();
+        String subject = "Kích hoạt tài khoản khách hàng";
+        String templateName = "mail";
+        Context context = new Context();
+        context.setVariable("id", user.getId());
+        sendEmailWithHtmlTemplate(to, subject, templateName, context);
+    }
+
+    public void sendEmailWithHtmlTemplate(String to, String subject, String templateName, Context context) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+        try {
+            helper.setTo(to);
+            helper.setSubject(subject);
+            String htmlContent = templateEngine.process(templateName, context);
+            helper.setText(htmlContent, true);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
