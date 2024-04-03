@@ -1,7 +1,7 @@
 import Header from "../header_footer/Header";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import Footer from "../header_footer/Footer";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {checkEmailAccount, checkPhoneNumberAccount, checkUserNameAccount, register} from "../../service/AccountService";
 import SweetAlert from "sweetalert";
 import {useNavigate} from "react-router-dom";
@@ -26,12 +26,18 @@ export default function Register() {
             setNotification(3)
         }
         if (checkPhone.length === 0 && checkEmail.length === 0 && checkPhone.length === 0) {
-            register(values).then(SweetAlert(" Đăng kí thành công!", ``, "success")
+            register(values).then(SweetAlert(" Đăng kí thành công!", `Bạn vui lòng kiểm tra mail để xác nhận tài khoản`, "success")
             )
             back("/login")
         }
         console.log(notification)
     }
+    useEffect(() => {
+        const isLogin = localStorage.getItem("isLogin");
+        if (isLogin) {
+            back("/home")
+        }
+    }, []);
     return (
         <>
             <div>
@@ -61,7 +67,7 @@ export default function Register() {
                                                 phoneNumber: "",
                                                 password: ""
                                             }}
-                                            //      x
+                                                //      x
                                                     onSubmit={values => {
                                                         registerUser(values)
                                                     }}>
@@ -77,24 +83,28 @@ export default function Register() {
                                                                     </ul>
                                                                 </div>
                                                             }
-                                                            <ErrorMessage name="nameAccount" component="div" className="errors"/>
+                                                            <ErrorMessage name="nameAccount" component="div"
+                                                                          className="errors"/>
                                                         </li>
                                                         <li id="form-name">
                                                             <Field name="fullName" placeholder={"Nhập họ và tên"}
                                                             />
-                                                            <ErrorMessage name="fullName" component="div" className="errors"/>
+                                                            <ErrorMessage name="fullName" component="div"
+                                                                          className="errors"/>
 
                                                         </li>
                                                         <li id="form-address">
                                                             <Field name="address" placeholder={"Nhập địa chỉ"}
                                                             />
-                                                            <ErrorMessage name="address" component="div" className="errors"/>
+                                                            <ErrorMessage name="address" component="div"
+                                                                          className="errors"/>
 
                                                         </li>
                                                         <li id="form-phone">
                                                             <Field name="phoneNumber" placeholder={"Nhập số điện thoại"}
                                                             />
-                                                            <ErrorMessage name="phoneNumber" component="div" className="errors"/>
+                                                            <ErrorMessage name="phoneNumber" component="div"
+                                                                          className="errors"/>
                                                             {notification === 3 &&
                                                                 <div className="errors">
                                                                     <ul>
@@ -106,7 +116,8 @@ export default function Register() {
                                                         <li id="form-email">
                                                             <Field name="email" placeholder={"Nhập email"}
                                                             />
-                                                            <ErrorMessage name="email" component="div" className="errors"/>
+                                                            <ErrorMessage name="email" component="div"
+                                                                          className="errors"/>
 
                                                             {notification === 2 &&
                                                                 <div className="errors">
@@ -120,7 +131,8 @@ export default function Register() {
                                                             <Field type="password" name="password"
                                                                    placeholder={"Nhập mật khẩu"}
                                                             />
-                                                            <ErrorMessage name="password" component="div" className="errors"/>
+                                                            <ErrorMessage name="password" component="div"
+                                                                          className="errors"/>
 
                                                         </li>
                                                         <div className=" action_account_custommer">

@@ -31,7 +31,7 @@ public class Booking {
     private StatusBooking statusBooking;
     private Long totalPrice;
     private int quantity;
-    private int statusPayment;
+    private int statusPayment; // 1 là thanh toán bằng shipcod// 2 là đã thanh toán // 0 đang trong giỏ hàng
     private String address;
     private String phone;
     private String des;

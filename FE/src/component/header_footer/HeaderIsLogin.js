@@ -3,15 +3,18 @@ import {useNavigate} from "react-router-dom";
 import SweetAlert from "sweetalert";
 import axios from "axios";
 import findById from "../../service/AccountService";
+import {getListCart, getTotalAmount} from "../../service/CartService";
 
 export default function HeaderIsLogin(props) {
     const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(false);
     const [qualityProduct, setQualityProduct] = useState(0);
     const [nameProduct, setNameProduct] = useState("");
-    const [flag, setFlag] = useState(false);
+    const [flag, setFlag] = useState(0);
     const [account, setAccount] = useState({});
     const [showButton, setShowButton] = useState(false);
+    const [listCart, setListCart] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         window.scrollTo(0, 0);
@@ -37,9 +40,22 @@ export default function HeaderIsLogin(props) {
             }
         }
         const isLogin = localStorage.getItem("isLogin");
+
+        try {
+            const getListData = async () => {
+                const list = await getListCart(account.id, token);
+                setListCart(list);
+                const total = await getTotalAmount(account.id);
+                setTotalAmount(total);
+            }
+            getListData();
+        } catch (e) {
+            navigate("/zxc")
+        }
         if (isLogin) {
             setIsLogin(true)
             qualityCart();
+
         }
 
     }, [flag, props]);
@@ -199,7 +215,7 @@ export default function HeaderIsLogin(props) {
                   </span>
                                                     <span className="small-text"
                                                           onClick={() => {
-                                                              setFlag(!flag)
+                                                              setFlag(1)
                                                           }}>
                                                                                 Tài khoản của bạn
                                                         </span>
@@ -226,7 +242,7 @@ export default function HeaderIsLogin(props) {
                                           <span className="js-number-cart number-cart">{qualityProduct}</span>
                                         </span>
                                                     <span onClick={() => {
-                                                        handleViewCart()
+                                                        handleViewCart();
                                                     }}>
                                                                               Giỏ hàng
                                                                           </span>
@@ -239,6 +255,104 @@ export default function HeaderIsLogin(props) {
                                           </svg>
                                         </span>
                                                 </button>
+                                                {flag === 2 &&
+                                                    <div className="header-action_dropdown">
+                                                        <div className="header-dropdown_content">
+                                                            <div className="overflow-hidden relative-position">
+                                                                <div className="account_header text-center">
+                                                                    <div className="account_title  h2 heading">Giỏ
+                                                                        hàng
+                                                                    </div>
+                                                                </div>
+                                                                <div className="cart-content" id="cart-mini-wanda">
+                                                                    <div className="cart-view clearfix">
+                                                                        <div className="cart-scroll">
+                                                                            <table id="cart-view">
+                                                                                <tbody>
+                                                                                <tr className="list-item" data-line={1}>
+                                                                                    <td className="img">
+                                                                                        <a
+                                                                                            href="/products/bugi-ngk-chinh-hang-nhap-khau-thai-lan-hop-10-cai"
+                                                                                            title="Bugi NGK Chính hãng Nhập khẩu Thái Lan (Hộp 10 cái)"
+                                                                                        >
+                                                                                            <img
+                                                                                                src="//product.hstatic.net/200000298594/product/bugi_ngk-1_30057967d4024ab9a4998fe35a183723_medium.jpg"
+                                                                                                alt="Bugi NGK Chính hãng Nhập khẩu Thái Lan (Hộp 10 cái)"
+                                                                                            />
+                                                                                        </a>
+                                                                                    </td>
+                                                                                    <td className="item">
+                                                                                        <a
+                                                                                            className="pro-title-view"
+                                                                                            href="/products/bugi-ngk-chinh-hang-nhap-khau-thai-lan-hop-10-cai"
+                                                                                            title="Bugi NGK Chính hãng Nhập khẩu Thái Lan (Hộp 10 cái)"
+                                                                                        >
+                                                                                            Bugi NGK Chính hãng Nhập
+                                                                                            khẩu Thái Lan (Hộp 10 cái)
+                                                                                        </a>
+                                                                                        <span className="variant">
+                      Bugi Chân ngắn không điện trở
+                    </span>
+                                                                                        <div
+                                                                                            className="quantity-area-cartmini d-flex d-flex-center">
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                name="quantity_minicart"
+                                                                                                defaultValue={1}
+                                                                                                min={1}
+                                                                                                className="quantity-mini"
+                                                                                            />
+                                                                                            <span
+                                                                                                className="pro-price-view">273,000₫</span>
+                                                                                        </div>
+                                                                                        <span
+                                                                                            className="remove_link remove-cart">
+                      <a
+                          href="javascript:void(0);"
+                          onClick="window.wd.scofield.deletecart(1)"
+                      >
+                        <i className="fa fa-times"/>
+                      </a>
+                    </span>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                        <span className="line"/>
+                                                                        <table className="table-total">
+                                                                            <tbody>
+                                                                            <tr>
+                                                                                <td className="text-left title-total">TỔNG
+                                                                                    TIỀN:
+                                                                                </td>
+                                                                                <td className="text-right"
+                                                                                    id="total-view-cart">
+                                                                                    273,000₫
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <a href="/cart"
+                                                                                       className="wanda-cart-url btn">
+                                                                                        Xem giỏ hàng
+                                                                                    </a>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <a href="/checkout"
+                                                                                       className="wanda-checkout-url btn">
+                                                                                        Thanh toán
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
                                             </div>
                                         </li>
                                     </ul>
@@ -247,10 +361,10 @@ export default function HeaderIsLogin(props) {
                         </div>
                     </div>
                 </div>
-                {flag &&
+                {flag === 1 &&
                     <div style={{
                         width: "30%",
-                        marginLeft: "60%",
+                        marginLeft: "55%",
                         position: "absolute",
                         backgroundColor: "white",
                         opacity: "30",

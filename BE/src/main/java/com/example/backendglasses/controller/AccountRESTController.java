@@ -64,13 +64,15 @@ public class AccountRESTController {
         iAccountService.sendMail(user);
     }
 
-    @GetMapping("confirm/{id}")
-    private ResponseEntity<String> confirmMail(@PathVariable Long id) {
+    @GetMapping("confirm")
+    private ResponseEntity<String> confirmMail(@RequestParam Long id) {
         User user = iAccountService.findById(id);
         if (!user.getIsConfirm() && user.getId() == id) {
+            user.setIsConfirm(true);
+            iAccountService.save(user);
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
-        return new ResponseEntity<>("NO", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("NO", HttpStatus.OK);
     }
 
     @PostMapping("/register")
@@ -119,6 +121,7 @@ public class AccountRESTController {
         try {
             String token = iAccountService.login(accountDTO.getNameAccount(), accountDTO.getPassword());
             User user = iAccountService.findAccountByAccountName(accountDTO.getNameAccount()).get();
+
             apiResponse.setToken(token);
             apiResponse.setDataRes(user);
 //            Cookie jwtCookie = new Cookie("JWT",token);

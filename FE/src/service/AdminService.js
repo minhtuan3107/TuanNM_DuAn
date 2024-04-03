@@ -17,13 +17,12 @@ export async function getAllAccessary(name, page) {
     }
 }
 
-export async function getAllBooking(name, page) {
+export async function getAllBooking(name) {
     try {
         const token = localStorage.getItem("authToken")
         const data = await axios.get(`http://localhost:8080/admin/getAllBooking`, {
             params: {
                 name: name,
-                page: page
             }, headers: {
                 Authorization: `Bearer ${token}`
             }

@@ -33,7 +33,8 @@ public class BookingRestController {
     private IMotobikeAccessoryService motobikeAccessoryService;
     @Autowired
     private IStatusBookingService statusBookingService;
-
+    @Autowired
+    private IAccountService iAccountService;
 
     @GetMapping("")
     private ResponseEntity<List<HistoryBookingDTO>> getListBookingByAccount(@RequestParam(defaultValue = "") String name, @RequestParam Long id) {
@@ -80,6 +81,8 @@ public class BookingRestController {
                          @RequestParam(defaultValue = "") String address,
                          @RequestParam(defaultValue = "") String phone) {
         List<Booking> bookings = bookingService.getListPay(idAccount);
+        Long totalAmount = bookingService.getAmountPriceCart(idAccount);
+        User user = iAccountService.findById(idAccount);
         LocalDateTime dateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
             MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
@@ -100,6 +103,7 @@ public class BookingRestController {
             } else {
                 booking.setPhone(phone);
             }
+            iAccountService.sendMailBooking(user, bookings, totalAmount, false);
             bookingService.save(booking);
         }
 

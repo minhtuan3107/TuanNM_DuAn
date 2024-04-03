@@ -1,6 +1,7 @@
 package com.example.backendglasses.service;
 
 import com.example.backendglasses.config.JwtTokenUtil;
+import com.example.backendglasses.model.Booking;
 import com.example.backendglasses.model.User;
 import com.example.backendglasses.repository.AccountRepository;
 import com.example.backendglasses.service.impl.IAccountService;
@@ -38,6 +39,7 @@ public class AccountService implements IAccountService {
     private JavaMailSender mailSender;
     @Autowired
     private TemplateEngine templateEngine;
+
     @Override
     public Optional<User> findAccountByEmail(String email) {
 
@@ -117,6 +119,19 @@ public class AccountService implements IAccountService {
         String templateName = "mail";
         Context context = new Context();
         context.setVariable("id", user.getId());
+        sendEmailWithHtmlTemplate(to, subject, templateName, context);
+    }
+
+    @Override
+    public void sendMailBooking(User user, List<Booking> list, Long amount, boolean status) {
+        String to = user.getEmail();
+        String subject = "Thông báo về đơn hàng của bạn";
+        String templateName = "email-template";
+        Context context = new Context();
+        context.setVariable("user", user);
+        context.setVariable("booking", list);
+        context.setVariable("amount", amount);
+        context.setVariable("status", status);
         sendEmailWithHtmlTemplate(to, subject, templateName, context);
     }
 

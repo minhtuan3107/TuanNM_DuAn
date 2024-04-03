@@ -6,6 +6,8 @@ import {deleteCart, getListCart, getTotalAmount, updateQuantity} from "../../ser
 import '../css/modal.css'
 import Swal from "sweetalert2";
 import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 import {
     checkQuantityPayment,
@@ -31,13 +33,14 @@ export default function Cart() {
     const [nameProduct, setNameProduct] = useState("")
     const [qualityProduct, setQualityProduct] = useState(0);
 
+
     useEffect(() => {
         if (idAccount === 0) {
             back("/zxc")
         }
         const token = localStorage.getItem("authToken");
         const idUser = localStorage.getItem("idAccount");
-        try{
+        try {
             const getListData = async () => {
                 const list = await getListCart(idAccount, token);
                 setListCart(list);
@@ -45,7 +48,7 @@ export default function Cart() {
                 setTotalAmount(total);
             }
             getListData()
-        }catch (e){
+        } catch (e) {
             back("/zxc")
         }
         window.scrollTo(0, 0);
@@ -80,6 +83,7 @@ export default function Cart() {
     }
     const onDelete = async (id) => {
         await deleteCart(id)
+        console.log(totalAmount)
         setAmount()
         setFlag(true)
     }
@@ -89,11 +93,9 @@ export default function Cart() {
     }
 
 
-
     const backToPayment = async () => {
         const paymentBooking1 = paymentBooking(totalAmount, idAccount, des, address, phone).then(url => {
             window.location.href = url;
-
             console.log(url)
         })
     }
@@ -102,7 +104,27 @@ export default function Cart() {
         shipCod(totalAmount, idAccount, des, address, phone).then(
             back(`/history/${idAccount}`, {state: {data: "COD"}})
         )
+        setFlag(!flag);
+        exportPDF()
     }
+
+    const exportPDF = () => {
+
+        const doc = new jsPDF();
+
+        // Tạo một mảng chứa các tên trường dữ liệu
+        const columns = Object.keys(listCart[0]);
+
+        // Tạo một mảng chứa dữ liệu của từng hàng trong bảng
+        const rows = listCart.map(item => Object.values(item));
+
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+        });
+
+        doc.save('table.pdf');
+    };
     const confirmShipCod = async () => {
         const data = await checkQuantityPayment(idAccount);
         if (data === "YES") {
@@ -203,88 +225,102 @@ export default function Cart() {
                   <span className="cart-item-title">Sản phẩm</span>
                 </span>
                                         </div>
-                                        {listCart.map((cart) => (
-                                            <>
-                                                <div className="item-wrap" id="cart-page-result">
-                                                    <ul className="cart-wrap" data-line={1}>
-                                                        <li className="item-info">
-                                                            <div className="item-img">
-                                                                <img
-                                                                    src={cart.motobikeAccessory.img}
-                                                                />
-                                                            </div>
-                                                            <div className="item-title">
-                                                                {/*<a>*/}
-                                                                {/*    {cart.motobikeAccessory.name}*/}
-                                                                {/*</a>*/}
-                                                                <Link
-                                                                    to={`/detail/${cart.motobikeAccessory.id}`}>    {cart.motobikeAccessory.name}</Link>
-                                                                <h5>Số lượng : {cart.motobikeAccessory.quantity}</h5>
-                                                                {/*<a onClick={() => {*/}
-                                                                {/*    back(`//1`)*/}
-                                                                {/*}}>*/}
-                                                                {/*    Giỏ hàng*/}
-                                                                {/*</a>*/}
-                                                            </div>
-                                                        </li>
-                                                        <li className="item-qty">
-                                                            <div className="quantity-area">
-                                                                {cart.quantity >= 2 &&
+                                        {listCart.length !== 0 ? <div>
+                                            {listCart.map((cart) => (
+                                                <>
+                                                    <div className="item-wrap" id="cart-page-result">
+                                                        <ul className="cart-wrap" data-line={1}>
+                                                            <li className="item-info">
+                                                                <div className="item-img">
+                                                                    <img
+                                                                        src={cart.motobikeAccessory.img}
+                                                                    />
+                                                                </div>
+                                                                <div className="item-title">
+                                                                    {/*<a>*/}
+                                                                    {/*    {cart.motobikeAccessory.name}*/}
+                                                                    {/*</a>*/}
+                                                                    <Link
+                                                                        to={`/detail/${cart.motobikeAccessory.id}`}>    {cart.motobikeAccessory.name}</Link>
+                                                                    <h5>Số lượng
+                                                                        : {cart.motobikeAccessory.quantity}</h5>
+                                                                    {/*<a onClick={() => {*/}
+                                                                    {/*    back(`//1`)*/}
+                                                                    {/*}}>*/}
+                                                                    {/*    Giỏ hàng*/}
+                                                                    {/*</a>*/}
+                                                                </div>
+                                                            </li>
+                                                            <li className="item-qty">
+                                                                <div className="quantity-area">
+                                                                    {cart.quantity >= 2 &&
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                updateQuantity(cart.quantity - 1, cart.id);
+                                                                                setAmount();
+                                                                                setFlag(true);
+                                                                                // eslint-disable-next-line no-restricted-globals
+
+                                                                            }}
+                                                                            className="qty-btn btn-left-quantity"
+                                                                        >-
+                                                                        </button>
+                                                                    }
+                                                                    <input
+                                                                        placeholder={cart.quantity}
+                                                                        className="quantity-selector quantity-mini"
+                                                                    />
                                                                     <button
                                                                         onClick={() => {
-                                                                            updateQuantity(cart.quantity - 1, cart.id);
-                                                                            setAmount();
-                                                                            setFlag(true);
-                                                                            // eslint-disable-next-line no-restricted-globals
-
-                                                                        }}
-                                                                        className="qty-btn btn-left-quantity"
-                                                                    >-
-                                                                    </button>
-                                                                }
-                                                                <input
-                                                                    placeholder={cart.quantity}
-                                                                    className="quantity-selector quantity-mini"
-                                                                />
-                                                                <button
-                                                                    onClick={() => {
-                                                                        if (cart.motobikeAccessory.quantity >= cart.quantity + 1) {
-                                                                            updateQuantity(cart.quantity + 1, cart.id);
-                                                                            setAmount();
-                                                                            setFlag(true);
-                                                                            // eslint-disable-next-line no-restricted-globals
-                                                                        } else {
-                                                                            Swal.fire({
-                                                                                title: "Số lượng hiện tại không đủ !",
-                                                                                icon: "error"
-                                                                            });
+                                                                            if (cart.motobikeAccessory.quantity >= cart.quantity + 1) {
+                                                                                updateQuantity(cart.quantity + 1, cart.id);
+                                                                                setAmount();
+                                                                                setFlag(true);
+                                                                                // eslint-disable-next-line no-restricted-globals
+                                                                            } else {
+                                                                                Swal.fire({
+                                                                                    title: "Số lượng hiện tại không đủ !",
+                                                                                    icon: "error"
+                                                                                });
+                                                                            }
                                                                         }
-                                                                    }
-                                                                    }
+                                                                        }
 
-                                                                    className="qty-btn btn-left-quantity"
-                                                                >+
-                                                                </button>
-                                                            </div>
-                                                            <div className="item-remove">
+                                                                        className="qty-btn btn-left-quantity"
+                                                                    >+
+                                                                    </button>
+                                                                </div>
+                                                                <div className="item-remove">
                                                                 <span className="remove-wrap">
                                                                 <a onClick={() => {
                                                                     alert(cart)
                                                                 }}>Xoá
                                                         </a>
                                                     </span>
-                                                            </div>
-                                                        </li>
-                                                        <li className="item-price">
+                                                                </div>
+                                                            </li>
+                                                            <li className="item-price">
                                         <span className="amount full-price">
                                         <span className="money">{formatNumber(cart.motobikeAccessory.price)} đ
                                 </span>
                             </span>
-                                                        </li>
-                                                    </ul>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </>
+                                            ))}
+                                        </div> : <div>
+                                            <div className="bg-while">
+                                                <div className="item-wrap" id="cart-page-result">
+                                                    <p className="no-item-cart">
+                                                        Giỏ hàng của bạn đang trống. Mời bạn mua thêm sản phẩm{" "}
+                                                        <a href="/all">tại đây.</a>
+                                                    </p>
                                                 </div>
-                                            </>
-                                        ))}
+                                            </div>
+
+                                        </div>
+                                        }
 
                                     </div>
                                 </div>
@@ -384,13 +420,15 @@ export default function Cart() {
                                                            className="btncart-checkout text-center"
                                                         >
                                                             THANH TOÁN NGAY
-                                                        </a> <a onClick={() => {
-                                                        confirmShipCod()
-                                                    }}
-                                                                className="btncart-checkout text-center"
-                                                    >
-                                                        COD
-                                                    </a>
+                                                        </a>
+                                                        <a style={{marginLeft: "30%"}}>Hoặc bạn có thể</a>
+                                                        <a onClick={() => {
+                                                            confirmShipCod()
+                                                        }}
+                                                           className="btncart-checkout text-center"
+                                                        >
+                                                            NHẬN HÀNG RỒI THANH TOÁN
+                                                        </a>
                                                     </>}
                                                 <p className="link-continue text-center">
                                                     <a href="/showAccessary/Home">
@@ -409,7 +447,6 @@ export default function Cart() {
             <div style={{marginTop: "6%"}}>
                 <Footer/>
             </div>
-
         </>
     )
 }

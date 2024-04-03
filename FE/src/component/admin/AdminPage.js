@@ -20,8 +20,6 @@ import {v4} from "uuid";
 import {storage} from '../firebase';
 import {addTypeAccessary, getAll} from "../../service/TypeAccessoryService";
 import {addAccessary} from "../../service/MotobikeAccessoryService";
-import ReactPaginate from "react-paginate";
-
 
 export default function AdminPage() {
     const [listAccessary, setListAccessary] = useState([]);
@@ -52,14 +50,18 @@ export default function AdminPage() {
                 const result = await getAllAccessary(nameSearch, currentPage);
                 setListAccessary(result?.content || back("/zxc"));
                 setPageCount(currentPage)
+                console.log(result)
             }
             const getListAccountPage = async () => {
                 const result = await getAllAccount(nameSearch, currentPage);
                 setListAccount(result);
+                console.log(result)
             }
             const getListBookingPage = async () => {
-                const result = await getAllBooking(nameSearch, currentPage);
-                setListBooking(result?.content || back("/zxc"));
+                const result = await getAllBooking(nameSearch);
+                setListBooking(result);
+                console.log(listBooking)
+                console.log(result)
             }
             const getTypeAccessary = async () => {
                 const result = await getAll();
@@ -72,7 +74,7 @@ export default function AdminPage() {
             document.title = "admin"
 
         } catch (e) {
-            back("/zxc")
+            console.log(e)
         }
         uploadImage()
     }, [showAdmin, currentPage, refesh, imageUpload]);
@@ -112,7 +114,7 @@ export default function AdminPage() {
 
 
     const uploadImage = () => {
-        if (imageUpload == "") return;
+        if (imageUpload === "") return;
         const imageRef = ref(storage, `productImage/${imageUpload.name + v4()}`);
         uploadBytes(imageRef, imageUpload).then(() => {
             getDownloadURL(imageRef).then((url) => {
@@ -153,7 +155,7 @@ export default function AdminPage() {
         setSelectedValue(event.target.value); // Lưu giá trị được chọn vào state
         console.log(selectedValue)
     };
-    const handlePageChange = ({ selected }) => {
+    const handlePageChange = ({selected}) => {
         setCurrentPage(selected);
         console.log("oK")
     };
@@ -177,9 +179,12 @@ export default function AdminPage() {
                                         <div className="account-left-header">
                                             <div className="user-account">
                                                 <div className="user-acc-logo" data-color="T">
+                                                    <span className="box-icon"><img width="24" height="24"
+                                                                                    src="//theme.hstatic.net/200000298594/1001166168/14/user-account.svg?v=256"
+                                                                                    alt="Tài khoản"/></span>
                                                 </div>
                                                 <div className="user-account">
-                                                    <h4 className="user-account-name">Tuan</h4>
+                                                    <h4 className="user-account-name">zxc</h4>
                                                 </div>
                                             </div>
                                         </div>
@@ -367,16 +372,6 @@ export default function AdminPage() {
                                                             </tbody>
                                                         </table>
                                                     </div>
-                                                    <div style={{marginLeft: "30%"}}>
-                                                        <ReactPaginate
-                                                            pageCount={pageCount}
-                                                            pageRangeDisplayed={5}
-                                                            marginPagesDisplayed={2}
-                                                            onPageChange={handlePageChange}
-                                                            containerClassName={'pagination'}
-                                                            activeClassName={'active'}
-                                                        />
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -407,7 +402,7 @@ export default function AdminPage() {
                                                                         {formatDate(booking.dateBooking)}
                                                                     </td>
                                                                     <td className="text-center">
-                                                                        <span>{formatNumber(booking.totalPrice)} đ</span>
+                                                                        <span>{formatNumber(booking.price)} đ</span>
                                                                     </td>
                                                                     <td className="text-center">
                                                                     <span

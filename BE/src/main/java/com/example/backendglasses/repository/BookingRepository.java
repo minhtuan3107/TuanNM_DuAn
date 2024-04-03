@@ -30,9 +30,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Transactional
     @Query(value = "SELECT DATE_FORMAT(booking.date_booking, '%Y-%m-%d %H:%i:%s.%f') AS dateBooking,\n" +
             "       SUM(booking.total_price) AS price,\n" +
-            "       booking.status_payment AS statusPayment\n" +
+            "       booking.status_payment AS statusPayment \n" +
             "FROM booking\n" +
-            "WHERE booking.status_booking_id = 2 and booking.is_deleted = 0 " +
+            "WHERE booking.status_booking_id = 2 AND booking.is_deleted = 0 \n" +
             "GROUP BY DATE_FORMAT(booking.date_booking, '%Y-%m-%d %H:%i:%s.%f'), booking.status_payment;\n", nativeQuery = true)
     List<HistoryBookingDTO> getListBooking();
 

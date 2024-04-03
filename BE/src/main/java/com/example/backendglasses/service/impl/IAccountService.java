@@ -1,5 +1,6 @@
 package com.example.backendglasses.service.impl;
 
+import com.example.backendglasses.model.Booking;
 import com.example.backendglasses.model.User;
 import org.hibernate.query.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +29,12 @@ public interface IAccountService {
     void save(User user);
 
     List<User> checkUserName(String userName);
+
     List<User> checkPhoneNumber(String phoneNumber);
+
     List<User> checkEmail(String email);
 
     void sendMail(User user);
+
+    void sendMailBooking(User user, List<Booking> list, Long amount, boolean status);
 }

@@ -17,20 +17,28 @@ export default function Login() {
     const name = location.state?.data || "";
     useEffect(() => {
         const isLogin = localStorage.getItem("isLogin");
-        window.scrollTo(0, 0);
-        document.title = "Đăng nhập"
-        if (name === "OK") {
-            Swal.fire({
-                title: "Xác minh tài khoản thành công !",
-                text: "Vui lòng đăng nhập",
-                icon: "success"
-            });
-        } else if (name === "NO") {
-            Swal.fire({
-                title: "Xác minh tài khoản không thành công !",
-                text: "Vui lòng thử lại",
-                icon: "error"
-            });
+        if (isLogin) {
+            navigate("/home")
+        }
+        try {
+            window.scrollTo(0, 0);
+            document.title = "Đăng nhập"
+            if (name === "OK") {
+                Swal.fire({
+                    title: "Xác minh tài khoản thành công !",
+                    text: "Vui lòng đăng nhập",
+                    icon: "success"
+                });
+            } else if (name === "NO") {
+                Swal.fire({
+                    title: "Xác minh tài khoản không thành công !",
+                    text: "Vui lòng thử lại",
+                    icon: "error"
+                });
+            }
+
+        } catch (e) {
+            console.log(e)
         }
     }, []);
     const handleParamAccountChange = (e) => {
@@ -54,13 +62,18 @@ export default function Login() {
                     password: paramPassword
                 }
                 const req = await loginAccount(params)
-                localStorage.setItem('authToken', req.token);
-                localStorage.setItem('idAccount', req.dataRes.id);
-                localStorage.setItem("isLogin", true);
-                localStorage.setItem("nameAccount", req.dataRes.nameAccount);
-                // Cookies.set('Token', req.token, { expires: 7 * 1000 * 60 ,httpOnly:true, secure: true, sameSite: 'strict' });
-                SweetAlert("Đăng nhập thành công!", `Chào mừng ${localStorage.getItem("nameAccount")} đến với hệ thống!`, "success")
-                navigate('/home');
+                if (!req.dataRes.isConfirm) {
+                    localStorage.clear();
+                    SweetAlert("Tài khoản của bạn chưa xác thực !", `Tài khoản của bạn chưa xác thực vui lòng kiểm tra email để xác nhận `, "error")
+                } else {
+                    localStorage.setItem('authToken', req.token);
+                    localStorage.setItem('idAccount', req.dataRes.id);
+                    localStorage.setItem("isLogin", true);
+                    localStorage.setItem("nameAccount", req.dataRes.nameAccount);
+                    // Cookies.set('Token', req.token, { expires: 7 * 1000 * 60 ,httpOnly:true, secure: true, sameSite: 'strict' });
+                    SweetAlert("Đăng nhập thành công!", `Chào mừng ${localStorage.getItem("nameAccount")} đến với hệ thống!`, "success")
+                    navigate('/home');
+                }
             }
         } catch (err) {
             setError("Tên đăng nhập hoặc mật khẩu không chính xác!");

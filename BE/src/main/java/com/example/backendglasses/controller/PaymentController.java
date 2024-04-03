@@ -3,6 +3,7 @@ package com.example.backendglasses.controller;
 import com.example.backendglasses.config.ConfigVNP;
 import com.example.backendglasses.model.Booking;
 import com.example.backendglasses.model.MotobikeAccessory;
+import com.example.backendglasses.model.User;
 import com.example.backendglasses.model.dto.PaymentResDTO;
 import com.example.backendglasses.service.impl.IAccountService;
 import com.example.backendglasses.service.impl.IBookingService;
@@ -36,7 +37,7 @@ public class PaymentController {
 
     @GetMapping("/createPay")
     private ResponseEntity<String> payment(@RequestParam(value = "price", required = false) Long price,
-                                           @RequestParam(value = "id",required = false) Long id,
+                                           @RequestParam(value = "id", required = false) Long id,
                                            @RequestParam(defaultValue = "") String des,
                                            @RequestParam(defaultValue = "") String address,
                                            @RequestParam(defaultValue = "") String phone) throws UnsupportedEncodingException {
@@ -149,6 +150,8 @@ public class PaymentController {
         System.out.println("Secure Hash: " + secureHash);
         List<Booking> bookings = bookingService.getListPay(id);
         LocalDateTime dateTime = LocalDateTime.now();
+        User user = accountService.findById(id);
+        Long price = bookingService.getAmountPriceCart(id);
         for (Booking booking : bookings) {
             MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
             motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
@@ -170,5 +173,6 @@ public class PaymentController {
             }
             bookingService.save(booking);
         }
+        accountService.sendMailBooking(user, bookings, price, true);
     }
 }

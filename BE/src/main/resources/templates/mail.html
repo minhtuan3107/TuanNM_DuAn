@@ -3,68 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="button.css">
 </head>
 <body>
-<form th:action="@{http://localhost:3000/confirm/{id}}">
-    <p>Xin chào , bạn đã tạo một tài khoản. Xin hãy kích hoạt tài khoản và thiết lập mật khẩu. .</p>
-    <input type="hidden" name="id" value=${}> <!-- Nếu cần gửi id -->
-    <button type="submit">Submit</button>
+<form th:action="@{'http://localhost:3000/confirm/' + ${id}}">
+    <p>Xin chào, bạn đã tạo một tài khoản. Xin hãy kích hoạt tài khoản và thiết lập mật khẩu.</p>
+    <input type="hidden" name="id" th:value="${id}"> <!-- Nếu cần gửi id -->
+    <button style="background-color: blue;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    text-align: center;
+                    font-size: 16px;
+                    cursor: pointer;" type="submit">Xác nhận tài khoản
+    </button>
 </form>
-<table style="border-spacing:0;border-collapse:collapse;height:100%!important;width:100%!important">
-    <tbody>
-    <tr>
-        <td style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif">
 
 
-            <table style="border-spacing:0;border-collapse:collapse;width:100%">
-                <tbody>
-                <tr>
-                    <td style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;padding-bottom:40px">
-                        <center>
-                            <table style="border-spacing:0;border-collapse:collapse;width:560px;text-align:left;margin:0 auto">
-                                <tbody>
-                                <tr>
-                                    <td style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif">
-
-                                        <h2 style="font-weight:normal;margin:0;font-size:24px;margin-bottom:10px">Chào
-                                            mừng ! </h2>
-                                        <p style="margin:0;color:#777;line-height:150%;font-size:16px">Chúc mừng bạn đã
-                                            kích hoạt tài khoản khách hàng thành công. Lần mua hàng tiếp theo, hãy đăng
-                                            nhập để việc thanh toán thuận tiện hơn.</p>
-
-                                        <table style="border-spacing:0;border-collapse:collapse;width:100%;margin-top:20px">
-                                            <tbody>
-                                            <tr>
-                                                <td style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif">
-                                                    <table style="border-spacing:0;border-collapse:collapse;float:left;margin-right:15px">
-                                                        <tbody>
-                                                        <tr>
-                                                            <td style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;text-align:center;padding:20px 25px;border-radius:4px;background:#1666a2">
-                                                                <a th:href="@{http://localhost:3000/confirm/${id}}"
-                                                                   style="font-size:16px;text-decoration:none;color:#fff">Xác nhận tài khoản
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-
-
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </center>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    </tbody>
-</table>
 </body>
 </html>

@@ -4,6 +4,7 @@ import com.example.backendglasses.model.Booking;
 import com.example.backendglasses.model.MotobikeAccessory;
 import com.example.backendglasses.model.TypeAccessory;
 import com.example.backendglasses.model.User;
+import com.example.backendglasses.model.dto.HistoryBookingDTO;
 import com.example.backendglasses.service.impl.IAccountService;
 import com.example.backendglasses.service.impl.IBookingService;
 import com.example.backendglasses.service.impl.IMotobikeAccessoryService;
@@ -34,18 +35,20 @@ public class AdminRestController {
     private ITypeAccessoryService typeAccessoryService;
 
     @GetMapping("getAllBooking")
-    private ResponseEntity<?> getAllBooking(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) {
-        Pageable pageable = PageRequest.of(page, 5);
-        Page<Booking> getList = bookingService.getListAndSearch(name, pageable);
+    private ResponseEntity<?> getAllBooking(@RequestParam(defaultValue = "") String name) {
+        List<HistoryBookingDTO> getList = bookingService.getListBooking();
+        for (HistoryBookingDTO historyBookingDTO : getList){
+            System.out.println(historyBookingDTO);
+        }
         return new ResponseEntity<>(getList, HttpStatus.OK);
     }
 
-        @GetMapping("getAllAccessary")
-        private ResponseEntity<Page<MotobikeAccessory>> getAllAccessary(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) {
-            Pageable pageable = PageRequest.of(page, 5);
-            Page<MotobikeAccessory> getList = motobikeAccessoryService.getAllAndSearch(name, pageable);
-            return new ResponseEntity<>(getList, HttpStatus.OK);
-        }
+    @GetMapping("getAllAccessary")
+    private ResponseEntity<Page<MotobikeAccessory>> getAllAccessary(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 500);
+        Page<MotobikeAccessory> getList = motobikeAccessoryService.getAllAndSearch(name, pageable);
+        return new ResponseEntity<>(getList, HttpStatus.OK);
+    }
 
     @GetMapping("getAllAccount")
     private ResponseEntity<List<User>> getAllUser(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) {

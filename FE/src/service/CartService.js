@@ -48,10 +48,12 @@ export async function addToCard(idAccount, idAccessory) {
 }
 
 export async function deleteCart(idBooking) {
-    const data = {idBooking}
     const token = localStorage.getItem("authToken")
     try {
-        return (await axios.post(`http://localhost:8080/booking/addToCart`, data, {
+        return (await axios.get(`http://localhost:8080/booking/deleteCart`, {
+            params: {
+                idBooking: idBooking
+            },
             headers: {
                 Authorization: `Bearer ${token}`
             }

@@ -1,12 +1,13 @@
 import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
-import { useLocation, useParams} from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import {detailsBooking, getListBookingByIdAccount} from "../../service/BookingService";
 import Swal from "sweetalert2";
 import MySwal from "sweetalert2";
 import HeaderIsLogin from "../header_footer/HeaderIsLogin";
 import findById from "../../service/AccountService";
 import '../css/bookingHistory.css'
+
 export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
     const {id} = useParams();
@@ -227,7 +228,8 @@ export default function HistoryBooking() {
                     </span>
                                                             <span>Thông tin cá nhân</span>
                                                         </a>
-                                                    </li>}
+                                                    </li>
+                                                }
                                                 {showData == 2 ?
                                                     <li className="d-flex d-flex-center mg-bottom-15 active">
                                                         <a onClick={() => {
@@ -338,6 +340,7 @@ export default function HistoryBooking() {
                                         </div>
                                     </div>
                                 </div>
+
                                 {showData == 2 ? <div className="col-xs-12 col-sm-9 col-md-9 item-right mg-bottom-15">
                                         <div className="bg-while pd-15 border-10-radius">
                                             <div className="row">
@@ -436,7 +439,7 @@ export default function HistoryBooking() {
                                                                 <label>Email</label>
                                                                 <p>
                                                                     <input
-                                                                        type="text"
+                                                                        disabled
                                                                         defaultValue={account.email}
                                                                         placeholder="Nhập email"
                                                                         size={30}
@@ -447,7 +450,7 @@ export default function HistoryBooking() {
                                                                 <label>Số điện thoại</label>
                                                                 <p>
                                                                     <input
-                                                                        placeholder="Nhập số điện thoại"
+                                                                        disabled
                                                                         defaultValue={account.phoneNumber}
                                                                         size={30}
                                                                     />
@@ -456,13 +459,13 @@ export default function HistoryBooking() {
                                                             <div
                                                                 className="form-group-edit d-flex align-center js-center-mb">
                                                                 <label/>
-                                                                <button
-                                                                    className="btn-update-customer"
-                                                                    type="submit"
-                                                                    data-address-default="ThemeSyntaxError"
-                                                                >
-                                                                    Cập nhật
-                                                                </button>
+                                                                {/*<button*/}
+                                                                {/*    className="btn-update-customer"*/}
+                                                                {/*    type="submit"*/}
+                                                                {/*    data-address-default="ThemeSyntaxError"*/}
+                                                                {/*>*/}
+                                                                {/*    Cập nhật*/}
+                                                                {/*</button>*/}
                                                             </div>
                                                         </form>
 
@@ -471,7 +474,6 @@ export default function HistoryBooking() {
                                             </div>
                                         </div>
                                     </div>
-
                                 }
                             </div>
                         </div>

@@ -30,7 +30,8 @@ export default function Detail() {
         if (isLogin) {
             setIsLogin(true)
         }
-    }, [flag]);
+        console.log("OK")
+    }, [flag, data.quantity]);
     const notify = async () => {
         await SweetAlert(
             "Thêm sản phẩm thành công",
@@ -48,7 +49,6 @@ export default function Detail() {
         );
         // back("/home")
     };
-
 
 
     function formatNumber(number) {

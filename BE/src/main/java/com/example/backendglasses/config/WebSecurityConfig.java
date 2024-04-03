@@ -35,6 +35,7 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.GET, ("/booking/quantityCart/")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET, ("/booking")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.POST, ("/booking/**")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/**")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET, ("/booking/price")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.POST, ("/booking/setQuantity")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET, ("/booking/**")).hasAnyRole("USER", "ADMIN")
