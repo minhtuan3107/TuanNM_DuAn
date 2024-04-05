@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default function PaymentOk() {
     const back = useNavigate();
-    const {id} = useParams();
+    const id = localStorage.getItem("idAccount");
     const [resultPayment, setResultPayment] = useState("");
     const token = localStorage.getItem("authToken")
     useEffect(() => {
@@ -17,6 +17,6 @@ export default function PaymentOk() {
             setResultPayment(data.data);
         }
         setPaymentOk();
-        back(`/history/${id}`, {state: {data: "OK"}})
+        back(`/history`, {state: {data: "OK"}})
     }, []);
 }

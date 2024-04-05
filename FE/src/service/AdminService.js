@@ -17,12 +17,31 @@ export async function getAllAccessary(name, page) {
     }
 }
 
-export async function getAllBooking(name) {
+export async function getAllBooking(page) {
     try {
         const token = localStorage.getItem("authToken")
         const data = await axios.get(`http://localhost:8080/admin/getAllBooking`, {
             params: {
-                name: name,
+                page: page,
+            }, headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data.data;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export async function changePassword(password, idAccount) {
+    try {
+        console.log(idAccount);
+        console.log(password)
+        const token = localStorage.getItem("authToken")
+        const data = await axios.get(`http://localhost:8080/account/changePassword`, {
+            params: {
+                password: password,
+                idAccount: idAccount
             }, headers: {
                 Authorization: `Bearer ${token}`
             }

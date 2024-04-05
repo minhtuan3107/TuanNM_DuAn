@@ -1,4 +1,3 @@
-import '../css/style.css'
 import {useEffect, useState} from "react";
 import {getList, getListNew} from "../../service/MotobikeAccessoryService";
 import {Link, useNavigate} from "react-router-dom";

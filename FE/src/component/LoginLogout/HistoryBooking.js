@@ -1,28 +1,38 @@
 import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
-import {useLocation, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {detailsBooking, getListBookingByIdAccount} from "../../service/BookingService";
 import Swal from "sweetalert2";
 import MySwal from "sweetalert2";
 import HeaderIsLogin from "../header_footer/HeaderIsLogin";
 import findById from "../../service/AccountService";
-import '../css/bookingHistory.css'
+import ReactPaginate from "react-paginate";
+import '../css/pagging.css'
+import {ErrorMessage, Field, Form, Formik} from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import {changePassword} from "../../service/AdminService";
 
 export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
-    const {id} = useParams();
     const [showData, setShowData] = useState(1);
     const location = useLocation();
     const [name, setName] = useState(location.state?.data || "")
     const [account, setAccount] = useState({});
+    const [totalPages, settotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [showError, setShowError] = useState(null);
+    const id = localStorage.getItem("idAccount");
+    const [hdPassword, setHdPassword] = useState("");
+    const back = useNavigate();
     useEffect(() => {
         const getListData = async () => {
-            const list = await getListBookingByIdAccount(id);
+            const list = await getListBookingByIdAccount(0, id);
             const account = await findById(id);
-            setListBooking(list)
+            setListBooking(list.content)
             setAccount(account);
+            settotalPages(list.totalPages);
         }
-        console.log(listBooking)
         getListData()
     }, [showData]);
     if (name === "OK") {
@@ -34,12 +44,52 @@ export default function HistoryBooking() {
             icon: "success"
         });
     }
+    const handlePassword = async (password) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const idAccount = id;
+            console.log(id)
+            console.log(idAccount)
+            const result = await axios.get(`http://localhost:8080/account/checkPassword`, {
+                params: {
+                    idAccount: idAccount,
+                    password: password
+                }, headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (result.data === true) {
+                setShowError(true);
+                setHdPassword(password);
+            } else {
+                setShowError(false);
+            }
+            console.log(hdPassword);
+            console.log(password)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
+    const handlePageClick = async (event) => {
+        const selected = event.selected;
+        setCurrentPage(selected);
+        try {
+            const result = await getListBookingByIdAccount(
+                event.selected,
+                id
+            );
+            setListBooking(result.content);
+            settotalPages(result.totalPages);
+            console.log(result.content)
+            console.log(result.totalPages)
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const formatDate = (dateString) => {
         const timestamp = new Date(dateString);
         const formattedDate = `${timestamp.getDate().toString().padStart(2, '0')}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getFullYear()} ${timestamp.getHours()}:${timestamp.getMinutes()} `;
-
-        console.log(formattedDate);
         return formattedDate;
     };
 
@@ -65,11 +115,14 @@ export default function HistoryBooking() {
                <img src="${booking.motobikeAccessory.img}" />
              </div>
              <div class="item-title">
-               <h5>Số lượng : ${booking.quantity}</h5>
+               <h4>${booking.motobikeAccessory.name} </h4>
              </div>
+             
            </li>
            <li class="item-price" style="flex: 0 0 40%">
              <span class="amount full-price">
+               <span><h4 style="color : #000000">Số lượng ${booking.quantity}</h4></span>
+               <br>
                <span>${formatNumber(booking.motobikeAccessory.price)}đ</span>
              </span>
            </li>
@@ -88,22 +141,6 @@ export default function HistoryBooking() {
             </div>
             <div>
                 <main>
-                    <div className="breadcrumb-shop">
-                        <div className="container">
-                            <ol className="breadcrumb breadcrumb-arrows">
-                                <li itemProp="itemListElement">
-                                    <a href="/" target="_self" itemProp="item">
-                                        <span itemProp="name">Trang chủ</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/account" target="_self">
-                                        Tài khoản
-                                    </a>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
                     <div id="template-account" className="mg-top-50 pd-bottom-30">
                         <div className="cloud x1"/>
                         <div className="cloud x2"/>
@@ -127,7 +164,7 @@ export default function HistoryBooking() {
                                         </div>
                                         <div className="AccountContent ">
                                             <ul>
-                                                {showData == 1 ?
+                                                {showData == 1 &&
                                                     <li className="d-flex d-flex-center mg-bottom-15 active ">
                                                         <a className="d-flex d-flex-center" onClick={() => {
                                                             setShowData(1);
@@ -178,10 +215,12 @@ export default function HistoryBooking() {
                     </span>
                                                             <span>Thông tin cá nhân</span>
                                                         </a>
-                                                    </li> : <li className="d-flex d-flex-center mg-bottom-15  ">
-                                                        <a className="d-flex d-flex-center" onClick={() => {
-                                                            setShowData(1);
-                                                        }}>
+                                                    </li>}
+
+                                                {showData == 2 && <li className="d-flex d-flex-center mg-bottom-15  ">
+                                                    <a className="d-flex d-flex-center" onClick={() => {
+                                                        setShowData(1);
+                                                    }}>
                     <span className="icon">
                       <svg
                           width={16}
@@ -226,11 +265,11 @@ export default function HistoryBooking() {
                         </defs>
                       </svg>
                     </span>
-                                                            <span>Thông tin cá nhân</span>
-                                                        </a>
-                                                    </li>
+                                                        <span>Thông tin cá nhân</span>
+                                                    </a>
+                                                </li>
                                                 }
-                                                {showData == 2 ?
+                                                {showData == 2 &&
                                                     <li className="d-flex d-flex-center mg-bottom-15 active">
                                                         <a onClick={() => {
                                                             setShowData(2);
@@ -283,7 +322,9 @@ export default function HistoryBooking() {
                     </span>
                                                             <span>Đơn hàng của bạn</span>
                                                         </a>
-                                                    </li> : <li className="d-flex d-flex-center mg-bottom-15 ">
+                                                    </li>}
+                                                {showData == 1 && <div>
+                                                    <li className="d-flex d-flex-center mg-bottom-15 ">
                                                         <a onClick={() => {
                                                             setShowData(2);
                                                         }}
@@ -335,146 +376,240 @@ export default function HistoryBooking() {
                     </span>
                                                             <span>Đơn hàng của bạn</span>
                                                         </a>
-                                                    </li>}
+                                                    </li>
+                                                </div>
+                                                }
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
 
-                                {showData == 2 ? <div className="col-xs-12 col-sm-9 col-md-9 item-right mg-bottom-15">
-                                        <div className="bg-while pd-15 border-10-radius">
-                                            <div className="row">
-                                                <div className="col-xs-12" id="customer_sidebar">
-                                                    <div className="table-responsive">
-                                                        <table className="table">
-                                                            <thead>
-                                                            <tr>
-                                                                <th className="date text-center">Ngày đặt</th>
-                                                                <th className="total text-center">Thành tiền</th>
-                                                                <th className="payment_status text-center">
-                                                                    Trạng thái thanh toán
-                                                                </th>
-                                                                <th className="order_number text-center">
+                                {showData == 2 && <div className="col-xs-12 col-sm-9 col-md-9 item-right mg-bottom-15">
+                                    <div className="bg-while pd-15 border-10-radius">
+                                        <div className="row">
+                                            <div className="col-xs-12" id="customer_sidebar">
+                                                <div className="table-responsive">
+                                                    <table className="table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th className="date text-center">Ngày đặt</th>
+                                                            <th className="total text-center">Thành tiền</th>
+                                                            <th className="payment_status text-center">
+                                                                Trạng thái thanh toán
+                                                            </th>
+                                                            <th className="order_number text-center">
 
-                                                                </th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            {listBooking.map((booking, index) => (
-                                                                <tr className="odd cancelled_order" data-od="">
-                                                                    <td className="text-center">
-                                                                        <span>{formatDate(booking.dateBooking)}</span>
-                                                                    </td>
-                                                                    <td className="text-center">
+                                                            </th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {listBooking.map((booking, index) => (
+                                                            <tr className="odd cancelled_order" data-od="">
+                                                                <td className="text-center">
+                                                                    <span>{formatDate(booking.dateBooking)}</span>
+                                                                </td>
+                                                                <td className="text-center">
                                                                     <span
                                                                         className="total money">{formatNumber(booking.price) + "đ" || "Đang cập nhật"}</span>
-                                                                    </td>
-                                                                    <td className="text-center">
+                                                                </td>
+                                                                <td className="text-center">
                                                                     <span
                                                                         className="status_pending">{booking.statusPayment === 1 ? "Nhận hàng rồi thanh toán" : "Đã thanh toán"}</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button className="btn-update-customer"
-                                                                                type="submit"
-                                                                                onClick={() => {
-                                                                                    showDetailBooking(booking.dateBooking)
-                                                                                }}
-                                                                                data-address-default="ThemeSyntaxError">Chi
-                                                                            tiết đơn hàng
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <button className="btn-update-customer"
+                                                                            type="submit"
+                                                                            onClick={() => {
+                                                                                showDetailBooking(booking.dateBooking)
+                                                                            }}
+                                                                            data-address-default="ThemeSyntaxError">Chi
+                                                                        tiết đơn hàng
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> :
-                                    <div className="col-xs-12 col-sm-9 col-md-9 item-right mg-bottom-15">
-                                        <div className="bg-while pd-15 border-10-radius">
-                                            <div className="row">
-                                                <div className="col-xs-12" id="customer_sidebar">
-                                                    <h1 className="title-detail h3">Thông tin tài khoản</h1>
-                                                    <div className="form-update-content">
-                                                        <div className="success-update-info hidden">
-                                                            <img
-                                                                width={20}
-                                                                height={20}
-                                                                src="https://file.hstatic.net/200000525917/file/check_fed1ae0ce277470eb827c4d6f3ac8ddf.png"
-                                                            />
-                                                            <div className="btn-close">
-                                                                <span className="bar animate"/>
-                                                            </div>
+                                        <div className="page">
+                                            <ReactPaginate
+                                                previousLabel={"Trang sau"}
+                                                nextLabel={"next"}
+                                                breakLabel={"..."}
+                                                breakClassName={"break-me"}
+                                                pageCount={totalPages}
+                                                marginPagesDisplayed={2}
+                                                pageRangeDisplayed={5}
+                                                onPageChange={handlePageClick}
+                                                containerClassName={"pagination"}
+                                                subContainerClassName={"pages pagination"}
+                                                activeClassName={"active"}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showData == 1 && <div className="col-xs-12 col-sm-9 col-md-9 item-right mg-bottom-15">
+                                    <div className="bg-while pd-15 border-10-radius">
+                                        <div className="row">
+                                            <div className="col-xs-12" id="customer_sidebar">
+                                                <h1 className="title-detail h3">Thông tin tài khoản</h1>
+                                                <div className="form-update-content">
+                                                    <div className="success-update-info hidden">
+                                                        <img
+                                                            width={20}
+                                                            height={20}
+                                                            src="https://file.hstatic.net/200000525917/file/check_fed1ae0ce277470eb827c4d6f3ac8ddf.png"
+                                                        />
+                                                        <div className="btn-close">
+                                                            <span className="bar animate"/>
                                                         </div>
-                                                        <form
-                                                            acceptCharset="UTF-8"
-                                                            action="/account"
-                                                            method="post"
-                                                        >
-                                                            <div className="form-group-edit d-flex align-center">
-                                                                <label>Họ và tên</label>
-                                                                <p>
-                                                                    <input
-                                                                        required=""
-                                                                        type="text"
-                                                                        defaultValue={account.fullName}
-                                                                        placeholder="Nhập họ và tên"
-                                                                        className="text"
-                                                                    />
-                                                                </p>
-                                                            </div>
-                                                            <div className="form-group-edit d-flex align-center">
-                                                                <label>Địa chỉ</label>
-                                                                <p>
-                                                                    <input
-                                                                        type="text"
-                                                                        defaultValue={account.address}
-                                                                        placeholder="Nhập địa chỉ"
-                                                                    />
-                                                                </p>
-                                                            </div>
-                                                            <div className="form-group-edit d-flex align-center">
-                                                                <label>Email</label>
-                                                                <p>
-                                                                    <input
-                                                                        disabled
-                                                                        defaultValue={account.email}
-                                                                        placeholder="Nhập email"
-                                                                        size={30}
-                                                                    />
-                                                                </p>
-                                                            </div>
-                                                            <div className="form-group-edit d-flex align-center">
-                                                                <label>Số điện thoại</label>
-                                                                <p>
-                                                                    <input
-                                                                        disabled
-                                                                        defaultValue={account.phoneNumber}
-                                                                        size={30}
-                                                                    />
-                                                                </p>
-                                                            </div>
-                                                            <div
-                                                                className="form-group-edit d-flex align-center js-center-mb">
-                                                                <label/>
-                                                                {/*<button*/}
-                                                                {/*    className="btn-update-customer"*/}
-                                                                {/*    type="submit"*/}
-                                                                {/*    data-address-default="ThemeSyntaxError"*/}
-                                                                {/*>*/}
-                                                                {/*    Cập nhật*/}
-                                                                {/*</button>*/}
-                                                            </div>
-                                                        </form>
-
                                                     </div>
+                                                    <form
+                                                        acceptCharset="UTF-8"
+                                                        action="/account"
+                                                        method="post"
+                                                    >
+                                                        <div className="form-group-edit d-flex align-center">
+                                                            <label>Họ và tên</label>
+                                                            <p>
+                                                                <input disabled={true}
+                                                                       required=""
+                                                                       type="text"
+                                                                       defaultValue={account.fullName}
+                                                                       placeholder="Nhập họ và tên"
+                                                                       className="text"
+                                                                />
+                                                            </p>
+                                                        </div>
+                                                        <div className="form-group-edit d-flex align-center">
+                                                            <label>Địa chỉ</label>
+                                                            <p>
+                                                                <input disabled={true}
+                                                                       type="text"
+                                                                       defaultValue={account.address}
+                                                                       placeholder="Nhập địa chỉ"
+                                                                />
+                                                            </p>
+                                                        </div>
+                                                        <div className="form-group-edit d-flex align-center">
+                                                            <label>Email</label>
+                                                            <p>
+                                                                <input
+                                                                    disabled
+                                                                    defaultValue={account.email}
+                                                                    placeholder="Nhập email"
+                                                                    size={30}
+                                                                />
+                                                            </p>
+                                                        </div>
+                                                        <div className="form-group-edit d-flex align-center">
+                                                            <label>Số điện thoại</label>
+                                                            <p>
+                                                                <input
+                                                                    disabled
+                                                                    defaultValue={account.phoneNumber}
+                                                                    size={30}
+                                                                />
+                                                            </p>
+                                                        </div>
+                                                        <div
+                                                            className="form-group-edit d-flex align-center js-center-mb">
+                                                            <label/>
+                                                            {/*<button*/}
+                                                            {/*    className="btn-update-customer"*/}
+                                                            {/*    type="submit"*/}
+                                                            {/*    data-address-default="ThemeSyntaxError"*/}
+                                                            {/*>*/}
+                                                            {/*    Cập nhật*/}
+                                                            {/*</button>*/}
+                                                        </div>
+                                                    </form>
+                                                    <h3>Đổi mật khẩu</h3>
+                                                    <Formik initialValues={{
+                                                        password: hdPassword,
+                                                        newPassword: "",
+                                                        confirmPassword: ""
+                                                    }} validationSchema={Yup.object({
+                                                        newPassword: Yup.string().required("Vui lòng nhập mật khẩu mới").min(6, "Mật khẩu phải có ít nhất 6 ký tự").max(20, "Mật khẩu không được quá 20 ký tự"),
+                                                        confirmPassword: Yup.string().required("Vui lòng nhập lại mật khẩu mới").oneOf([Yup.ref('newPassword'), null], 'Mật khẩu không trùng khớp')
+                                                    })}
+                                                            onSubmit={values => (
+                                                                changePassword(values.confirmPassword, id).then(
+                                                                    () => {
+                                                                        back("/login")
+                                                                        localStorage.clear()
+                                                                        Swal.fire({
+                                                                                title: "Đổi mật khẩu thành công !",
+                                                                                text: "Vui lòng đăng nhập lại.",
+                                                                                icon: "success"
+                                                                            }
+                                                                        )
+                                                                    }
+                                                                )
+                                                            )}>
+
+                                                        <Form>
+                                                            <div className="form-group-edit d-flex align-center">
+                                                                <label>Nhập mật khẩu cũ</label>
+                                                                <p>
+                                                                    <input type="password" onChange={(event) =>
+                                                                        handlePassword(event.target.value, id)
+                                                                    }
+                                                                           placeholder="Nhập mật khẩu cũ"/>
+                                                                    {showError === false &&
+                                                                        <div className="errors">
+                                                                            <p>Mật khẩu cũ của bạn không đúng
+                                                                            </p>
+                                                                        </div>}
+                                                                </p>
+                                                            </div>
+                                                            <div className="form-group-edit d-flex align-center">
+                                                                <label>Nhập mật khẩu mới</label>
+                                                                <p>
+                                                                    <Field name="newPassword" type="password"
+                                                                           placeholder="Nhập mật khẩu mới"
+                                                                    />
+                                                                    <ErrorMessage name="newPassword" component="div"
+                                                                                  className="errors"/>
+                                                                </p>
+                                                            </div>
+                                                            <div className="form-group-edit d-flex align-center">
+                                                                <label>Nhập lại mật khẩu mới</label>
+                                                                <p>
+                                                                    <Field name="confirmPassword" type="password"
+                                                                           placeholder="Nhập lại mật khẩu mới"
+                                                                    />
+                                                                    <ErrorMessage name="confirmPassword" component="div"
+                                                                                  className="errors"/>
+                                                                </p>
+                                                            </div>
+                                                            {showError === true ?
+                                                                <button style={{marginLeft: "40%"}}
+                                                                        className="btn-update-customer"
+                                                                        type="submit"
+                                                                        data-address-default="ThemeSyntaxError"
+                                                                >
+                                                                    Cập nhật
+                                                                </button> :
+                                                                <button style={{marginLeft: "40%"}}
+                                                                        className="btn-update-customer"
+                                                                        type="submit"
+                                                                        data-address-default="ThemeSyntaxError"
+                                                                        disabled={true}
+                                                                >
+                                                                    Cập nhật
+                                                                </button>}
+                                                        </Form>
+                                                    </Formik>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                                 }
+
                             </div>
                         </div>
                     </div>

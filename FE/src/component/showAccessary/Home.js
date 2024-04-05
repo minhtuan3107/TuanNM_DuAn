@@ -1,4 +1,3 @@
-import '../css/style.css'
 import Header from "../header_footer/Header";
 import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";

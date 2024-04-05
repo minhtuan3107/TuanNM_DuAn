@@ -42,6 +42,8 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.GET, ("/payment/**")).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.POST, ("/admin/**")).hasAnyRole("ADMIN")
                             .requestMatchers(HttpMethod.GET, ("/admin/**")).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/account/checkPassword")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.POST, ("/account/changePassword")).hasAnyRole("USER", "ADMIN")
                             .anyRequest().permitAll()
 
                     ;

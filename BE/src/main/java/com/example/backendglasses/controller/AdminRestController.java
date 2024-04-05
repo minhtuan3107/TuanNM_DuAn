@@ -35,53 +35,49 @@ public class AdminRestController {
     private ITypeAccessoryService typeAccessoryService;
 
     @GetMapping("getAllBooking")
-    private ResponseEntity<?> getAllBooking(@RequestParam(defaultValue = "") String name) {
-        List<HistoryBookingDTO> getList = bookingService.getListBooking();
-        for (HistoryBookingDTO historyBookingDTO : getList){
-            System.out.println(historyBookingDTO);
-        }
-        return new ResponseEntity<>(getList, HttpStatus.OK);
+    private ResponseEntity<?> getAllBooking(@RequestParam(defaultValue = "0") int page) { // lấy tất cả booking
+        Pageable pageable = PageRequest.of(page, 2);// phân trang
+        Page<HistoryBookingDTO> getListBooking = bookingService.getListBooking(pageable); // lấy danh sách booking
+        return new ResponseEntity<>(getListBooking, HttpStatus.OK);// trả về danh sách booking
     }
 
     @GetMapping("getAllAccessary")
-    private ResponseEntity<Page<MotobikeAccessory>> getAllAccessary(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) {
-        Pageable pageable = PageRequest.of(page, 500);
-        Page<MotobikeAccessory> getList = motobikeAccessoryService.getAllAndSearch(name, pageable);
-        return new ResponseEntity<>(getList, HttpStatus.OK);
+    private ResponseEntity<Page<MotobikeAccessory>> getAllAccessary(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) { // lấy tất cả phụ tùng
+        Pageable pageable = PageRequest.of(page, 5);// phân trang
+        Page<MotobikeAccessory> getList = motobikeAccessoryService.getAllAndSearch(name, pageable); // lấy danh sách phụ tùng
+        return new ResponseEntity<>(getList, HttpStatus.OK);// trả về danh sách phụ tùng
     }
 
     @GetMapping("getAllAccount")
-    private ResponseEntity<List<User>> getAllUser(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) {
-        Pageable pageable = PageRequest.of(page, 5);
-        List<User> users = accountService.getAll(pageable);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    private ResponseEntity<List<User>> getAllUser(@RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "0") int page) { // lấy tất cả user
+        Pageable pageable = PageRequest.of(page, 5); // phân trang
+        List<User> users = accountService.getAll(pageable);// lấy danh sách user
+        return new ResponseEntity<>(users, HttpStatus.OK);// trả về danh sách user
     }
 
 
     @GetMapping("detailBookingAdmin")
-    private ResponseEntity<List<Booking>> detailsBookingAdmin(@RequestParam(defaultValue = "") String date) {
-        List<Booking> bookings = bookingService.detailBookingAdmin(date);
-        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    private ResponseEntity<List<Booking>> detailsBookingAdmin(@RequestParam(defaultValue = "") String date) { // chi tiết booking
+        List<Booking> bookings = bookingService.detailBookingAdmin(date);// chi tiết booking
+        return new ResponseEntity<>(bookings, HttpStatus.OK); // trả về danh sách booking
     }
 
     @GetMapping("deleteAccessary")
-    private void deleteAccessary(@RequestParam Long id) {
-        MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(id);
-        motobikeAccessory.setIsDeleted(true);
-        motobikeAccessoryService.save(motobikeAccessory);
+    private void deleteAccessary(@RequestParam Long id) { // xóa phụ tùng
+        MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(id); // tìm phụ tùng theo id
+        motobikeAccessory.setIsDeleted(true);// xóa phụ tùng
+        motobikeAccessoryService.save(motobikeAccessory);// lưu phụ tùng vào database
     }
 
     @PostMapping("addAccessary")
-    private void addAccessary(@RequestBody MotobikeAccessory motobikeAccessory) {
-        motobikeAccessory.setIsDeleted(false);
-        motobikeAccessory.setDate(LocalDate.now());
-        System.out.println(motobikeAccessory.getTypeAccessory());
-        System.out.println(motobikeAccessory);
-        motobikeAccessoryService.save(motobikeAccessory);
+    private void addAccessary(@RequestBody MotobikeAccessory motobikeAccessory) { // thêm phụ tùng
+        motobikeAccessory.setIsDeleted(false); // phụ tùng chưa xóa
+        motobikeAccessory.setDate(LocalDate.now()); // ngày thêm phụ tùng
+        motobikeAccessoryService.save(motobikeAccessory); // lưu phụ tùng vào database
     }
 
     @PostMapping("addTypeAccessary")
-    private void addTypeAccessary(@RequestBody TypeAccessory typeAccessory) {
-        typeAccessoryService.save(typeAccessory);
+    private void addTypeAccessary(@RequestBody TypeAccessory typeAccessory) { // thêm loại phụ tùng
+        typeAccessoryService.save(typeAccessory); // lưu loại phụ tùng vào database
     }
 }

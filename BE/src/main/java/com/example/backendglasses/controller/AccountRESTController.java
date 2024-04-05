@@ -32,60 +32,76 @@ public class AccountRESTController {
     @Autowired
     private IRoleService roleService;
 
-    @GetMapping("findById")
-    private ResponseEntity<User> findById(@RequestParam Long idAccount) {
-        User user = iAccountService.findById(idAccount);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    @GetMapping("/findById")
+    private ResponseEntity<User> findById(@RequestParam Long idAccount) { // tìm user theo id
+        User user = iAccountService.findById(idAccount); // tìm user theo id
+        return new ResponseEntity<>(user, HttpStatus.OK); // trả về user
     }
 
-    @GetMapping("checkUserName")
-    private ResponseEntity<List<User>> checkUserName(@RequestParam String userName) {
-        List<User> list = iAccountService.checkUserName(userName);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    @GetMapping("/checkUserName")
+    private ResponseEntity<List<User>> checkUserName(@RequestParam String userName) { // kiểm tra tên tài khoản đã tồn tại chưa
+        List<User> list = iAccountService.checkUserName(userName); // kiểm tra tên tài khoản đã tồn tại chưa
+        return new ResponseEntity<>(list, HttpStatus.OK); // trả về list user
     }
 
-    @GetMapping("checkPhoneNumber")
-    private ResponseEntity<List<User>> checkPhoneNumber(@RequestParam String phoneNumber) {
+    @GetMapping("/checkPhoneNumber")
+    private ResponseEntity<List<User>> checkPhoneNumber(@RequestParam String phoneNumber) { // kiểm tra số điện thoại đã tồn tại chưa
         List<User> list = iAccountService.checkPhoneNumber(phoneNumber);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    @GetMapping("checkEmail")
-    private ResponseEntity<List<User>> checkEmail(@RequestParam String email) {
-        List<User> list = iAccountService.checkEmail(email);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    @GetMapping("/checkEmail")
+    private ResponseEntity<List<User>> checkEmail(@RequestParam String email) { // kiểm tra email đã tồn tại chưa
+        List<User> list = iAccountService.checkEmail(email); // kiểm tra email đã tồn tại chưa
+        return new ResponseEntity<>(list, HttpStatus.OK); // trả về list user
     }
 
-    @PostMapping("registerr")
-    private void createAccount(@RequestBody User user) {
-        user.setRole(roleService.findById(2L));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    @GetMapping("/checkPassword")
+    private ResponseEntity<Boolean> checkPasswordAccount(@RequestParam(value = "idAccount") Long idAccount, @RequestParam(value = "password") String password) { // kiểm tra password
+        User user = iAccountService.findById(idAccount);
+        Boolean flag = passwordEncoder.matches(password, user.getPassword());
+        return new ResponseEntity<>(flag, HttpStatus.OK);
+    }
+
+    @GetMapping("/changePassword")
+    private void changePassword(@RequestParam String password, @RequestParam Long idAccount) {
+        User user = iAccountService.findById(idAccount);
+        user.setPassword(passwordEncoder.encode(password));
         iAccountService.save(user);
-        iAccountService.sendMail(user);
+        System.out.println(user.getPassword());
     }
 
-    @GetMapping("confirm")
-    private ResponseEntity<String> confirmMail(@RequestParam Long id) {
-        User user = iAccountService.findById(id);
-        if (!user.getIsConfirm() && user.getId() == id) {
-            user.setIsConfirm(true);
-            iAccountService.save(user);
-            return new ResponseEntity<>("OK", HttpStatus.OK);
+    @PostMapping("/registerr")
+    private void createAccount(@RequestBody User user) { // tạo tài khoản
+        user.setRole(roleService.findById(2L)); // 2 là role user
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // mã hóa password
+        iAccountService.save(user); // lưu user vào database
+        iAccountService.sendMail(user); // gửi mail xác nhận
+    }
+
+    @GetMapping("/confirm")
+    private ResponseEntity<String> confirmMail(@RequestParam Long id) { // xác nhận mail
+        User user = iAccountService.findById(id); // tìm user theo id
+        if (!user.getIsConfirm() && user.getId() == id) { // nếu chưa xác nhận và id trùng khớp
+            user.setIsConfirm(true);// xác nhận
+            iAccountService.save(user); // lưu vào database
+            return new ResponseEntity<>("OK", HttpStatus.OK); // trả về OK
+        } else {
+            return new ResponseEntity<>("NO", HttpStatus.OK); // trả về NO
         }
-        return new ResponseEntity<>("NO", HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> createAccount(@RequestBody @Valid AccountDTO accountDTO,
-                                                BindingResult bindingResult) throws Exception {
-        Map<String, String> listError = new HashMap<>();
-        if (bindingResult.hasFieldErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> createAccount(@RequestBody @Valid AccountDTO accountDTO, // tạo tài khoản
+                                                BindingResult bindingResult) throws Exception { // kiểm tra lỗi
+        Map<String, String> listError = new HashMap<>(); // tạo map lỗi
+        if (bindingResult.hasFieldErrors()) { // nếu có lỗi
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // trả về lỗi
         } else {
-            Optional<User> userEmail = iAccountService.findAccountByEmail(accountDTO.getEmail());
-            Optional<User> userPhone = iAccountService.findAccountByPhone(accountDTO.getPhoneNumber());
-            Optional<User> userAccount = iAccountService.findAccountByAccountName(accountDTO.getNameAccount());
-            System.out.println(userAccount.isPresent() + " " + userEmail.isPresent() + "  " + userPhone.isPresent());
+            Optional<User> userEmail = iAccountService.findAccountByEmail(accountDTO.getEmail()); // kiểm tra email đã tồn tại chưa
+            Optional<User> userPhone = iAccountService.findAccountByPhone(accountDTO.getPhoneNumber()); // kiểm tra số điện thoại đã tồn tại chưa
+            Optional<User> userAccount = iAccountService.findAccountByAccountName(accountDTO.getNameAccount()); // kiểm tra tên tài khoản đã tồn tại chưa
+            System.out.println(userAccount.isPresent() + " " + userEmail.isPresent() + "  " + userPhone.isPresent());// in ra kiểm tra
 
             if (userEmail.isPresent()) {
                 System.out.println(iAccountService.findAccountByEmail(accountDTO.getEmail()));
@@ -116,14 +132,14 @@ public class AccountRESTController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Object> loginAccount(HttpServletResponse response, @RequestBody AccountDTO accountDTO) {
-        ApiResponse<User> apiResponse = new ApiResponse<>();
+    public ResponseEntity<Object> loginAccount(HttpServletResponse response, @RequestBody AccountDTO accountDTO) { // đăng nhập
+        ApiResponse<User> apiResponse = new ApiResponse<>(); // tạo apiResponse
         try {
-            String token = iAccountService.login(accountDTO.getNameAccount(), accountDTO.getPassword());
-            User user = iAccountService.findAccountByAccountName(accountDTO.getNameAccount()).get();
+            String token = iAccountService.login(accountDTO.getNameAccount(), accountDTO.getPassword()); // đăng nhập
+            User user = iAccountService.findAccountByAccountName(accountDTO.getNameAccount()).get();// tìm user theo tên tài khoản
 
-            apiResponse.setToken(token);
-            apiResponse.setDataRes(user);
+            apiResponse.setToken(token); // set token
+            apiResponse.setDataRes(user); // set user
 //            Cookie jwtCookie = new Cookie("JWT",token);
 //            jwtCookie.setHttpOnly(true);
 //            jwtCookie.setSecure(true);
@@ -131,10 +147,10 @@ public class AccountRESTController {
 //            jwtCookie.setMaxAge(7 * 24 * 60 * 60);
 //            response.addCookie(jwtCookie);
 
-            return ResponseEntity.ok(apiResponse);
+            return ResponseEntity.ok(apiResponse); // trả về apiResponse
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage()); // trả về lỗi
         }
 
 

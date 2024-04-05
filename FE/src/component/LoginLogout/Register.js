@@ -9,7 +9,7 @@ import * as Yup from "yup";
 
 export default function Register() {
     const [notification, setNotification] = useState(0);
-
+    const [check, setCheck] = useState(false);
     const back = useNavigate();
     const registerUser = async (values) => {
         console.log(values)
@@ -65,10 +65,18 @@ export default function Register() {
                                                 address: "",
                                                 email: "",
                                                 phoneNumber: "",
-                                                password: ""
+                                                password: "",
                                             }}
-                                                //      x
+                                                    validationSchema={Yup.object({
+                                                        fullName: Yup.string().required("Vui lòng nhập họ và tên").min(6, "Họ và tên phải lớn hơn 6 ký tự").max(50, "Họ và tên phải nhỏ hơn 50 ký tự").matches(/^[a-zA-Z ]+$/, "Họ và tên không được chứa ký tự đặc biệt"),
+                                                        nameAccount: Yup.string().required("Vui lòng nhập tên đăng nhập").min(6, "Tên đăng nhập phải lớn hơn 6 ký tự").max(50, "Tên đăng nhập phải nhỏ hơn 50 ký tự").matches(/^[a-zA-Z0-9]+$/, "Tên đăng nhập không được chứa ký tự đặc biệt"),
+                                                        address: Yup.string().required("Vui lòng nhập địa chỉ").min(6, "Địa chỉ phải lớn hơn 6 ký tự").max(50, "Địa chỉ phải nhỏ hơn 50 ký tự").matches(/^[a-zA-Z0-9 ]+$/, "Địa chỉ không được chứa ký tự đặc biệt"),
+                                                        email: Yup.string().required("Vui lòng nhập email").email("Email không hợp lệ"),
+                                                        phoneNumber: Yup.string().required("Vui lòng nhập số điện thoại").matches(/^[0-9]+$/, "Số điện thoại không hợp lệ").min(10, "Số điện thoại phải lớn hơn 10 ký tự").max(11, "Số điện thoại phải nhỏ hơn 11 ký tự"),
+                                                        password: Yup.string().required("Vui lòng nhập mật khẩu").min(6, "Mật khẩu phải lớn hơn 6 ký tự").max(20, "Mật khẩu phải nhỏ hơn 50 ký tự").matches(/^[a-zA-Z0-9]+$/, "Mật khẩu không được chứa ký tự đặc biệt"),
+                                                    })}
                                                     onSubmit={values => {
+                                                        console.log(values)
                                                         registerUser(values)
                                                     }}>
                                                 <Form>
@@ -131,10 +139,12 @@ export default function Register() {
                                                             <Field type="password" name="password"
                                                                    placeholder={"Nhập mật khẩu"}
                                                             />
+
                                                             <ErrorMessage name="password" component="div"
                                                                           className="errors"/>
 
                                                         </li>
+
                                                         <div className=" action_account_custommer">
                                                             <div className="action_bottom button dark">
                                                                 <button className="btn" type="submit"

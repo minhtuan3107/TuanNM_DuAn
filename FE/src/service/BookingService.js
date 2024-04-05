@@ -1,11 +1,11 @@
 import axios from "axios";
 
-export async function getListBookingByIdAccount(id) {
+export async function getListBookingByIdAccount(page, id) {
     try {
         const token = localStorage.getItem("authToken")
         const data = await axios.get(`http://localhost:8080/booking`, {
             params: {
-                name: "",
+                page: page,
                 id: id
             }, headers: {
                 Authorization: `Bearer ${token}`

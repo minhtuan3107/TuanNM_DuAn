@@ -71,7 +71,6 @@ export default function Login() {
                     localStorage.setItem("isLogin", true);
                     localStorage.setItem("nameAccount", req.dataRes.nameAccount);
                     // Cookies.set('Token', req.token, { expires: 7 * 1000 * 60 ,httpOnly:true, secure: true, sameSite: 'strict' });
-                    SweetAlert("Đăng nhập thành công!", `Chào mừng ${localStorage.getItem("nameAccount")} đến với hệ thống!`, "success")
                     navigate('/home');
                 }
             }

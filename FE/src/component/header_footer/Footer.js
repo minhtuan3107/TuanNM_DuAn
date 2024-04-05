@@ -1,4 +1,3 @@
-import '../css/style.css'
 import {useEffect, useState} from "react";
 import {getListHot, getListNew} from "../../service/MotobikeAccessoryService";
 import {getAll} from "../../service/TypeAccessoryService";

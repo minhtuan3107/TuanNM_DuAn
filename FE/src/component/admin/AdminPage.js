@@ -3,7 +3,6 @@ import {useEffect, useState} from "react";
 import MySwal from "sweetalert2";
 import Swal from "sweetalert2";
 import {formatNumber} from "chart.js/helpers";
-import '../css/paging.css'
 import {
     deleteAccessory,
     detailBooking,
@@ -20,6 +19,8 @@ import {v4} from "uuid";
 import {storage} from '../firebase';
 import {addTypeAccessary, getAll} from "../../service/TypeAccessoryService";
 import {addAccessary} from "../../service/MotobikeAccessoryService";
+import {getListBookingByIdAccount} from "../../service/BookingService";
+import ReactPaginate from "react-paginate";
 
 export default function AdminPage() {
     const [listAccessary, setListAccessary] = useState([]);
@@ -27,7 +28,6 @@ export default function AdminPage() {
     const [listTypeAccessary, setListTypeAccessary] = useState([]);
     const [listBooking, setListBooking] = useState([]);
     const [nameSearch, setNameSearch] = useState("");
-    const [currentPage, setCurrentPage] = useState(0);
     const [showAdmin, setShowAdmin] = useState(1);
     const [refesh, setRefesh] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
@@ -38,6 +38,8 @@ export default function AdminPage() {
     const [selectedValue, setSelectedValue] = useState('');
     const [accessary, setAccessary] = useState({});
     const [pageCount, setPageCount] = useState(0);
+    const [totalPages, settotalPages] = useState(0);
+    const [totalPagesBooking, settotalPagesBooking] = useState(0);
     useEffect(() => {
         try {
             const idUser = localStorage.getItem("idAccount");
@@ -47,21 +49,19 @@ export default function AdminPage() {
                 setIsLogin(true)
             }
             const getListAccessary = async () => {
-                const result = await getAllAccessary(nameSearch, currentPage);
+                const result = await getAllAccessary(nameSearch, 0);
                 setListAccessary(result?.content || back("/zxc"));
-                setPageCount(currentPage)
-                console.log(result)
+                settotalPages(result.totalPages);
             }
             const getListAccountPage = async () => {
-                const result = await getAllAccount(nameSearch, currentPage);
+                const result = await getAllAccount(nameSearch, 0);
                 setListAccount(result);
                 console.log(result)
             }
             const getListBookingPage = async () => {
-                const result = await getAllBooking(nameSearch);
-                setListBooking(result);
-                console.log(listBooking)
-                console.log(result)
+                const result = await getAllBooking(0);
+                setListBooking(result.content);
+                settotalPages(result.totalPages);
             }
             const getTypeAccessary = async () => {
                 const result = await getAll();
@@ -77,7 +77,31 @@ export default function AdminPage() {
             console.log(e)
         }
         uploadImage()
-    }, [showAdmin, currentPage, refesh, imageUpload]);
+    }, [showAdmin, refesh, imageUpload]);
+    const [currentPageBooking, setCurrentPageBooking] = useState(0);
+    const handlePageBooking = async (event) => {
+        console.log("OK")
+        try {
+            const result = await getAllBooking(event.selected);
+            setListBooking(result.content);
+            settotalPages(result.totalPages);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const handlePageClick = async (event) => {
+        try {
+            const resultAccessary = await getAllAccessary(nameSearch, event.selected);
+            setListAccessary(resultAccessary.content);
+            settotalPages(resultAccessary.totalPages);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
 
     const showDetailBooking = async (date) => {
         const booking = await detailBooking(date);
@@ -155,10 +179,7 @@ export default function AdminPage() {
         setSelectedValue(event.target.value); // Lưu giá trị được chọn vào state
         console.log(selectedValue)
     };
-    const handlePageChange = ({selected}) => {
-        setCurrentPage(selected);
-        console.log("oK")
-    };
+
     return (
         <>
             <div>
@@ -374,6 +395,21 @@ export default function AdminPage() {
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div className="page">
+                                                <ReactPaginate
+                                                    previousLabel={"Trang sau"}
+                                                    nextLabel={"Trang trước"}
+                                                    breakLabel={"..."}
+                                                    breakClassName={"break-me"}
+                                                    pageCount={totalPages}
+                                                    marginPagesDisplayed={2}
+                                                    pageRangeDisplayed={5}
+                                                    onPageChange={handlePageClick}
+                                                    containerClassName={"pagination"}
+                                                    subContainerClassName={"pages pagination"}
+                                                    activeClassName={"active"}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 }
@@ -428,6 +464,22 @@ export default function AdminPage() {
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div className="page">
+                                                <ReactPaginate
+                                                    previousLabel={"Trang sau"}
+                                                    nextLabel={"Trang trước"}
+                                                    breakLabel={"..."}
+                                                    breakClassName={"break-me"}
+                                                    pageCount={totalPages}
+                                                    marginPagesDisplayed={2}
+                                                    pageRangeDisplayed={5}
+                                                    onPageChange={handlePageBooking}
+                                                    containerClassName={"pagination"}
+                                                    subContainerClassName={"pages pagination"}
+                                                    activeClassName={"active"}
+                                                />
+                                            </div>
+
                                         </div>
                                     </div>
                                 }
@@ -542,10 +594,17 @@ export default function AdminPage() {
                                                                 <div className="form-group-edit d-flex align-center">
                                                                     <label>Chọn ảnh </label>
                                                                     <p>
-                                                                        <input type='file'
+                                                                        <label
+                                                                            htmlFor="file-upload">{imageUpload.name === undefined ?
+                                                                            <h5>Bấm vào đây để tải ảnh
+                                                                                lên</h5> : imageUpload.name}</label>
+                                                                        <input id="file-upload" type='file'
+                                                                               style={{display: "none"}}
                                                                                onChange={(event) => {
-                                                                                   setImageUpload(event.target.files[0])
-                                                                                   uploadImage();
+                                                                                   const selectedFile = event.target.files[0];
+                                                                                   if (selectedFile) {
+                                                                                       setImageUpload(selectedFile);
+                                                                                   }
                                                                                }}/>
                                                                     </p>
                                                                     {imageUrl !== "" &&
@@ -600,8 +659,10 @@ export default function AdminPage() {
                                                         typeAccessory: selectedValue
                                                     }} validationSchema={Yup.object({
                                                         name: Yup.string().required("Vui lòng không để trống"),
-                                                        price: Yup.number().required("Vui lòng không để trống"),
-                                                        quantity: Yup.number().required("Vui lòng không để trống")
+                                                        price: Yup.number().required("Vui lòng không để trống").positive("Vui lòng nhập số dương")
+                                                            .integer("Vui lòng nhập số nguyên"),
+                                                        quantity: Yup.number().required("Vui lòng không để trống").positive("Vui lòng nhập số dương")
+                                                            .integer("Vui lòng nhập số nguyên")
                                                     })}
                                                             onSubmit={values => {
                                                                 const data = {
@@ -695,10 +756,17 @@ export default function AdminPage() {
                                                             <div className="form-group-edit d-flex align-center">
                                                                 <label>Chọn ảnh </label>
                                                                 <p>
-                                                                    <input type='file'
+                                                                    <label
+                                                                        htmlFor="file-upload-img">{imageUpload.name === undefined ?
+                                                                        <h5>Bấm vào đây để tải ảnh
+                                                                            lên</h5> : imageUpload.name}</label>
+                                                                    <input id="file-upload-img" type='file'
+                                                                           style={{display: "none"}}
                                                                            onChange={(event) => {
-                                                                               setImageUpload(event.target.files[0])
-                                                                               uploadImage();
+                                                                               const selectedFile = event.target.files[0];
+                                                                               if (selectedFile) {
+                                                                                   setImageUpload(selectedFile);
+                                                                               }
                                                                            }}/>
                                                                 </p>
                                                                 {imageUrl !== "" &&

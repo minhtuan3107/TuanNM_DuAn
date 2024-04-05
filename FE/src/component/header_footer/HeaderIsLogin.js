@@ -83,7 +83,7 @@ export default function HeaderIsLogin(props) {
         }
     }, [props]);
     const backToDetails = () => {
-        navigate(`/history/${account.id}`)
+        navigate(`/history`)
     }
     const handleNameSearch = (value) => {
         setNameProduct(value)

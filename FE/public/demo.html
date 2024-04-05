@@ -2,11 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom File Upload Form</title>
+    <style>
+        /* Thiết lập CSS cho container của form */
+        .file-upload-container {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Thiết lập CSS cho nút upload */
+        .custom-file-upload-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Thiết lập CSS cho hiển thị tên file đã chọn */
+        .file-name-display {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-<form>
-    <input type="text" placeholder="Nhập tên loại phụ tùng" onchange="">
-</form>
+
+<!-- Form upload file -->
+<div style="border: 10px black" class="file-upload-container">
+    <button class="custom-file-upload-button" id="custom-upload-button">Chọn file</button>
+    <span class="file-name-display" id="file-name-display">Chưa chọn file</span>
+    <input type="file" id="file-upload" style="display: none;">
+</div>
+
+<script>
+    // Lắng nghe sự kiện click trên nút upload
+    document.getElementById('custom-upload-button').addEventListener('click', function() {
+        document.getElementById('file-upload').click(); // Kích hoạt input type file ẩn
+    });
+
+    // Lắng nghe sự kiện thay đổi file
+    document.getElementById('file-upload').addEventListener('change', function() {
+        var fileName = this.files[0].name;
+        document.getElementById('file-name-display').innerText = fileName;
+    });
+</script>
+
 </body>
 </html>

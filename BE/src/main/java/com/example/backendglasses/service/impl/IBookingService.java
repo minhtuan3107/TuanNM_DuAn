@@ -36,13 +36,12 @@ public interface IBookingService {
 
     Booking findBookingByIdAccountAndIdAccessory(Long idAccount, Long idAccessory);
 
-    List<HistoryBookingDTO> getListBookingFormat(Long id);
+    Page<HistoryBookingDTO> getListBookingAccount(Long id, Pageable pageable);
 
-    List<HistoryBookingDTO> getListBooking();
+    Page<HistoryBookingDTO> getListBooking(Pageable pageable);
 
     List<Booking> detailBookingAdmin(String date);
 
-    void sendEmail(Long idAccount, Long price);
 
-    void sendMailBooking(String to, String subject, String template, User user, Booking booking);
+
 }

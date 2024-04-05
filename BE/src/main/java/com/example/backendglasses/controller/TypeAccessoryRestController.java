@@ -20,8 +20,8 @@ public class TypeAccessoryRestController {
     private ITypeAccessoryService typeAccessoryService;
 
     @GetMapping()
-    private ResponseEntity<List<TypeAccessory>> getList() {
-        List<TypeAccessory> list = typeAccessoryService.getList();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    private ResponseEntity<List<TypeAccessory>> getList() { // lấy danh sách loại phụ tùng
+        List<TypeAccessory> list = typeAccessoryService.getList(); // lấy danh sách loại phụ tùng
+        return new ResponseEntity<>(list, HttpStatus.OK); // trả về danh sách loại phụ tùng
     }
 }
