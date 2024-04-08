@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {getList, getListNew} from "../../service/MotobikeAccessoryService";
 import {Link, useNavigate} from "react-router-dom";
-import {getListCart} from "../../service/CartService";
+import {checkPayment, getListCart} from "../../service/CartService";
 import {Field, Form, Formik} from "formik";
 
 export default function Header(props) {

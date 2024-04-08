@@ -16,6 +16,20 @@ export async function getListCart(id, token) {
     }
 }
 
+export async function checkPayment() {
+    const token = localStorage.getItem("authToken")
+    try {
+        const data = await axios.get(`http://localhost:8080/booking/checkPayment`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data.data;
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 export async function getTotalAmount(id) {
     try {
         const token = localStorage.getItem("authToken")

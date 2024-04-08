@@ -21,7 +21,6 @@ import {addTypeAccessary, getAll} from "../../service/TypeAccessoryService";
 import {addAccessary} from "../../service/MotobikeAccessoryService";
 import {getListBookingByIdAccount} from "../../service/BookingService";
 import ReactPaginate from "react-paginate";
-import {Line} from "react-chartjs-2";
 
 export default function AdminPage() {
     const [listAccessary, setListAccessary] = useState([]);
@@ -79,6 +78,7 @@ export default function AdminPage() {
         }
         uploadImage()
     }, [showAdmin, refesh, imageUpload]);
+    const [currentPageBooking, setCurrentPageBooking] = useState(0);
     const handlePageBooking = async (event) => {
         console.log("OK")
         try {
@@ -90,6 +90,7 @@ export default function AdminPage() {
         }
     };
 
+    const [currentPage, setCurrentPage] = useState(0);
 
     const handlePageClick = async (event) => {
         try {
@@ -134,19 +135,8 @@ export default function AdminPage() {
   `
         });
     };
-    const sortedProducts = listBooking.sort((a, b) => b.orders - a.orders);
-    const chartData = {
-        labels: sortedProducts.map(product => product.name),
-        datasets: [
-            {
-                label: 'Số lượng đặt hàng',
-                data: sortedProducts.map(product => product.orders),
-                fill: false,
-                backgroundColor: 'rgb(75, 192, 192)',
-                borderColor: 'rgba(75, 192, 192, 0.2)',
-            },
-        ],
-    };
+
+
     const uploadImage = () => {
         if (imageUpload === "") return;
         const imageRef = ref(storage, `productImage/${imageUpload.name + v4()}`);
@@ -542,18 +532,6 @@ export default function AdminPage() {
                                                             </tbody>
 
                                                         </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }{showAdmin === 3 &&
-                                    <div className="col-xs-12 col-sm-9 col-md-10 item-right mg-bottom-15">
-                                        <div className="bg-while pd-15 border-10-radius">
-                                            <div className="row">
-                                                <div className="col-xs-12" id="customer_sidebar">
-                                                    <div className="table-responsive">
-                                                        <Line data={chartData} />
                                                     </div>
                                                 </div>
                                             </div>

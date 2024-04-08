@@ -1,35 +1,56 @@
-package com.example.backendglasses.repository;
+package com.example.backendglasses.config;
 
-import com.example.backendglasses.model.MotobikeAccessory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.List;
 
-@Repository
-public interface MotobikeAccessoryRepository extends JpaRepository<MotobikeAccessory, Long> {
-    @Query(value = "select * from motobike_accessory where motobike_accessory.is_deleted = 0 order by motobike_accessory.date desc limit 10", nativeQuery = true)
-    List<MotobikeAccessory> getListNew();
+@Configuration
+@EnableMethodSecurity
+@RequiredArgsConstructor
+public class WebSecurityConfig {
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
 
-    @Query(value = "SELECT ma.* FROM motobike_accessory ma JOIN ( SELECT motobike_accessory_id, COUNT(*) AS booking_count FROM booking GROUP BY motobike_accessory_id ORDER BY booking_count DESC LIMIT 3) AS max_booking ON max_booking.motobike_accessory_id = ma.id; ", nativeQuery = true)
-    List<MotobikeAccessory> getListHot();
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(requests -> {
+                    requests
+                            .requestMatchers(("/account/registerr"),
+                                    ("/account/login"))
+                            .permitAll()
+                            .requestMatchers(HttpMethod.GET, ("/booking")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/checkLiveCart")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/account/findById")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/quantityCart/")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.POST, ("/booking/**")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/**")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/price")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.POST, ("/booking/setQuantity")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/checkPayment")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/waitPayment")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/booking/**")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/payment/**")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.POST, ("/admin/**")).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/admin/**")).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, ("/account/checkPassword")).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.POST, ("/account/changePassword")).hasAnyRole("USER", "ADMIN")
+                            .anyRequest().permitAll()
 
-    @Query(value = "select * from motobike_accessory where motobike_accessory.name like :name and motobike_accessory.is_deleted = 0", nativeQuery = true)
-    List<MotobikeAccessory> getListNewAll(@Param("name") String name);
-
-    @Query(value = "SELECT ma.* FROM motobike_accessory ma " +
-            "JOIN type_accessory ta ON ma.type_accessory_id = ta.id " +
-            "WHERE ma.is_deleted = 0 AND (ma.name LIKE :name OR ta.name LIKE :name) " +
-            "GROUP BY ma.id",
-            countQuery = "SELECT COUNT(*) FROM motobike_accessory ma " +
-                    "JOIN type_accessory ta ON ma.type_accessory_id = ta.id " +
-                    "WHERE ma.is_deleted = 0 AND (ma.name LIKE :name OR ta.name LIKE :name) " +
-                    "GROUP BY ma.id",
-            nativeQuery = true)
-    Page<MotobikeAccessory> getAllAndSearch(@Param("name") String name, Pageable pageable);
-
+                    ;
+                })
+        ;
+        return http.build();
+    }
 }

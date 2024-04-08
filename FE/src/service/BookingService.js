@@ -35,16 +35,13 @@ export async function detailsBooking(date, id) {
 }
 
 
-export async function paymentBooking(price, id, des, address, phone) {
+export async function paymentBooking(price, id) {
     const token = localStorage.getItem("authToken")
     try {
         const data = await axios.get(`http://localhost:8080/payment/createPay`, {
             params: {
                 price: price,
                 id: id,
-                des: des,
-                address: address,
-                phone: phone
             },
             headers: {
                 Authorization: `Bearer ${token}`
@@ -76,14 +73,16 @@ export async function shipCod(price, id, des, address, phone) {
     }
 }
 
-export async function checkQuantityPayment(id) {
+export async function waitPayment(id, des, address, phone) {
     const token = localStorage.getItem("authToken")
     try {
-        const data = await axios.get(`http://localhost:8080/booking/checkQuantityPayment`, {
+        const data = await axios.get(`http://localhost:8080/booking/waitPayment`, {
             params: {
-                idAccount: id
-            },
-            headers: {
+                idAccount: id,
+                des: des,
+                address: address,
+                phone: phone
+            }, headers: {
                 Authorization: `Bearer ${token}`
             }
         });
@@ -92,15 +91,13 @@ export async function checkQuantityPayment(id) {
         console.log(e)
     }
 }
-export async function waitForPayment(id, des, address, phone) {
+
+export async function checkQuantityPayment(id) {
     const token = localStorage.getItem("authToken")
     try {
-        const data = await axios.get(`http://localhost:8080/booking/waitForPayment`, {
+        const data = await axios.get(`http://localhost:8080/booking/checkQuantityPayment`, {
             params: {
-                idAccount: id,
-                des: des,
-                address: address,
-                phone: phone
+                idAccount: id
             },
             headers: {
                 Authorization: `Bearer ${token}`

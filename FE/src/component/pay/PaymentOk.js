@@ -9,25 +9,28 @@ export default function PaymentOk() {
     const token = localStorage.getItem("authToken")
     const location = useLocation();
     useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const vnpResponseCode = searchParams.get('vnp_ResponseCode');
-        console.log(vnpResponseCode)
         const setPaymentOk = async () => {
+            const searchParams = new URLSearchParams(window.location.search);
+            const status = searchParams.get('vnp_TransactionStatus');
             const data = await axios.get(`http://localhost:8080/payment/payment_infor/${id}`, {
                 params: {
-                    vnp_ResponseCode: vnpResponseCode
+                    status: status
                 },
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             setResultPayment(data.data);
+            console.log(data);
+            console.log(data.data)
         }
         setPaymentOk();
+        console.log(resultPayment);
         if (resultPayment === true) {
             back(`/history`, {state: {data: "OK"}})
-        } else {
+        }
+        if (resultPayment === false) {
             back(`/history`, {state: {data: "NO"}})
         }
-    }, []);
+    }, [resultPayment]);
 }

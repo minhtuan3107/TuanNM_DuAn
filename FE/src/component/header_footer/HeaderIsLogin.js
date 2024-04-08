@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import SweetAlert from "sweetalert";
 import axios from "axios";
 import findById from "../../service/AccountService";
-import {getListCart, getTotalAmount} from "../../service/CartService";
+import {checkPayment, getListCart, getTotalAmount} from "../../service/CartService";
 
 export default function HeaderIsLogin(props) {
     const navigate = useNavigate();
@@ -18,6 +18,7 @@ export default function HeaderIsLogin(props) {
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         window.scrollTo(0, 0);
+        checkPayment();
         document.title = "Phụ tùng xe máy"
         const qualityCart = async () => {
             try {

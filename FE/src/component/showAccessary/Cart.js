@@ -12,7 +12,7 @@ import jsPDF from 'jspdf';
 import {
     checkQuantityPayment,
     paymentBooking,
-    shipCod, waitForPayment
+    shipCod, waitPayment
 } from "../../service/BookingService";
 import HeaderIsLogin from "../header_footer/HeaderIsLogin";
 
@@ -29,7 +29,7 @@ export default function Cart() {
     const [des, setDes] = useState("");
     const [useAccountAddress, setUseAccountAddress] = useState(true);
     const [printPDF, setPrintPDF] = useState(false);
-    const idAccount = localStorage.getItem("idAccount");
+    const idAccount = location.state?.idAccount || 0;
     const [nameProduct, setNameProduct] = useState("")
     const [qualityProduct, setQualityProduct] = useState(0);
 
@@ -94,11 +94,14 @@ export default function Cart() {
 
 
     const backToPayment = async () => {
-        waitForPayment(idAccount, des, address, phone);
-        const paymentBooking1 = paymentBooking(totalAmount, idAccount, des, address, phone).then(url => {
-            window.location.href = url;
-            console.log(url)
-        })
+        waitPayment(idAccount, des, address, phone).then(
+            () => {
+                paymentBooking(totalAmount, idAccount, des, address, phone).then(url => {
+                    window.location.href = url;
+                    console.log(url)
+                })
+            }
+        )
     }
 
     const cod = async () => {
