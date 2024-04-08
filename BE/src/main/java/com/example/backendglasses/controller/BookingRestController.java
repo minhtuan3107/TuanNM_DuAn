@@ -1,156 +1,92 @@
-package com.example.backendglasses.controller;
+package com.example.backendglasses.config;
 
-import com.example.backendglasses.model.Booking;
-import com.example.backendglasses.model.MotobikeAccessory;
 import com.example.backendglasses.model.User;
-import com.example.backendglasses.model.dto.CartDTO;
-import com.example.backendglasses.model.dto.HistoryBookingDTO;
-import com.example.backendglasses.model.dto.QuantityDTO;
-import com.example.backendglasses.service.impl.IAccountService;
-import com.example.backendglasses.service.impl.IBookingService;
-import com.example.backendglasses.service.impl.IMotobikeAccessoryService;
-import com.example.backendglasses.service.impl.IStatusBookingService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.*;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
-@RestController
-@CrossOrigin("*")
-@RequestMapping("/booking")
-public class BookingRestController {
-    @Autowired
-    private IBookingService bookingService;
+@Component
+@RequiredArgsConstructor
+public class JwtTokenFilter extends OncePerRequestFilter {
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private IMotobikeAccessoryService motobikeAccessoryService;
-    @Autowired
-    private IStatusBookingService statusBookingService;
-    @Autowired
-    private IAccountService iAccountService;
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-
-    @GetMapping("")
-    private ResponseEntity<Page<HistoryBookingDTO>> getListBookingByAccount(@RequestParam(defaultValue = "0") int page, @RequestParam Long id) { // lấy danh sách booking theo tài khoản
-        Pageable pageable = PageRequest.of(page, 5); // phân trang
-        Page<HistoryBookingDTO> getListBooking = bookingService.getListBookingAccount(id, pageable); // lấy danh sách booking theo tài khoản
-        return new ResponseEntity<>(getListBooking, HttpStatus.OK); // trả về danh sách booking theo tài khoản
-    }
-
-
-    @GetMapping("detailsBooking/{id}")
-    private ResponseEntity<List<Booking>> detailsBooking(@PathVariable Long id, @RequestParam(defaultValue = "") String date) { // chi tiết booking
-        List<Booking> bookings = bookingService.detailsBooking(date, id); // chi tiết booking
-        return new ResponseEntity<>(bookings, HttpStatus.OK);// trả về danh sách booking
-    }
-
-    @GetMapping("cart")
-    private ResponseEntity<List<Booking>> getCart(@RequestParam Long id) { // lấy giỏ hàng
-        List<Booking> getListBooking = bookingService.getCartByIdAccount(id); // lấy giỏ hàng
-        return new ResponseEntity<>(getListBooking, HttpStatus.OK); // trả về giỏ hàng
-    }
-
-    @GetMapping("price")
-    private ResponseEntity<Long> getAmountPriceCart(@RequestParam(value = "id", required = false) Long id) { // lấy tổng giá giỏ hàng
-        Long priceCart = bookingService.getAmountPriceCart(id); // lấy tổng giá giỏ hàng
-        return new ResponseEntity<>(priceCart, HttpStatus.OK); // trả về tổng giá giỏ hàng
-    }
-
-    @PostMapping("/addToCart")
-    private void addToCart(@RequestBody CartDTO cartDTO) { // thêm vào giỏ hàng
-        List<Booking> booking = bookingService.checkBooking(cartDTO.getIdAccount(), cartDTO.getIdAccessory()); // kiểm tra booking
-        if (booking.size() == 0) { // nếu booking = 0
-            bookingService.addToCard(cartDTO.getIdAccount(), cartDTO.getIdAccessory()); // thêm vào giỏ hàng
-        } else {
-            Booking booking1 = bookingService.findBookingByIdAccountAndIdAccessory(cartDTO.getIdAccount(), cartDTO.getIdAccessory()); // tìm booking theo id tài khoản và id phụ tùng
-            booking1.setQuantity(booking1.getQuantity() + 1); // tăng số lượng
-            bookingService.save(booking1); // lưu vào database
-        }
-    }
-
-
-    @GetMapping("shipCod")
-    private void shipCod(@RequestParam Long price,
-                         @RequestParam Long idAccount,
-                         @RequestParam(defaultValue = "") String des,
-                         @RequestParam(defaultValue = "") String address,
-                         @RequestParam(defaultValue = "") String phone) { // giao hàng COD
-        List<Booking> bookings = bookingService.getListPay(idAccount); // lấy danh sách booking
-        Long totalAmount = bookingService.getAmountPriceCart(idAccount); // lấy tổng giá giỏ hàng
-        User user = iAccountService.findById(idAccount); // tìm user theo id
-        LocalDateTime dateTime = LocalDateTime.now(); // ngày giờ hiện tại
-        for (Booking booking : bookings) { // duyệt danh sách booking
-            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
-            motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity()); // cập nhật số lượng
-            motobikeAccessoryService.save(motobikeAccessory); // lưu vào database
-            booking.setStatusBooking(statusBookingService.findById(2L)); // cập nhật trạng thái booking
-            booking.setStatusPayment(1); // cập nhật trạng thái thanh toán
-            booking.setDateBooking(dateTime); // cập nhật ngày giờ booking
-            booking.setTotalPrice(motobikeAccessory.getPrice()); // cập nhật tổng giá
-            booking.setDes(des); // cập nhật mô tả
-            if (address.equals("")) { // nếu địa chỉ rỗng
-                booking.setAddress(booking.getAccount().getAddress()); // cập nhật địa chỉ
-            } else { // nếu địa chỉ không rỗng
-                booking.setAddress(address); // cập nhật địa chỉ
+        try {
+            if (isByPassToken(request)) {
+                filterChain.doFilter(request, response); // enable bypass
+                return;
             }
-            if (phone.equals("")) { // nếu số điện thoại rỗng
-                booking.setPhone(booking.getAccount().getPhoneNumber()); // cập nhật số điện thoại
-            } else { // nếu số điện thoại không rỗng
-                booking.setPhone(phone); // cập nhật số điện thoại
+            // need token
+            final String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UNAUTHORIZED");
+                return;
             }
-            iAccountService.sendMailBooking(user, bookings, totalAmount, false); // gửi mail booking
-            bookingService.save(booking); // lưu vào database
+
+            final String token = authHeader.substring(7);
+            final String nameAccount = jwtTokenUtil.extractUserName(token);
+            if (nameAccount != null
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
+                User userDetails = (User) userDetailsService.loadUserByUsername(nameAccount);
+                if (jwtTokenUtil.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails,
+                                    null,
+                                    userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UNAUTHORIZED");
         }
 
+
     }
 
-    @GetMapping("donePayment/{idAccount}")
-    private void donePayment(@PathVariable Long idBooking) { // thanh toán
-        Booking booking = bookingService.findById(idBooking); // tìm booking theo id
-        LocalDateTime dateTime = LocalDateTime.now(); // ngày giờ hiện tại
-        MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
-        booking.setStatusBooking(statusBookingService.findById(2L)); // cập nhật trạng thái booking
-        booking.setStatusPayment(2); // cập nhật trạng thái thanh toán
-        booking.setDateBooking(dateTime); // cập nhật ngày giờ booking
-        booking.setTotalPrice(motobikeAccessory.getPrice()); // cập nhật tổng giá
-        bookingService.save(booking);// lưu vào database
-    }
-
-
-    @GetMapping("deleteCart")
-    private void deleteCart(@RequestParam Long idBooking) { // xóa giỏ hàng
-        bookingService.deleteCart(idBooking); // xóa giỏ hàng
-    }
-
-    @PostMapping("setQuantity")
-    private void setQuantity(@RequestBody QuantityDTO quantityDTO) { // cập nhật số lượng
-        bookingService.updateQuantity(quantityDTO.getQuantity(), quantityDTO.getIdBooking()); // cập nhật số lượng
-    }
-
-
-    @GetMapping("checkQuantityPayment")
-    private ResponseEntity<?> checkQuantityPayment(@RequestParam Long idAccount) { // kiểm tra số lượng thanh toán
-        List<Booking> bookings = bookingService.getListPay(idAccount); // lấy danh sách booking
-        for (Booking booking : bookings) {// duyệt danh sách booking
-            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
-            System.out.println(motobikeAccessory.getQuantity() - booking.getQuantity() < -1); // in ra số lượng
-            if (motobikeAccessory.getQuantity() - booking.getQuantity() < -1) { // nếu số lượng < -1
-                return new ResponseEntity<>("NO", HttpStatus.OK); // trả về NO
-            } // trả về YES
+    private boolean isByPassToken(@NonNull HttpServletRequest request) {
+        final List<Pair<String, String>> byPassTokens = Arrays.asList(
+                Pair.of("/account/login", "POST"),
+                Pair.of("/account/register", "POST"),
+                Pair.of("/api/findAllNew", "GET"),
+                Pair.of("/type", "GET"),
+                Pair.of("/api/getListHot", "GET"),
+                Pair.of("api/getAll", "GET"),
+                Pair.of("api/find", "GET"),
+                Pair.of("account/checkUserName", "GET"),
+                Pair.of("account/checkPhoneNumber", "GET"),
+                Pair.of("account/confirm", "GET"),
+                Pair.of("account/checkEmail", "GET")
+        );
+        for (Pair<String, String> byPassToken : byPassTokens) {
+            if (request.getServletPath().contains(byPassToken.getFirst()) &&
+                    request.getMethod().equals(byPassToken.getSecond())) {
+                return true;
+            }
         }
-        return new ResponseEntity<>("YES", HttpStatus.OK); // trả về YES
+        return false;
     }
 
-    @GetMapping("/quantityCart")
-    private ResponseEntity<?> getQuantityCart(@RequestParam(value = "idUser", required = false) Long idUser) { // lấy số lượng giỏ hàng
-        List<Booking> getList = bookingService.getCartByIdAccount(idUser); // lấy giỏ hàng
-        return new ResponseEntity<>(getList.size(), HttpStatus.OK); // trả về số lượng giỏ hàng
-    }
 }

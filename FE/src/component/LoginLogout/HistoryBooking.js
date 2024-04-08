@@ -43,6 +43,14 @@ export default function HistoryBooking() {
             // text: ".",
             icon: "success"
         });
+    }if (name === "NO") {
+        setName("")
+        setShowData(2);
+        Swal.fire({
+            title: "Thanh toán khong thành công !",
+            // text: ".",
+            icon: "error"
+        });
     }
     const handlePassword = async (password) => {
         try {

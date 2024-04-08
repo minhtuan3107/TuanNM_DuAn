@@ -92,3 +92,22 @@ export async function checkQuantityPayment(id) {
         console.log(e)
     }
 }
+export async function waitForPayment(id, des, address, phone) {
+    const token = localStorage.getItem("authToken")
+    try {
+        const data = await axios.get(`http://localhost:8080/booking/waitForPayment`, {
+            params: {
+                idAccount: id,
+                des: des,
+                address: address,
+                phone: phone
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data.data
+    } catch (e) {
+        console.log(e)
+    }
+}
