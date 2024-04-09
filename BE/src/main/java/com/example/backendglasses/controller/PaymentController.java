@@ -3,6 +3,7 @@ package com.example.backendglasses.controller;
 import com.example.backendglasses.config.ConfigVNP;
 import com.example.backendglasses.model.Booking;
 import com.example.backendglasses.model.MotobikeAccessory;
+import com.example.backendglasses.model.StatusBooking;
 import com.example.backendglasses.model.User;
 import com.example.backendglasses.model.dto.PaymentResDTO;
 import com.example.backendglasses.service.impl.IAccountService;
@@ -131,6 +132,15 @@ public class PaymentController {
             }
             accountService.sendMailBooking(user, bookings, price, true);
             return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            for (Booking booking : bookings) {
+                MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
+                motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
+                motobikeAccessoryService.save(motobikeAccessory);
+                booking.setStatusBooking(statusBookingService.findById(1L));
+                bookingService.save(booking);
+            }
+            accountService.sendMailBooking(user, bookings, price, true);
         }
         return new ResponseEntity<>(false, HttpStatus.OK);
     }

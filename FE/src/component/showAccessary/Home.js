@@ -1,7 +1,7 @@
 import Header from "../header_footer/Header";
 import Footer from "../header_footer/Footer";
 import {useEffect, useState} from "react";
-import {getListHot, getListNew} from "../../service/MotobikeAccessoryService";
+import {getListByQuantity, getListHot, getListNew} from "../../service/MotobikeAccessoryService";
 import {Link, useNavigate} from "react-router-dom";
 import {getAll} from "../../service/TypeAccessoryService";
 import SweetAlert from "sweetalert";
@@ -20,7 +20,7 @@ export default function Home() {
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         const getListData = async () => {
-            const list = await getListNew();
+            const list = await getListByQuantity();
             const listNew = await getListNew()
             const listType = await getAll();
             const listHot = await getListHot();
@@ -216,7 +216,13 @@ export default function Home() {
                                                                             src={datanew.img}
                                                                             data-src={datanew.img}
                                                                             data-mobile={datanew.img}
-                                                                        />
+                                                                        /> {datanew.quantity === 0 &&
+
+                                                                        <p style={{
+                                                                            color: "red",
+                                                                            fontWeight: "bold"
+                                                                        }}>Hết hàng</p>
+                                                                    }
                                                                         <div
                                                                             className="button-loop-pro hidden-xs hidden-sm">
                                                                             <button
@@ -293,6 +299,13 @@ export default function Home() {
                                                                             data-src={datanew.img}
                                                                             data-mobile={datanew.img}
                                                                         />
+                                                                        {datanew.quantity === 0 &&
+
+                                                                            <p style={{
+                                                                                color: "red",
+                                                                                fontWeight: "bold"
+                                                                            }}>Hết hàng</p>
+                                                                        }
                                                                         <div
                                                                             className="button-loop-pro hidden-xs hidden-sm">
                                                                             <button
@@ -360,6 +373,10 @@ export default function Home() {
                                                             height={260}
                                                             src={m.img}
                                                         />
+                                                        {listData.quantity === 0 &&
+
+                                                            <p style={{color: "red", fontWeight: "bold"}}>Hết hàng</p>
+                                                        }
                                                     </div>
                                                     <div className="product-detail">
                                                         <h3 className="pro-name">

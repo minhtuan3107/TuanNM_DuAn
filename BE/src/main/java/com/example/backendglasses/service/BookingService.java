@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -114,6 +116,7 @@ public class BookingService implements IBookingService {
     @Override
     public Page<HistoryBookingDTO> getListBooking(Pageable pageable) { // lấy danh sách booking theo trang và số lượng
         List<HistoryBookingDTO> resultList = bookingRepository.getListBooking();
+        Collections.sort(resultList, Comparator.comparing(HistoryBookingDTO::getDateBooking, Comparator.reverseOrder()));
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), resultList.size());
         Page<HistoryBookingDTO> page = new PageImpl<>(resultList.subList(start, end), pageable, resultList.size());

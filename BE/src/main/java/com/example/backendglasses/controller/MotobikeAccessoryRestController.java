@@ -32,6 +32,10 @@ public class MotobikeAccessoryRestController {
         return new ResponseEntity<>(getList, HttpStatus.OK); // trả về danh sách phụ tùng
     }
 
+    @GetMapping("getListByQuantity") // lấy danh sách phụ tùng mới
+    private ResponseEntity<List<MotobikeAccessory>> getListByQuantity() { // lấy danh sách phụ tùng mới
+        return new ResponseEntity<>(motobikeAccessoryService.getAll(), HttpStatus.OK); // trả về danh sách phụ tùng mới
+    }
 
     @GetMapping("findAllNew") // lấy danh sách phụ tùng mới
     private ResponseEntity<List<MotobikeAccessory>> getListNew() { // lấy danh sách phụ tùng mới

@@ -22,4 +22,6 @@ public interface IMotobikeAccessoryService {
     Page<MotobikeAccessory> getAllAndSearch(String name, Pageable pageable);
 
     void save(MotobikeAccessory motobikeAccessory);
+
+    List<MotobikeAccessory> getAll();
 }

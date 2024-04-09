@@ -36,7 +36,7 @@ public class AdminRestController {
 
     @GetMapping("getAllBooking")
     private ResponseEntity<?> getAllBooking(@RequestParam(defaultValue = "0") int page) { // lấy tất cả booking
-        Pageable pageable = PageRequest.of(page, 2);// phân trang
+        Pageable pageable = PageRequest.of(page, 5);// phân trang
         Page<HistoryBookingDTO> getListBooking = bookingService.getListBooking(pageable); // lấy danh sách booking
         return new ResponseEntity<>(getListBooking, HttpStatus.OK);// trả về danh sách booking
     }

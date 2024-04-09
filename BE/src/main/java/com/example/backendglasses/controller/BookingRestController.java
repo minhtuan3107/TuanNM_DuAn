@@ -82,7 +82,6 @@ public class BookingRestController {
 
     @GetMapping("checkPayment")
     private void checkPayment() {
-
         List<Booking> bookings = bookingService.getAll();
         StatusBooking statusBooking = statusBookingService.findById(3L);
         LocalDateTime currentTime = LocalDateTime.now();
@@ -103,64 +102,54 @@ public class BookingRestController {
     }
 
     @GetMapping("waitPayment")
-    private void waitPayment(@RequestParam Long idAccount,
-                             @RequestParam(defaultValue = "") String des,
-                             @RequestParam(defaultValue = "") String address,
-                             @RequestParam(defaultValue = "") String phone) { // chờ thanh toán
+    private ResponseEntity<Boolean> waitPayment(@RequestParam Long idAccount,
+                                                @RequestParam(defaultValue = "") String des,
+                                                @RequestParam(defaultValue = "") String address,
+                                                @RequestParam(defaultValue = "") String phone) { // chờ thanh toán
         List<Booking> bookings = bookingService.getListPay(idAccount); // lấy danh sách booking
         User user = iAccountService.findById(idAccount); // tìm user theo id
         LocalDateTime localDateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
             MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
-            booking.setStatusBooking(statusBookingService.findById(3L)); // cập nhật trạng thái booking
-            motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity()); // cập nhật số lượng
-            booking.setDes(des); // cập nhật mô tả
-            booking.setDateBooking(localDateTime);
-            if (address.equals("")) { // nếu địa chỉ rỗng
-                booking.setAddress(booking.getAccount().getAddress()); // cập nhật địa chỉ
-            } else { // nếu địa chỉ không rỗng
-                booking.setAddress(address); // cập nhật địa chỉ
+            if (motobikeAccessory.getQuantity() - booking.getQuantity() < -1) {
+                return new ResponseEntity<>(false, HttpStatus.OK);
+            } else {
+                booking.setStatusBooking(statusBookingService.findById(3L)); // cập nhật trạng thái booking
+                motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity()); // cập nhật số lượng
+                booking.setDes(des); // cập nhật mô tả
+                booking.setDateBooking(localDateTime);
+                if (address.equals("")) { // nếu địa chỉ rỗng
+                    booking.setAddress(booking.getAccount().getAddress()); // cập nhật địa chỉ
+                } else { // nếu địa chỉ không rỗng
+                    booking.setAddress(address); // cập nhật địa chỉ
+                }
+                if (phone.equals("")) { // nếu số điện thoại rỗng
+                    booking.setPhone(booking.getAccount().getPhoneNumber()); // cập nhật số điện thoại
+                } else { // nếu số điện thoại không rỗng
+                    booking.setPhone(phone); // cập nhật số điện thoại
+                }
+                bookingService.save(booking); // lưu vào database
             }
-            if (phone.equals("")) { // nếu số điện thoại rỗng
-                booking.setPhone(booking.getAccount().getPhoneNumber()); // cập nhật số điện thoại
-            } else { // nếu số điện thoại không rỗng
-                booking.setPhone(phone); // cập nhật số điện thoại
-            }
-            bookingService.save(booking); // lưu vào database
         }
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping("shipCod")
     private void shipCod(@RequestParam Long price,
-                         @RequestParam Long idAccount,
-                         @RequestParam(defaultValue = "") String des,
-                         @RequestParam(defaultValue = "") String address,
-                         @RequestParam(defaultValue = "") String phone) { // giao hàng COD
-        List<Booking> bookings = bookingService.getListPay(idAccount); // lấy danh sách booking
-        Long totalAmount = bookingService.getAmountPriceCart(idAccount); // lấy tổng giá giỏ hàng
-        User user = iAccountService.findById(idAccount); // tìm user theo id
-        LocalDateTime dateTime = LocalDateTime.now(); // ngày giờ hiện tại
-        for (Booking booking : bookings) { // duyệt danh sách booking
-            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
-            motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity()); // cập nhật số lượng
-            motobikeAccessoryService.save(motobikeAccessory); // lưu vào database
-            booking.setStatusBooking(statusBookingService.findById(2L)); // cập nhật trạng thái booking
-            booking.setStatusPayment(1); // cập nhật trạng thái thanh toán
-            booking.setDateBooking(dateTime); // cập nhật ngày giờ booking
-            booking.setTotalPrice(motobikeAccessory.getPrice()); // cập nhật tổng giá
-            booking.setDes(des); // cập nhật mô tả
-            if (address.equals("")) { // nếu địa chỉ rỗng
-                booking.setAddress(booking.getAccount().getAddress()); // cập nhật địa chỉ
-            } else { // nếu địa chỉ không rỗng
-                booking.setAddress(address); // cập nhật địa chỉ
-            }
-            if (phone.equals("")) { // nếu số điện thoại rỗng
-                booking.setPhone(booking.getAccount().getPhoneNumber()); // cập nhật số điện thoại
-            } else { // nếu số điện thoại không rỗng
-                booking.setPhone(phone); // cập nhật số điện thoại
-            }
-            iAccountService.sendMailBooking(user, bookings, totalAmount, false); // gửi mail booking
-            bookingService.save(booking); // lưu vào database
+                         @RequestParam Long idAccount) { // giao hàng COD
+        List<Booking> bookings = bookingService.getListPayment(idAccount);
+        LocalDateTime dateTime = LocalDateTime.now();
+        User user = iAccountService.findById(idAccount);
+        for (Booking booking : bookings) {
+            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
+            motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
+            motobikeAccessoryService.save(motobikeAccessory);
+            booking.setStatusBooking(statusBookingService.findById(2L));
+            booking.setStatusPayment(1);
+            booking.setDateBooking(dateTime);
+            booking.setTotalPrice(motobikeAccessory.getPrice());
+            bookingService.save(booking);
+            iAccountService.sendMailBooking(user, bookings, price, true);
         }
 
     }
@@ -188,19 +177,6 @@ public class BookingRestController {
         bookingService.updateQuantity(quantityDTO.getQuantity(), quantityDTO.getIdBooking()); // cập nhật số lượng
     }
 
-
-    @GetMapping("checkQuantityPayment")
-    private ResponseEntity<?> checkQuantityPayment(@RequestParam Long idAccount) { // kiểm tra số lượng thanh toán
-        List<Booking> bookings = bookingService.getListPay(idAccount); // lấy danh sách booking
-        for (Booking booking : bookings) {// duyệt danh sách booking
-            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
-            System.out.println(motobikeAccessory.getQuantity() - booking.getQuantity() < -1); // in ra số lượng
-            if (motobikeAccessory.getQuantity() - booking.getQuantity() < -1) { // nếu số lượng < -1
-                return new ResponseEntity<>("NO", HttpStatus.OK); // trả về NO
-            } // trả về YES
-        }
-        return new ResponseEntity<>("YES", HttpStatus.OK); // trả về YES
-    }
 
     @GetMapping("/quantityCart")
     private ResponseEntity<?> getQuantityCart(@RequestParam(value = "idUser", required = false) Long idUser) { // lấy số lượng giỏ hàng

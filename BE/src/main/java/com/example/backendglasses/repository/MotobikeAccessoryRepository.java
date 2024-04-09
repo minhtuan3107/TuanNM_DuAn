@@ -15,6 +15,9 @@ public interface MotobikeAccessoryRepository extends JpaRepository<MotobikeAcces
     @Query(value = "select * from motobike_accessory where motobike_accessory.is_deleted = 0 order by motobike_accessory.date desc limit 10", nativeQuery = true)
     List<MotobikeAccessory> getListNew();
 
+    @Query(value = "select * from motobike_accessory where motobike_accessory.is_deleted = 0 order by motobike_accessory.quantity desc limit 10", nativeQuery = true)
+    List<MotobikeAccessory> getAllSortByQuantity();
+
     @Query(value = "SELECT ma.* FROM motobike_accessory ma JOIN ( SELECT motobike_accessory_id, COUNT(*) AS booking_count FROM booking GROUP BY motobike_accessory_id ORDER BY booking_count DESC LIMIT 3) AS max_booking ON max_booking.motobike_accessory_id = ma.id; ", nativeQuery = true)
     List<MotobikeAccessory> getListHot();
 

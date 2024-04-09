@@ -53,16 +53,13 @@ export async function paymentBooking(price, id) {
     }
 }
 
-export async function shipCod(price, id, des, address, phone) {
+export async function shipCod(price, id) {
     const token = localStorage.getItem("authToken")
     try {
         const data = await axios.get(`http://localhost:8080/booking/shipCod`, {
             params: {
                 price: price,
-                idAccount: id,
-                des: des,
-                address: address,
-                phone: phone
+                idAccount: id
             }, headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -92,19 +89,4 @@ export async function waitPayment(id, des, address, phone) {
     }
 }
 
-export async function checkQuantityPayment(id) {
-    const token = localStorage.getItem("authToken")
-    try {
-        const data = await axios.get(`http://localhost:8080/booking/checkQuantityPayment`, {
-            params: {
-                idAccount: id
-            },
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        return data.data
-    } catch (e) {
-        console.log(e)
-    }
-}
+

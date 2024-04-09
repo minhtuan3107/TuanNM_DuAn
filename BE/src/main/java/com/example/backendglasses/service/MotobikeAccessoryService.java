@@ -52,5 +52,10 @@ public class MotobikeAccessoryService implements IMotobikeAccessoryService {
         motobikeAccessoryRepository.save(motobikeAccessory);
     }
 
+    @Override
+    public List<MotobikeAccessory> getAll() {
+        return motobikeAccessoryRepository.getAllSortByQuantity();
+    }
+
 
 }

@@ -4,6 +4,9 @@ import axios from "axios";
 export async function getListNew() {
     const data = await axios.get("http://localhost:8080/api/findAllNew");
     return data.data;
+}export async function getListByQuantity() {
+    const data = await axios.get("http://localhost:8080/api/getListByQuantity");
+    return data.data;
 }
 
 export async function getListHot() {

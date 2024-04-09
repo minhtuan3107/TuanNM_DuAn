@@ -10,7 +10,6 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 import {
-    checkQuantityPayment,
     paymentBooking,
     shipCod, waitPayment
 } from "../../service/BookingService";
@@ -94,24 +93,70 @@ export default function Cart() {
 
 
     const backToPayment = async () => {
-        waitPayment(idAccount, des, address, phone).then(
-            () => {
-                paymentBooking(totalAmount, idAccount, des, address, phone).then(url => {
-                    window.location.href = url;
-                    console.log(url)
-                })
+        waitPayment(idAccount, des, address, phone).then(flag => {
+                console.log(flag)
+                if (flag === true) {
+                    paymentBooking(totalAmount, idAccount, des, address, phone).then(url => {
+                        window.location.href = url;
+                        console.log(url)
+                    })
+                }
+                if (flag === false) {
+                    Swal.fire({
+                        title: "Số lượng hiện tại không đủ !",
+                        text: "Số lượng sản phẩm bạn đặt không đủ với sản phẩm trong kho.",
+                        icon: "error"
+                    });
+                }
             }
         )
     }
 
     const cod = async () => {
-        shipCod(totalAmount, idAccount, des, address, phone).then(
-            back(`/history/${idAccount}`, {state: {data: "COD"}})
-        )
-        setFlag(!flag);
-        exportPDF()
-    }
+        Swal.fire({
+            title: "Bạn chắc là muốn nhận hàng rồi thanh toán?",
+            text: "BBạn sẽ phải thanh toán " + formatNumber(totalAmount) + " cho shipper ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Đồng ý",
+            cancelButtonText: "Huỷ"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                waitPayment(idAccount, des, address, phone).then(flag => {
+                        console.log(flag)
+                        if (flag === true) {
+                            Swal.fire({
+                                title: "Đặt hàng thành công !",
+                                text: "Vui lòng thanh toán " + formatNumber(totalAmount) + " cho shipper khi nhận hàng.",
+                                icon: "success"
+                            });
+                            shipCod(totalAmount, idAccount).then(
+                                back(`/history/${idAccount}`, {state: {data: "COD"}})
+                            )
+                            setFlag(!flag);
 
+
+                        }
+                        if (flag === false) {
+                            Swal.fire({
+                                title: "Số lượng hiện tại không đủ !",
+                                text: "Số lượng sản phẩm bạn đặt không đủ với sản phẩm trong kho.",
+                                icon: "error"
+                            });
+                        }
+                    }
+                )
+
+            }
+        });
+    }
+    const confirmShipCod = () => {
+        waitPayment(idAccount, des, address, phone).then(() => {
+
+        })
+    }
     const exportPDF = () => {
 
         const doc = new jsPDF();
@@ -129,55 +174,11 @@ export default function Cart() {
 
         doc.save('table.pdf');
     };
-    const confirmShipCod = async () => {
-        const data = await checkQuantityPayment(idAccount);
-        if (data === "YES") {
-            Swal.fire({
-                title: "Bạn muốn nhận hàng rồi thanh toán  ?",
-                text: "Bạn chắc chắn muốn hàng rồi thanh toán chứ ?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Đồng ý",
-                cancelButtonText: "Huỷ"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    checkQuantityPart2();
-                }
-            });
-        } else {
-            Swal.fire({
-                title: "Số lượng sản phẩm trong kho không đủ  !",
-                text: "Số lượng sản phẩm trong kho không đủ vui lòng đặt lại sau",
-                icon: "error"
-            });
-        }
-    }
 
     function formatNumber(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    const checkQuantityPart2 = async () => {
-        const token = localStorage.getItem("authToken")
-        const data = await checkQuantityPayment(idAccount, token);
-        console.log(data)
-        if (data === "YES") {
-            Swal.fire({
-                title: "Đặt hàng thành công !",
-                text: "Vui lòng thanh toán " + formatNumber(totalAmount) + "đ khi nhận hàng",
-                icon: "success"
-            });
-            cod()
-        } else {
-            Swal.fire({
-                title: "Số lượng sản phẩm trong kho không đủ  !",
-                text: "Số lượng sản phẩm trong kho không đủ vui lòng đặt lại sau",
-                icon: "error"
-            });
-        }
-    }
     const changeDes = (event) => {
         setDes(event);
     }
@@ -427,7 +428,7 @@ export default function Cart() {
                                                         </a>
                                                         <a style={{marginLeft: "30%"}}>Hoặc bạn có thể</a>
                                                         <a onClick={() => {
-                                                            confirmShipCod()
+                                                            cod()
                                                         }}
                                                            className="btncart-checkout text-center"
                                                         >
