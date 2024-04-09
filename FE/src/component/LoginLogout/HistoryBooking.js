@@ -17,7 +17,6 @@ export default function HistoryBooking() {
     const [listBooking, setListBooking] = useState([]);
     const [showData, setShowData] = useState(1);
     const location = useLocation();
-    const [name, setName] = useState(location.state?.data || "")
     const [account, setAccount] = useState({});
     const [totalPages, settotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
@@ -35,24 +34,7 @@ export default function HistoryBooking() {
         }
         getListData()
     }, [showData]);
-    if (name === "OK") {
-        setName("")
-        setShowData(2);
-        Swal.fire({
-            title: "Thanh toán thành công !",
-            // text: ".",
-            icon: "success"
-        });
-    }
-    if (name === "NO") {
-        setName("")
-        setShowData(2);
-        Swal.fire({
-            title: "Thanh toán không thành công !",
-            // text: ".",
-            icon: "error"
-        });
-    }
+
     const handlePassword = async (password) => {
         try {
             const token = localStorage.getItem("authToken");

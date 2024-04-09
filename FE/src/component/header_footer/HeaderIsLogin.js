@@ -44,7 +44,7 @@ export default function HeaderIsLogin(props) {
 
         try {
             const getListData = async () => {
-                const list = await getListCart(account.id, token);
+                const list = await getListCart();
                 setListCart(list);
                 const total = await getTotalAmount(account.id);
                 setTotalAmount(total);

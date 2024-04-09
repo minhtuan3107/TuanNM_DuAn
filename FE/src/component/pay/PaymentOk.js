@@ -1,6 +1,7 @@
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default function PaymentOk() {
     const back = useNavigate();
@@ -27,10 +28,20 @@ export default function PaymentOk() {
         setPaymentOk();
         console.log(resultPayment);
         if (resultPayment === true) {
-            back(`/history`, {state: {data: "OK"}})
+            back(`/history`)
+            Swal.fire({
+                title: "Thanh toán thành công !",
+                // text: ".",
+                icon: "success"
+            });
         }
         if (resultPayment === false) {
-            back(`/history`, {state: {data: "NO"}})
+            Swal.fire({
+                title: "Thanh toán không thành công !",
+                // text: ".",
+                icon: "error"
+            });
+            back(`/history`)
         }
     }, [resultPayment]);
 }

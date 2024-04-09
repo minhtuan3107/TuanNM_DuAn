@@ -1,11 +1,11 @@
 import axios from "axios";
 
-export async function getListCart(id, token) {
+export async function getListCart() {
+    const token = localStorage.getItem("authToken")
+    const idAccount = localStorage.getItem("idAccount")
+
     try {
-        const data = await axios.get(`http://localhost:8080/booking/cart`, {
-            params: {
-                id: id
-            },
+        const data = await axios.get(`http://localhost:8080/booking/cart?id=${idAccount}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

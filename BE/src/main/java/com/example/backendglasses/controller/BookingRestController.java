@@ -111,25 +111,27 @@ public class BookingRestController {
         LocalDateTime localDateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
             MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
-            if (motobikeAccessory.getQuantity() - booking.getQuantity() < -1) {
+            if (motobikeAccessory.getQuantity() < booking.getQuantity()) {
                 return new ResponseEntity<>(false, HttpStatus.OK);
-            } else {
-                booking.setStatusBooking(statusBookingService.findById(3L)); // cập nhật trạng thái booking
-                motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity()); // cập nhật số lượng
-                booking.setDes(des); // cập nhật mô tả
-                booking.setDateBooking(localDateTime);
-                if (address.equals("")) { // nếu địa chỉ rỗng
-                    booking.setAddress(booking.getAccount().getAddress()); // cập nhật địa chỉ
-                } else { // nếu địa chỉ không rỗng
-                    booking.setAddress(address); // cập nhật địa chỉ
-                }
-                if (phone.equals("")) { // nếu số điện thoại rỗng
-                    booking.setPhone(booking.getAccount().getPhoneNumber()); // cập nhật số điện thoại
-                } else { // nếu số điện thoại không rỗng
-                    booking.setPhone(phone); // cập nhật số điện thoại
-                }
-                bookingService.save(booking); // lưu vào database
             }
+        }
+        for (Booking booking : bookings) {
+            MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId()); // tìm phụ tùng theo id
+            booking.setStatusBooking(statusBookingService.findById(3L)); // cập nhật trạng thái booking
+            motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity()); // cập nhật số lượng
+            booking.setDes(des); // cập nhật mô tả
+            booking.setDateBooking(localDateTime);
+            if (address.equals("")) { // nếu địa chỉ rỗng
+                booking.setAddress(booking.getAccount().getAddress()); // cập nhật địa chỉ
+            } else { // nếu địa chỉ không rỗng
+                booking.setAddress(address); // cập nhật địa chỉ
+            }
+            if (phone.equals("")) { // nếu số điện thoại rỗng
+                booking.setPhone(booking.getAccount().getPhoneNumber()); // cập nhật số điện thoại
+            } else { // nếu số điện thoại không rỗng
+                booking.setPhone(phone); // cập nhật số điện thoại
+            }
+            bookingService.save(booking); // lưu vào database
         }
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
@@ -142,7 +144,6 @@ public class BookingRestController {
         User user = iAccountService.findById(idAccount);
         for (Booking booking : bookings) {
             MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
-            motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
             motobikeAccessoryService.save(motobikeAccessory);
             booking.setStatusBooking(statusBookingService.findById(2L));
             booking.setStatusPayment(1);

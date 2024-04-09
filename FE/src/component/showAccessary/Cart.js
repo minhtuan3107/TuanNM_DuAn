@@ -93,6 +93,7 @@ export default function Cart() {
 
 
     const backToPayment = async () => {
+        setFlag(!flag)
         waitPayment(idAccount, des, address, phone).then(flag => {
                 console.log(flag)
                 if (flag === true) {
@@ -115,40 +116,35 @@ export default function Cart() {
     const cod = async () => {
         Swal.fire({
             title: "Bạn chắc là muốn nhận hàng rồi thanh toán?",
-            text: "BBạn sẽ phải thanh toán " + formatNumber(totalAmount) + " cho shipper ?",
+            text: "Bạn sẽ phải thanh toán " + formatNumber(totalAmount) + " cho shipper ?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Đồng ý",
             cancelButtonText: "Huỷ"
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                waitPayment(idAccount, des, address, phone).then(flag => {
-                        console.log(flag)
-                        if (flag === true) {
-                            Swal.fire({
-                                title: "Đặt hàng thành công !",
-                                text: "Vui lòng thanh toán " + formatNumber(totalAmount) + " cho shipper khi nhận hàng.",
-                                icon: "success"
-                            });
-                            shipCod(totalAmount, idAccount).then(
-                                back(`/history/${idAccount}`, {state: {data: "COD"}})
-                            )
-                            setFlag(!flag);
-
-
-                        }
-                        if (flag === false) {
-                            Swal.fire({
-                                title: "Số lượng hiện tại không đủ !",
-                                text: "Số lượng sản phẩm bạn đặt không đủ với sản phẩm trong kho.",
-                                icon: "error"
-                            });
-                        }
-                    }
-                )
-
+                const checkStatus = await waitPayment(idAccount, des, address, phone)
+                console.log(checkStatus)
+                if (checkStatus === true) {
+                    shipCod(totalAmount, idAccount).then(
+                        back(`/history`)
+                    )
+                    Swal.fire({
+                        title: "Đặt hàng thành công !",
+                        text: "Vui lòng thanh toán " + formatNumber(totalAmount) + " cho shipper khi nhận hàng.",
+                        icon: "success"
+                    });
+                    setFlag(!flag);
+                }
+                if (checkStatus === false) {
+                    Swal.fire({
+                        title: "Số lượng hiện tại không đủ !",
+                        text: "Số lượng sản phẩm bạn đặt không đủ với sản phẩm trong kho.",
+                        icon: "error"
+                    });
+                }
             }
         });
     }

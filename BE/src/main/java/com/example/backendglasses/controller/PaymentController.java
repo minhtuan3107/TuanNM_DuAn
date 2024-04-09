@@ -122,8 +122,6 @@ public class PaymentController {
         if (status.equals("00")) {
             for (Booking booking : bookings) {
                 MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
-                motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
-                motobikeAccessoryService.save(motobikeAccessory);
                 booking.setStatusBooking(statusBookingService.findById(2L));
                 booking.setStatusPayment(2);
                 booking.setDateBooking(dateTime);
@@ -132,15 +130,6 @@ public class PaymentController {
             }
             accountService.sendMailBooking(user, bookings, price, true);
             return new ResponseEntity<>(true, HttpStatus.OK);
-        } else {
-            for (Booking booking : bookings) {
-                MotobikeAccessory motobikeAccessory = motobikeAccessoryService.findById(booking.getMotobikeAccessory().getId());
-                motobikeAccessory.setQuantity(motobikeAccessory.getQuantity() - booking.getQuantity());
-                motobikeAccessoryService.save(motobikeAccessory);
-                booking.setStatusBooking(statusBookingService.findById(1L));
-                bookingService.save(booking);
-            }
-            accountService.sendMailBooking(user, bookings, price, true);
         }
         return new ResponseEntity<>(false, HttpStatus.OK);
     }
