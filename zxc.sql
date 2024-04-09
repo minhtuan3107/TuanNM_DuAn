@@ -4,6 +4,7 @@ INSERT INTO `xe`.`role` (`name`) VALUES ('employee');
 INSERT INTO `xe`.`account` (`account_name`, `address`, `birthday`, `email`, `full_name`, `password`, `phone`, `role_id`) VALUES ('tuanne', '68 Do Dang Tuyen', '2005-07-31', 'tn989993@gmail.com', 'Nguyen Minh Tuan', 'tuan123', '0345323724', '1');
 INSERT INTO `xe`.`status_booking` (`name`) VALUES ('Đang trong giỏ hàng');
 INSERT INTO `xe`.`status_booking` (`name`) VALUES ('Đã mua');
+INSERT INTO `xe`.`status_booking` (`name`) VALUES ('Đợi thanh toán');
 INSERT INTO `xe`.`type_accessory` (`name`) VALUES ('Phuoc');
 INSERT INTO `xe`.`type_accessory` (`name`) VALUES ('Mam');
 INSERT INTO `xe`.`type_accessory` (`name`) VALUES ('Dia');
