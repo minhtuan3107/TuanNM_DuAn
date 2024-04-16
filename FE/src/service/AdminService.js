@@ -69,6 +69,11 @@ export async function getAllAccount(name, page) {
     }
 }
 
+export async function getAllTypeAccessary() {
+    const data = await axios.get(`http://localhost:8080/type/getAll`);
+    return data.data;
+}
+
 export async function getRole(id) {
     const token = localStorage.getItem("authToken")
     try {
@@ -116,3 +121,4 @@ export async function deleteAccessory(id) {
         console.log(e)
     }
 }
+

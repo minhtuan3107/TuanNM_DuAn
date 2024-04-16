@@ -11,4 +11,6 @@ public interface ITypeAccessoryService {
     void save(TypeAccessory typeAccessory);
 
     TypeAccessory findById(Long id);
+
+    List<TypeAccessory> getAll();
 }

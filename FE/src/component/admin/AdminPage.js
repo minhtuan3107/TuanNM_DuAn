@@ -8,7 +8,7 @@ import {
     detailBooking,
     getAllAccessary,
     getAllAccount,
-    getAllBooking,
+    getAllBooking, getAllTypeAccessary, getBookingTop,
 } from "../../service/AdminService";
 import HeaderIsLogin from "../header_footer/HeaderIsLogin";
 import {useNavigate} from "react-router-dom";
@@ -21,6 +21,10 @@ import {addTypeAccessary, getAll} from "../../service/TypeAccessoryService";
 import {addAccessary} from "../../service/MotobikeAccessoryService";
 import {getListBookingByIdAccount} from "../../service/BookingService";
 import ReactPaginate from "react-paginate";
+import {Chart} from "chart.js";
+import StatisticsChart from "./StatisticsChart";
+import MovieStatisticChart from "./StatisticsChart";
+import StatisticsChartUser from "./StatisticsChartUser";
 
 export default function AdminPage() {
     const [listAccessary, setListAccessary] = useState([]);
@@ -64,9 +68,10 @@ export default function AdminPage() {
                 settotalPages(result.totalPages);
             }
             const getTypeAccessary = async () => {
-                const result = await getAll();
+                const result = await getAllTypeAccessary();
                 setListTypeAccessary(result)
             }
+
             getListBookingPage();
             getListAccountPage();
             getListAccessary();
@@ -78,6 +83,7 @@ export default function AdminPage() {
         }
         uploadImage()
     }, [showAdmin, refesh, imageUpload]);
+
     const [currentPageBooking, setCurrentPageBooking] = useState(0);
     const handlePageBooking = async (event) => {
         console.log("OK")
@@ -135,7 +141,6 @@ export default function AdminPage() {
   `
         });
     };
-
 
     const uploadImage = () => {
         if (imageUpload === "") return;
@@ -537,7 +542,30 @@ export default function AdminPage() {
                                             </div>
                                         </div>
                                     </div>
-                                }
+                                } {showAdmin === 3 &&
+                                <div className="col-xs-12 col-sm-9 col-md-10 item-right mg-bottom-15">
+                                    <div className="bg-while pd-15 border-10-radius">
+                                        <div className="row">
+                                            <div className="col-xs-12" id="customer_sidebar">
+                                                <div className="table-responsive">
+                                                    <div >
+                                                        <table>
+                                                            <tr>
+                                                                <td style={{width: "45%"}}>
+                                                                    <StatisticsChart style={{display: "none"}}/>
+                                                                </td>
+                                                                <td style={{width: "50%"}}>
+                                                                    <StatisticsChartUser style={{display: "none"}}/>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                                 {action === 1 &&
                                     <div className="col-xs-12 col-sm-9 col-md-9 item-right mg-bottom-15">
                                         <div className="bg-while pd-15 border-10-radius">
@@ -566,6 +594,7 @@ export default function AdminPage() {
                                                                         name: values.name,
                                                                         img: imageUrl
                                                                     }
+                                                                    console.log(data)
                                                                     addTypeAccessary(data).then(() => {
                                                                         Swal.fire({
                                                                             title: "Thêm thành công !",

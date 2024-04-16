@@ -3,6 +3,8 @@ package com.example.backendglasses.service;
 import com.example.backendglasses.model.Booking;
 import com.example.backendglasses.model.User;
 import com.example.backendglasses.model.dto.HistoryBookingDTO;
+import com.example.backendglasses.model.dto.StatisticalBookingDTO;
+import com.example.backendglasses.model.dto.UserBookingDTO;
 import com.example.backendglasses.repository.BookingRepository;
 import com.example.backendglasses.service.impl.IAccountService;
 import com.example.backendglasses.service.impl.IBookingService;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -126,6 +129,16 @@ public class BookingService implements IBookingService {
     @Override
     public List<Booking> detailBookingAdmin(String date) {
         return bookingRepository.detailBookingAdmin(date);
+    }
+
+    @Override
+    public List<StatisticalBookingDTO> getBookingTop() {
+        return bookingRepository.getAllBookingTop();
+    }
+
+    @Override
+    public List<UserBookingDTO> getBookingUser() {
+        return bookingRepository.getUserBooking();
     }
 
 

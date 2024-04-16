@@ -5,6 +5,8 @@ import com.example.backendglasses.model.MotobikeAccessory;
 import com.example.backendglasses.model.TypeAccessory;
 import com.example.backendglasses.model.User;
 import com.example.backendglasses.model.dto.HistoryBookingDTO;
+import com.example.backendglasses.model.dto.StatisticalBookingDTO;
+import com.example.backendglasses.model.dto.UserBookingDTO;
 import com.example.backendglasses.service.impl.IAccountService;
 import com.example.backendglasses.service.impl.IBookingService;
 import com.example.backendglasses.service.impl.IMotobikeAccessoryService;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -79,5 +82,17 @@ public class AdminRestController {
     @PostMapping("addTypeAccessary")
     private void addTypeAccessary(@RequestBody TypeAccessory typeAccessory) { // thêm loại phụ tùng
         typeAccessoryService.save(typeAccessory); // lưu loại phụ tùng vào database
+    }
+
+    @GetMapping("getAllTop")
+    private ResponseEntity<StatisticalBookingDTO> getAllTop() { // lấy top booking
+        List<StatisticalBookingDTO> list = bookingService.getBookingTop();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("getUserTop")
+    private ResponseEntity<UserBookingDTO> getUserTop() { // lấy top booking
+        List<UserBookingDTO> list = bookingService.getBookingUser();
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 }

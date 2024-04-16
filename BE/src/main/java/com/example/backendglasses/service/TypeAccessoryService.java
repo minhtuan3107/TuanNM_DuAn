@@ -18,6 +18,7 @@ public class TypeAccessoryService implements ITypeAccessoryService {
         return typeAccessoryRepository.getTypeAccessories();
     }
 
+
     @Override
     public void save(TypeAccessory typeAccessory) {
         typeAccessoryRepository.save(typeAccessory);
@@ -26,5 +27,10 @@ public class TypeAccessoryService implements ITypeAccessoryService {
     @Override
     public TypeAccessory findById(Long id) {
         return typeAccessoryRepository.findById(id).get();
+    }
+
+    @Override
+    public List<TypeAccessory> getAll() {
+        return typeAccessoryRepository.findAll();
     }
 }

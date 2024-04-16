@@ -3,9 +3,12 @@ package com.example.backendglasses.service.impl;
 import com.example.backendglasses.model.Booking;
 import com.example.backendglasses.model.User;
 import com.example.backendglasses.model.dto.HistoryBookingDTO;
+import com.example.backendglasses.model.dto.StatisticalBookingDTO;
+import com.example.backendglasses.model.dto.UserBookingDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IBookingService {
@@ -45,5 +48,7 @@ public interface IBookingService {
 
     List<Booking> detailBookingAdmin(String date);
 
+    List<StatisticalBookingDTO> getBookingTop();
 
+    List<UserBookingDTO> getBookingUser();
 }

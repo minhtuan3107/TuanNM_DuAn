@@ -12,6 +12,8 @@ import AdminPage from "./component/admin/AdminPage";
 import PaymentOk from "./component/pay/PaymentOk";
 import Errors from "./component/Errors";
 import ConfirmAccount from "./component/LoginLogout/ConfirmAccount";
+import BarChart from "./component/admin/BarChart";
+import MovieStatisticChart from "./component/admin/StatisticsChart";
 
 function App() {
     return (
@@ -29,6 +31,8 @@ function App() {
                 <Route path={"/payOk/:id"} element={<PaymentOk/>}></Route>
                 <Route path={"*"} element={<Errors/>}></Route>
                 <Route path={"/confirm/:id"} element={<ConfirmAccount/>}></Route>
+                <Route path={"/1"} element={<BarChart/>}></Route>
+                <Route path={"/2"} element={<MovieStatisticChart/>}></Route>
             </Routes>
         </>
     );
